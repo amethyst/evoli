@@ -1,0 +1,10 @@
+(
+  title: "evolution-island",
+  dimensions: (1280, 720),
+  max_dimensions: None,
+  min_dimensions: None,
+  fullscreen: false,
+  multisampling: 4,
+  visibility: true,
+  vsync: true,
+)
