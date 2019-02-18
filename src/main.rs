@@ -135,7 +135,7 @@ impl<'s> System<'s> for DebugSystem {
         bounds.left -= tcos;
         bounds.right += tcos;
 
-        let color = [1.0, 0.05, 0.65, 1.0];
+        let color = [0.8, 0.04, 0.6, 1.0];
         debug_lines_resource.draw_line(
             [bounds.left, bounds.bottom, 0.0].into(),
             [bounds.right, bounds.bottom, 0.0].into(),

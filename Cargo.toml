@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 amethyst = "0.10.0"
+rand = "0.6.5"

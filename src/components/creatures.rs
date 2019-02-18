@@ -43,12 +43,44 @@ impl Component for PursueBehaviorTag {
 
 pub struct Movement {
     pub velocity: Vector3<f32>,
-    pub wandering_speed: f32,
     pub max_movement_speed: f32,
 }
-
 impl Component for Movement {
     type Storage = DenseVecStorage<Self>;
+}
+
+pub struct Wander {
+    pub angle: f32,
+    pub radius: f32,
+}
+impl Component for Wander {
+    type Storage = DenseVecStorage<Self>;
+}
+
+impl Wander {
+    pub fn new(radius: f32) -> Wander {
+        Wander {
+            angle: 0.0,
+            radius: radius,
+        }
+    }
+
+    pub fn shake_angle(&mut self) {
+        let change = 0.1;
+        if rand::random() {
+            self.angle += change;
+        } else {
+            self.angle -= change;
+        }
+    }
+
+    pub fn get_direction(&self) -> Vector3<f32> {
+        Vector3::new(
+            self.radius * self.angle.cos(),
+            self.radius * self.angle.sin(),
+            0.0,
+        )
+    }
 }
 
 pub type CarnivorePrefabData = BasicScenePrefab<Vec<PosNormTex>>;
@@ -70,9 +102,9 @@ pub fn create_carnivore(
         .create_entity()
         .with(Movement {
             velocity: [x, y, 0.0].into(),
-            wandering_speed: 5.0,
-            max_movement_speed: 10.0,
+            max_movement_speed: 5.0,
         })
+        .with(Wander::new(1.0))
         .with(WanderBehaviorTag)
         .with(mesh.clone())
         .with(handle.clone())
