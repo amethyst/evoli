@@ -74,13 +74,13 @@ impl Wander {
     }
 }
 
-pub type CarnivorePrefabData = BasicScenePrefab<Vec<PosNormTex>>;
+pub type CreaturePrefabData = BasicScenePrefab<Vec<PosNormTex>>;
 
 pub fn create_carnivore(
     world: &mut World,
     x: f32,
     y: f32,
-    handle: &Handle<Prefab<CarnivorePrefabData>>,
+    handle: &Handle<Prefab<CreaturePrefabData>>,
 ) {
     let mut local_transform = Transform::default();
     local_transform.set_xyz(x, y, 0.0);

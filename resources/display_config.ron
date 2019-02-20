@@ -1,6 +1,6 @@
 (
   title: "evolution-island",
-  dimensions: (1280, 720),
+  dimensions: Some((1280, 960)),
   max_dimensions: None,
   min_dimensions: None,
   fullscreen: false,

@@ -33,7 +33,7 @@ impl SimpleState for ExampleState {
 
         let carnivorous_sprite =
             data.world
-                .exec(|loader: PrefabLoader<'_, creatures::CarnivorePrefabData>| {
+                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
                     loader.load("prefabs/carnivorous.ron", RonFormat, (), ())
                 });
 
@@ -94,7 +94,7 @@ fn main() -> amethyst::Result<()> {
             InputBundle::<String, String>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
         .with(
-            PrefabLoaderSystem::<creatures::CarnivorePrefabData>::default(),
+            PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
             "",
             &[],
         )
