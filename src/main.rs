@@ -15,9 +15,9 @@ mod components;
 mod resources;
 mod systems;
 
-use components::creatures;
-use resources::world_bounds::*;
-use systems::*;
+use crate::components::creatures;
+use crate::resources::world_bounds::*;
+use crate::systems::*;
 
 struct ExampleState;
 impl SimpleState for ExampleState {
