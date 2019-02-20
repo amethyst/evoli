@@ -65,15 +65,6 @@ impl Wander {
         }
     }
 
-    pub fn shake_angle(&mut self) {
-        let change = 0.1;
-        if rand::random() {
-            self.angle += change;
-        } else {
-            self.angle -= change;
-        }
-    }
-
     pub fn get_direction(&self) -> Vector3<f32> {
         Vector3::new(
             self.radius * self.angle.cos(),

@@ -1,8 +1,4 @@
-use amethyst::{
-    core::transform::Transform,
-    core::Time,
-    ecs::{Join, Read, ReadStorage, System, WriteStorage},
-};
+use amethyst::{core::transform::Transform, core::Time, ecs::*};
 
 use crate::components::creatures;
 pub struct MovementSystem;
@@ -20,8 +16,8 @@ impl<'s> System<'s> for MovementSystem {
                 movement.velocity = movement.velocity.normalize() * movement.max_movement_speed;
             }
 
-            local.translate_x(movement.velocity.x * time.delta_seconds());
-            local.translate_y(movement.velocity.y * time.delta_seconds());
+            local.translate_x(movement.velocity.x * time.fixed_seconds());
+            local.translate_y(movement.velocity.y * time.fixed_seconds());
         }
     }
 }

@@ -84,7 +84,6 @@ fn main() -> amethyst::Result<()> {
                 ALPHA,
                 None,
             ))
-            .with_pass(DrawFlat2D::new())
             .with_pass(DrawDebugLines::<PosColorNorm>::new()),
     );
 
