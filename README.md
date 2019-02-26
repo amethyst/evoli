@@ -14,7 +14,7 @@ Read the complete description in our [MVP Design Doc](https://community.amethyst
 
 ### Screen captures
 
-![](https://community.amethyst.rs/uploads/default/original/1X/51b1b68b786dd211703b74f1be4fbe044f105b26.png) 
+![](https://community.amethyst.rs/uploads/default/original/1X/51b1b68b786dd211703b74f1be4fbe044f105b26.png)
 
 https://vimeo.com/331507073
 
@@ -27,8 +27,10 @@ Don't worry too much about whether you know enough about Rust or game coding yet
 **Note:** Amethyst 0.11 is coming soon, so most new implementation work should probably wait until then. We're still in "high friction mode" so be prepared to make stuff, learn from it then throw it out for something better. Iteration is the name of the game here.
 
 
-## Build Instructions
-Type on your favorite terminal emulator: 
+[Read here for details](https://community.amethyst-engine.org/t/demo-game-evolution-island-mvp/487)
+
+## To play
+Ensure you have Cargo installed ([use rustup if you don't](https://rustup.rs/)), and run the following:
 ```
 cargo run
 ```
