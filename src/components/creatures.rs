@@ -26,23 +26,6 @@ impl Component for PlantTag {
     type Storage = NullStorage<Self>;
 }
 
-#[derive(Default)]
-pub struct WanderBehaviorTag;
-#[derive(Default)]
-pub struct EvadeBehaviorTag;
-#[derive(Default)]
-pub struct PursueBehaviorTag;
-
-impl Component for WanderBehaviorTag {
-    type Storage = NullStorage<Self>;
-}
-impl Component for EvadeBehaviorTag {
-    type Storage = NullStorage<Self>;
-}
-impl Component for PursueBehaviorTag {
-    type Storage = NullStorage<Self>;
-}
-
 pub struct Movement {
     pub velocity: Vector3<f32>,
     pub max_movement_speed: f32,
@@ -98,7 +81,6 @@ pub fn create_carnivore(
             max_movement_speed: 5.0,
         })
         .with(Wander::new(1.0))
-        .with(WanderBehaviorTag)
         .with(digestion::Fullness::new(100.0, 100.0))
         .with(digestion::Digestion::new(5.0))
         .with(mesh.clone())

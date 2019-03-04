@@ -11,16 +11,15 @@ impl<'s> System<'s> for WanderSystem {
         WriteStorage<'s, creatures::Wander>,
         WriteStorage<'s, creatures::Movement>,
         ReadStorage<'s, Transform>,
-        ReadStorage<'s, creatures::WanderBehaviorTag>,
         Write<'s, DebugLines>,
         Read<'s, Time>,
     );
 
     fn run(
         &mut self,
-        (mut wanders, mut movements, locals, tag, mut debug_lines, time): Self::SystemData,
+        (mut wanders, mut movements, locals, mut debug_lines, time): Self::SystemData,
     ) {
-        for (wander, movement, local, _) in (&mut wanders, &mut movements, &locals, &tag).join() {
+        for (wander, movement, local) in (&mut wanders, &mut movements, &locals).join() {
             let position = local.translation();
             let future_position = position + movement.velocity * 0.5;
 
