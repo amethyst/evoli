@@ -28,25 +28,45 @@ impl SimpleState for ExampleState {
             line_width: 1.0 / 20.0,
         });
 
+        data.world.register::<creatures::CarnivoreTag>();
+
         data.world
             .add_resource(DebugLines::new().with_capacity(100));
         data.world
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
 
-        let carnivorous_sprite =
+        let carnivore_sprite =
             data.world
                 .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
-                    loader.load("prefabs/carnivorous.ron", RonFormat, (), ())
+                    loader.load("prefabs/carnivore.ron", RonFormat, (), ())
                 });
 
-        for i in 0..10 {
-            for j in 0..10 {
-                let (x, y) = (i as f32, j as f32);
+        let herbivore_sprite =
+            data.world
+                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
+                    loader.load("prefabs/herbivore.ron", RonFormat, (), ())
+                });
+
+        for i in 0..5 {
+            for j in 0..5 {
+                let (x, y) = (2.0 * i as f32, 2.0 * j as f32);
                 creatures::create_carnivore(
                     data.world,
                     (x - 5.0) / 10.0,
                     (y - 5.0) / 10.0,
-                    &carnivorous_sprite,
+                    &carnivore_sprite,
+                );
+            }
+        }
+
+        for i in 0..5 {
+            for j in 0..5 {
+                let (x, y) = (2.0 * i as f32, 2.0 * j as f32);
+                creatures::create_herbivore(
+                    data.world,
+                    (x - 5.0) / 10.0,
+                    (y - 5.0) / 10.0,
+                    &herbivore_sprite,
                 );
             }
         }

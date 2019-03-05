@@ -76,6 +76,9 @@ pub fn create_carnivore(
 
     world
         .create_entity()
+        // .with(CarnivoreTag)
+        .with(Wander::new(1.0))
+        .with(local_transform)
         .with(Movement {
             velocity: [x, y, 0.0].into(),
             max_movement_speed: 5.0,
@@ -85,7 +88,33 @@ pub fn create_carnivore(
         .with(digestion::Digestion::new(5.0))
         .with(mesh.clone())
         .with(handle.clone())
+        .build();
+}
+
+pub fn create_herbivore(
+    world: &mut World,
+    x: f32,
+    y: f32,
+    handle: &Handle<Prefab<CreaturePrefabData>>,
+) {
+    let mut local_transform = Transform::default();
+    local_transform.set_xyz(x, y, 0.0);
+
+    let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
+        loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
+    });
+
+    world
+        .create_entity()
+        // .with(HerbivoreTag)
+        .with(Wander::new(1.0))
         .with(local_transform)
+        .with(Movement {
+            velocity: [x, y, 0.0].into(),
+            max_movement_speed: 5.0,
+        })
+        .with(mesh.clone())
+        .with(handle.clone())
         .build();
 }
 

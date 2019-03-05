@@ -1,0 +1,20 @@
+#![enable(implicit_some)]
+Prefab (
+    entities: [
+        (
+            data: (
+                graphics: (
+                    mesh: Shape((shape: Plane(None),)),
+                    material: (
+                        albedo: File("assets/herbivore.png", Png, (channel: Srgb),),
+                    ),
+                ),
+                transform: (
+                    rotation: (1, 0, 0, 0),
+                    scale: (0.5, 0.5, -0.5),
+                    translation: (0.0, 0.0, 0.02),
+                ),
+            ),
+        ),
+    ],
+)
