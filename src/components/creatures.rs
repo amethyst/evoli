@@ -67,8 +67,8 @@ pub fn create_carnivore(
     y: f32,
     handle: &Handle<Prefab<CreaturePrefabData>>,
 ) {
-    let mut local_transform = Transform::default();
-    local_transform.set_xyz(x, y, 0.0);
+    let mut transform = Transform::default();
+    transform.set_xyz(x, y, 1.0);
 
     let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
         loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
@@ -78,16 +78,16 @@ pub fn create_carnivore(
         .create_entity()
         // .with(CarnivoreTag)
         .with(Wander::new(1.0))
-        .with(local_transform)
         .with(Movement {
-            velocity: [x, y, 0.0].into(),
-            max_movement_speed: 5.0,
+            velocity: [0.0, 0.0, 0.0].into(),
+            max_movement_speed: 1.75,
         })
         .with(Wander::new(1.0))
         .with(digestion::Fullness::new(100.0, 100.0))
         .with(digestion::Digestion::new(5.0))
         .with(mesh.clone())
         .with(handle.clone())
+        .with(transform)
         .build();
 }
 
@@ -97,8 +97,8 @@ pub fn create_herbivore(
     y: f32,
     handle: &Handle<Prefab<CreaturePrefabData>>,
 ) {
-    let mut local_transform = Transform::default();
-    local_transform.set_xyz(x, y, 0.0);
+    let mut transform = Transform::default();
+    transform.set_xyz(x, y, 1.0);
 
     let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
         loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
@@ -108,13 +108,13 @@ pub fn create_herbivore(
         .create_entity()
         // .with(HerbivoreTag)
         .with(Wander::new(1.0))
-        .with(local_transform)
         .with(Movement {
-            velocity: [x, y, 0.0].into(),
-            max_movement_speed: 5.0,
+            velocity: [0.0, 0.0, 0.0].into(),
+            max_movement_speed: 2.0,
         })
         .with(mesh.clone())
         .with(handle.clone())
+        .with(transform)
         .build();
 }
 
