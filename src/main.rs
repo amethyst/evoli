@@ -28,6 +28,7 @@ impl SimpleState for ExampleState {
             line_width: 1.0 / 20.0,
         });
 
+        data.world.register::<creatures::HerbivoreTag>();
         data.world.register::<creatures::CarnivoreTag>();
 
         data.world

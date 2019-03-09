@@ -76,7 +76,7 @@ pub fn create_carnivore(
 
     world
         .create_entity()
-        // .with(CarnivoreTag)
+        .with(CarnivoreTag)
         .with(Wander::new(1.0))
         .with(Movement {
             velocity: [0.0, 0.0, 0.0].into(),
@@ -106,7 +106,7 @@ pub fn create_herbivore(
 
     world
         .create_entity()
-        // .with(HerbivoreTag)
+        .with(HerbivoreTag)
         .with(Wander::new(1.0))
         .with(Movement {
             velocity: [0.0, 0.0, 0.0].into(),
