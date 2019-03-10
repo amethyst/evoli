@@ -11,21 +11,41 @@ use crate::components::digestion;
 
 #[derive(Default)]
 pub struct CarnivoreTag;
-#[derive(Default)]
-pub struct HerbivoreTag;
-#[derive(Default)]
-pub struct PlantTag;
-
 impl Component for CarnivoreTag {
     type Storage = NullStorage<Self>;
 }
+
+#[derive(Default)]
+pub struct HerbivoreTag;
 impl Component for HerbivoreTag {
     type Storage = NullStorage<Self>;
 }
+
+#[derive(Default)]
+pub struct PlantTag;
 impl Component for PlantTag {
     type Storage = NullStorage<Self>;
 }
 
+#[derive(Default)]
+pub struct IntelligenceTag;
+impl Component for IntelligenceTag {
+    type Storage = NullStorage<Self>;
+}
+
+///
+///
+///
+pub struct Attributes {
+    pub fullness: f32,
+}
+impl Component for Attributes {
+    type Storage = DenseVecStorage<Self>;
+}
+
+///
+///
+///
 pub struct Movement {
     pub velocity: Vector3<f32>,
     pub max_movement_speed: f32,
@@ -34,6 +54,9 @@ impl Component for Movement {
     type Storage = DenseVecStorage<Self>;
 }
 
+///
+///
+///
 pub struct Wander {
     pub angle: f32,
     pub radius: f32,
@@ -59,8 +82,12 @@ impl Wander {
     }
 }
 
+///
+///
+///
 pub type CreaturePrefabData = BasicScenePrefab<Vec<PosNormTex>>;
 
+// TODO: Turn this into a generic `create` function
 pub fn create_carnivore(
     world: &mut World,
     x: f32,
@@ -77,6 +104,8 @@ pub fn create_carnivore(
     world
         .create_entity()
         .with(CarnivoreTag)
+        .with(IntelligenceTag)
+        .with(Attributes { fullness: 10.0 })
         .with(Wander::new(1.0))
         .with(Movement {
             velocity: [0.0, 0.0, 0.0].into(),
@@ -107,6 +136,8 @@ pub fn create_herbivore(
     world
         .create_entity()
         .with(HerbivoreTag)
+        .with(IntelligenceTag)
+        .with(Attributes { fullness: 10.0 })
         .with(Wander::new(1.0))
         .with(Movement {
             velocity: [0.0, 0.0, 0.0].into(),

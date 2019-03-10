@@ -29,7 +29,7 @@ impl<'s> System<'s> for WanderSystem {
             let desired_velocity = target - position;
             let turn_rate = 10.0;
 
-            movement.velocity += desired_velocity * turn_rate * time.fixed_seconds();
+            // movement.velocity += desired_velocity * turn_rate * time.fixed_seconds();
 
             let change = 10.0;
             if rand::random() {

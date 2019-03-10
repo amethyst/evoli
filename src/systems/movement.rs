@@ -1,8 +1,8 @@
 use amethyst::{core::transform::Transform, core::Time, ecs::*};
 
 use crate::components::creatures;
-pub struct MovementSystem;
 
+pub struct MovementSystem;
 impl<'s> System<'s> for MovementSystem {
     type SystemData = (
         WriteStorage<'s, creatures::Movement>,
