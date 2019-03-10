@@ -8,6 +8,7 @@ use crate::components::creatures::*;
 pub struct DecisionSystem;
 impl<'s> System<'s> for DecisionSystem {
     type SystemData = (
+        Entities<'s>,
         WriteStorage<'s, Movement>,
         ReadStorage<'s, Transform>,
         ReadStorage<'s, CarnivoreTag>,
@@ -18,7 +19,7 @@ impl<'s> System<'s> for DecisionSystem {
 
     fn run(
         &mut self,
-        (mut movements, transforms, carnivore_tag, herbivore_tag, intelligence_tag, time): Self::SystemData,
+        (entities, mut movements, transforms, carnivore_tag, herbivore_tag, intelligence_tag, time): Self::SystemData,
     ) {
         for (movement, transform, _, _) in (
             &mut movements,
@@ -30,7 +31,7 @@ impl<'s> System<'s> for DecisionSystem {
         {
             let mut shortest = Vector3::<f32>::new(99999.0, 99999.0, 99999.0);
 
-            for (other_transform, _) in (&transforms, &herbivore_tag).join() {
+            for (other_transform, entity, _) in (&transforms, &entities, &herbivore_tag).join() {
                 let position = transform.translation();
                 let other_position = other_transform.translation();
 
@@ -41,8 +42,8 @@ impl<'s> System<'s> for DecisionSystem {
                     }
                 }
             }
-            let turn_rate = 10.0;
 
+            let turn_rate = 10.0;
             movement.velocity += shortest * turn_rate * time.fixed_seconds();
         }
     }
