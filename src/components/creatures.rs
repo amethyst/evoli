@@ -7,6 +7,8 @@ use amethyst::{
     utils::scene::BasicScenePrefab,
 };
 
+use crate::components::digestion;
+
 #[derive(Default)]
 pub struct CarnivoreTag;
 #[derive(Default)]
@@ -97,6 +99,8 @@ pub fn create_carnivore(
         })
         .with(Wander::new(1.0))
         .with(WanderBehaviorTag)
+        .with(digestion::Fullness::new(100.0, 100.0))
+        .with(digestion::Digestion::new(5.0))
         .with(mesh.clone())
         .with(handle.clone())
         .with(local_transform)
