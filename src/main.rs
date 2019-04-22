@@ -1,3 +1,5 @@
+use rand::prelude::*;
+
 use amethyst;
 
 use amethyst::assets::{PrefabLoader, PrefabLoaderSystem, RonFormat};
@@ -47,6 +49,24 @@ impl SimpleState for ExampleState {
                     &carnivorous_sprite,
                 );
             }
+        }
+
+        // Add some plants
+        data.world.register::<creatures::PlantTag>(); // Need to manually register component, not part of a system yet.
+        let plant_sprite =
+            data.world
+                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
+                    loader.load("prefabs/plant.ron", RonFormat, (), ())
+                });
+        let (left, right, bottom, top) = {
+            let wb = data.world.read_resource::<WorldBounds>();
+            (wb.left, wb.right, wb.bottom, wb.top)
+        };
+        let mut rng = thread_rng();
+        for _ in 0..100 {
+            let x = rng.gen_range(left, right);
+            let y = rng.gen_range(bottom, top);
+            creatures::create_plant(data.world, x, y, &plant_sprite);
         }
 
         // Setup camera
