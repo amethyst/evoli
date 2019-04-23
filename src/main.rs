@@ -130,6 +130,9 @@ fn main() -> amethyst::Result<()> {
             &["movement_system"],
         )
         .with(DebugSystem, "debug_system", &["enforce_bounds_system"])
+        .with(digestion::DigestionSystem, "digestion_system", &[])
+        .with(digestion::StarvationSystem, "starvation_system", &["digestion_system"])
+        .with(digestion::DebugFullnessSystem, "debug_fullness_system", &["digestion_system"])
         .with_bundle(TransformBundle::new().with_dep(&["enforce_bounds_system"]))?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
 
