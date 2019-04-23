@@ -1,6 +1,4 @@
-use amethyst::{
-    ecs::{Component, DenseVecStorage},
-};
+use amethyst::ecs::{Component, DenseVecStorage};
 
 pub struct Circle {
     pub radius: f32,

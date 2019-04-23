@@ -1,13 +1,12 @@
-use amethyst::{core::Transform, ecs::*};
-use amethyst::renderer::{DebugLines};
+use amethyst::renderer::DebugLines;
 use amethyst::shrev::{EventChannel, ReaderId};
+use amethyst::{core::Transform, ecs::*};
+use log::info;
 use std::f32;
-use log::{info};
 
-use crate::resources::world_bounds::*;
-use crate::components::creatures;
 use crate::components::collider;
-
+use crate::components::creatures;
+use crate::resources::world_bounds::*;
 
 pub struct EnforceBoundsSystem;
 
@@ -39,10 +38,7 @@ pub struct CollisionEvent {
 
 impl CollisionEvent {
     pub fn new(entity_a: Entity, entity_b: Entity) -> CollisionEvent {
-        CollisionEvent {
-            entity_a,
-            entity_b,
-        }
+        CollisionEvent { entity_a, entity_b }
     }
 }
 
@@ -57,9 +53,13 @@ impl<'s> System<'s> for CollisionSystem {
         Write<'s, EventChannel<CollisionEvent>>,
     );
 
-
-    fn run(&mut self, (circles, mut movements, locals, entities, mut collision_events): Self::SystemData) {
-        for (circle_a, movement, local_a, entity_a) in (&circles, &mut movements, &locals, &entities).join() {
+    fn run(
+        &mut self,
+        (circles, mut movements, locals, entities, mut collision_events): Self::SystemData,
+    ) {
+        for (circle_a, movement, local_a, entity_a) in
+            (&circles, &mut movements, &locals, &entities).join()
+        {
             for (circle_b, local_b, entity_b) in (&circles, &locals, &entities).join() {
                 if entity_a == entity_b {
                     continue;
@@ -93,13 +93,13 @@ impl<'s> System<'s> for DebugColliderSystem {
 
     fn run(&mut self, (circles, locals, mut debug_lines): Self::SystemData) {
         for (circle, local) in (&circles, &locals).join() {
-          let position = local.translation();
+            let position = local.translation();
             debug_lines.draw_line(
                 [position.x - circle.radius, position.y, 0.0].into(),
                 [position.x + circle.radius, position.y, 0.0].into(),
                 [1.0, 0.5, 0.5, 1.0].into(),
             );
-                debug_lines.draw_line(
+            debug_lines.draw_line(
                 [position.x, position.y - circle.radius, 0.0].into(),
                 [position.x, position.y + circle.radius, 0.0].into(),
                 [1.0, 0.5, 0.5, 1.0].into(),
@@ -114,9 +114,7 @@ pub struct DebugCollisionEventSystem {
 }
 
 impl<'s> System<'s> for DebugCollisionEventSystem {
-    type SystemData = (
-       Write<'s, EventChannel<CollisionEvent>>,
-    );
+    type SystemData = (Write<'s, EventChannel<CollisionEvent>>,);
 
     fn run(&mut self, (collision_events,): Self::SystemData) {
         let event_reader = self
