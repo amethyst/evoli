@@ -79,22 +79,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "amethyst-imgui"
-version = "0.1.0"
-dependencies = [
- "amethyst 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gfx 0.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "glium 0.24.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "glsl-layout 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "imgui 0.0.24-pre (git+https://github.com/awpteamoose/imgui-rs.git?branch=gfx-rollback)",
- "imgui-gfx-renderer 0.0.24-pre (git+https://github.com/awpteamoose/imgui-rs.git?branch=gfx-rollback)",
- "shred 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "shred-derive 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "amethyst-inspector"
 version = "0.1.0"
+source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#7e61bb31bb7205615bc5c37d1bb0ca4b7a5e520d"
 dependencies = [
  "amethyst 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "amethyst-imgui 0.1.0 (git+https://github.com/awpteamoose/amethyst-imgui.git?branch=amethyst-v0.10)",
@@ -978,8 +965,8 @@ name = "evolution-island"
 version = "0.1.0"
 dependencies = [
  "amethyst 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "amethyst-imgui 0.1.0",
- "amethyst-inspector 0.1.0",
+ "amethyst-imgui 0.1.0 (git+https://github.com/awpteamoose/amethyst-imgui.git?branch=amethyst-v0.10)",
+ "amethyst-inspector 0.1.0 (git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10)",
  "rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -3075,6 +3062,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum alsa-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b0edcbbf9ef68f15ae1b620f722180b82a98b6f0628d30baa6b8d2a5abc87d58"
 "checksum amethyst 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2aeb884ea509846b98408d1c5c5524a894533bd147e66d29b7efc95c4047b73b"
 "checksum amethyst-imgui 0.1.0 (git+https://github.com/awpteamoose/amethyst-imgui.git?branch=amethyst-v0.10)" = "<none>"
+"checksum amethyst-inspector 0.1.0 (git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10)" = "<none>"
 "checksum amethyst_animation 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ca4306ecc8d9f0dd03bad2bd7de5e1be09dc1bd9f8163e31cd01fec1f66eaaa5"
 "checksum amethyst_assets 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8ba7431483b9198bcf99434c91b3d55bc705532f3d43f96c4182e16054eeeb65"
 "checksum amethyst_audio 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b48f39fb0d5ab6d6bf61c0d2f87dc0a853defa8cc318ffa2ad1c13215f5a99ed"
