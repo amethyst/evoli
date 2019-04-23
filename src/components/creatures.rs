@@ -102,3 +102,25 @@ pub fn create_carnivore(
         .with(local_transform)
         .build();
 }
+
+pub fn create_plant(
+    world: &mut World,
+    x: f32,
+    y: f32,
+    handle: &Handle<Prefab<CreaturePrefabData>>,
+) {
+    let mut transform = Transform::default();
+    transform.set_xyz(x, y, 0.0);
+
+    let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
+        loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
+    });
+
+    world
+        .create_entity()
+        .with(PlantTag)
+        .with(mesh.clone())
+        .with(handle.clone())
+        .with(transform)
+        .build();
+}
