@@ -1,6 +1,4 @@
-use amethyst::{
-    ecs::{Component, DenseVecStorage},
-};
+use amethyst::ecs::{Component, DenseVecStorage, WriteStorage};
 
 pub struct Digestion {
     // Points of fullness lost every second
@@ -13,23 +11,37 @@ impl Component for Digestion {
 
 impl<'a> amethyst_inspector::Inspect<'a> for Digestion {
     type UserData = &'a mut crate::UserData;
+    const CAN_ADD: bool = true;
 
     fn inspect(
-        &mut self,
+        storage: &mut WriteStorage<'_, Self>,
         entity: amethyst::ecs::Entity,
-        ui: &amethyst_inspector::imgui::Ui<'_>,
+        ui: &amethyst_imgui::imgui::Ui<'_>,
         _user_data: Self::UserData,
     ) {
+        let me = if let Some(x) = storage.get_mut(entity) {
+            x
+        } else {
+            return;
+        };
         ui.drag_float(
             amethyst_inspector::imgui::im_str!(
                 "nutrition burn rate##digestion{}{}",
                 entity.id(),
                 entity.gen().id()
             ),
-            &mut self.nutrition_burn_rate,
+            &mut me.nutrition_burn_rate,
         )
         .build();
         ui.separator();
+    }
+
+    fn add(
+        storage: &mut WriteStorage<'_, Self>,
+        entity: amethyst::ecs::Entity,
+        _user_data: Self::UserData,
+    ) {
+        storage.insert(entity, Digestion::new(0.)).unwrap();
     }
 }
 
@@ -50,20 +62,26 @@ impl Component for Fullness {
 
 impl<'a> amethyst_inspector::Inspect<'a> for Fullness {
     type UserData = &'a mut crate::UserData;
+    const CAN_ADD: bool = true;
 
     fn inspect(
-        &mut self,
+        storage: &mut WriteStorage<'_, Self>,
         entity: amethyst::ecs::Entity,
-        ui: &amethyst_inspector::imgui::Ui<'_>,
+        ui: &amethyst_imgui::imgui::Ui<'_>,
         _user_data: Self::UserData,
     ) {
+        let me = if let Some(x) = storage.get_mut(entity) {
+            x
+        } else {
+            return;
+        };
         ui.drag_float(
             amethyst_inspector::imgui::im_str!(
                 "fullness value##fullness{}{}",
                 entity.id(),
                 entity.gen().id()
             ),
-            &mut self.value,
+            &mut me.value,
         )
         .build();
         ui.drag_float(
@@ -72,10 +90,18 @@ impl<'a> amethyst_inspector::Inspect<'a> for Fullness {
                 entity.id(),
                 entity.gen().id()
             ),
-            &mut self.max,
+            &mut me.max,
         )
         .build();
         ui.separator();
+    }
+
+    fn add(
+        storage: &mut WriteStorage<'_, Self>,
+        entity: amethyst::ecs::Entity,
+        _user_data: Self::UserData,
+    ) {
+        storage.insert(entity, Fullness::new(0., 0.)).unwrap();
     }
 }
 

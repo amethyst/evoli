@@ -81,7 +81,7 @@ dependencies = [
 [[package]]
 name = "amethyst-inspector"
 version = "0.1.0"
-source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#7e61bb31bb7205615bc5c37d1bb0ca4b7a5e520d"
+source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#741f4ae8f81406655e51f851c54cbbf92fbb2604"
 dependencies = [
  "amethyst 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "amethyst-imgui 0.1.0 (git+https://github.com/awpteamoose/amethyst-imgui.git?branch=amethyst-v0.10)",

@@ -18,7 +18,9 @@ mod components;
 mod resources;
 mod systems;
 
-use crate::components::creatures::{self, Movement, Wander};
+use crate::components::creatures::{
+    self, Attributes, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
+};
 use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::world_bounds::*;
 use crate::systems::*;
@@ -28,7 +30,17 @@ use crate::systems::collision::DebugCollisionEventSystem;
 pub struct UserData;
 
 amethyst_inspector::inspector![
-    UserData, Named, Transform, Movement, Wander, Digestion, Fullness,
+    UserData,
+    Named,
+    Transform,
+    Movement,
+    Wander,
+    Digestion,
+    Fullness,
+    CarnivoreTag,
+    HerbivoreTag,
+    PlantTag,
+    IntelligenceTag,
 ];
 
 struct ExampleState;
