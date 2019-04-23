@@ -20,6 +20,7 @@ mod systems;
 use crate::components::creatures;
 use crate::resources::world_bounds::*;
 use crate::systems::*;
+use crate::systems::collision::DebugCollisionEventSystem;
 
 struct ExampleState;
 impl SimpleState for ExampleState {
@@ -76,7 +77,7 @@ impl SimpleState for ExampleState {
             (wb.left, wb.right, wb.bottom, wb.top)
         };
         let mut rng = thread_rng();
-        for _ in 0..100 {
+        for _ in 0..25 {
             let x = rng.gen_range(left, right);
             let y = rng.gen_range(bottom, top);
             creatures::create_plant(data.world, x, y, &plant_sprite);
@@ -139,15 +140,24 @@ fn main() -> amethyst::Result<()> {
             &["wander_system"],
         )
         .with(
-            collision::EnforceBoundsSystem,
+            collision::CollisionSystem,
+            "collision_system",
+            &["movement_system"],
+        )
+        .with(collision::EnforceBoundsSystem,
             "enforce_bounds_system",
             &["movement_system"],
         )
-        .with(DebugSystem, "debug_system", &["enforce_bounds_system"])
+        .with(DebugCollisionEventSystem::default(),
+            "debug_collision_event_system",
+            &["collision_system"],
+        )
+        .with(collision::DebugColliderSystem, "debug_collider_system", &[])
+        .with(DebugSystem, "debug_system", &["collision_system", "enforce_bounds_system"])
         .with(digestion::DigestionSystem, "digestion_system", &[])
         .with(digestion::StarvationSystem, "starvation_system", &["digestion_system"])
         .with(digestion::DebugFullnessSystem, "debug_fullness_system", &["digestion_system"])
-        .with_bundle(TransformBundle::new().with_dep(&["enforce_bounds_system"]))?
+        .with_bundle(TransformBundle::new().with_dep(&["collision_system", "enforce_bounds_system"]))?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
 
     let mut game = Application::new(resources, ExampleState, game_data)?;
