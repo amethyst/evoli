@@ -28,26 +28,39 @@ impl SimpleState for ExampleState {
             line_width: 1.0 / 20.0,
         });
 
+        data.world.register::<creatures::HerbivoreTag>();
+        data.world.register::<creatures::CarnivoreTag>();
+        data.world.register::<creatures::IntelligenceTag>();
+        data.world.register::<creatures::Attributes>();
+
         data.world
             .add_resource(DebugLines::new().with_capacity(100));
         data.world
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
 
-        let carnivorous_sprite =
+        let carnivore_sprite =
             data.world
                 .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
-                    loader.load("prefabs/carnivorous.ron", RonFormat, (), ())
+                    loader.load("prefabs/carnivore.ron", RonFormat, (), ())
                 });
 
-        for i in 0..10 {
-            for j in 0..10 {
-                let (x, y) = (i as f32, j as f32);
-                creatures::create_carnivore(
-                    data.world,
-                    (x - 5.0) / 10.0,
-                    (y - 5.0) / 10.0,
-                    &carnivorous_sprite,
-                );
+        let herbivore_sprite =
+            data.world
+                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
+                    loader.load("prefabs/herbivore.ron", RonFormat, (), ())
+                });
+
+        for i in 0..2 {
+            for j in 0..2 {
+                let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
+                creatures::create_carnivore(data.world, (x - 5.0), (y - 5.0), &carnivore_sprite);
+            }
+        }
+
+        for i in 0..2 {
+            for j in 0..2 {
+                let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
+                creatures::create_herbivore(data.world, (x - 5.0), (y - 5.0), &herbivore_sprite);
             }
         }
 
@@ -75,8 +88,8 @@ impl SimpleState for ExampleState {
             (dim.width(), dim.height())
         };
 
-        let mut local_transform = Transform::default();
-        local_transform.set_position([0.0, 0.0, 12.0].into());
+        let mut transform = Transform::default();
+        transform.set_position([0.0, 0.0, 12.0].into());
 
         data.world
             .create_entity()
@@ -84,7 +97,7 @@ impl SimpleState for ExampleState {
                 width / height,
                 std::f32::consts::FRAC_PI_2,
             )))
-            .with(local_transform)
+            .with(transform)
             .build();
     }
 }
@@ -118,7 +131,8 @@ fn main() -> amethyst::Result<()> {
             "",
             &[],
         )
-        .with(wander::WanderSystem, "wander_system", &[])
+        .with(decision::DecisionSystem, "decision_system", &[])
+        .with(wander::WanderSystem, "wander_system", &["decision_system"])
         .with(
             movement::MovementSystem,
             "movement_system",
@@ -143,20 +157,9 @@ fn main() -> amethyst::Result<()> {
 
 struct DebugSystem;
 impl<'s> System<'s> for DebugSystem {
-    type SystemData = (
-        Write<'s, DebugLines>,
-        Write<'s, WorldBounds>,
-        Read<'s, Time>,
-    );
+    type SystemData = (Write<'s, DebugLines>, Write<'s, WorldBounds>);
 
-    fn run(&mut self, (mut debug_lines_resource, mut bounds, time): Self::SystemData) {
-        let tcos = (time.absolute_time_seconds() as f32).cos() * 0.02;
-
-        bounds.top += tcos;
-        bounds.bottom -= tcos;
-        bounds.left -= tcos;
-        bounds.right += tcos;
-
+    fn run(&mut self, (mut debug_lines_resource, bounds): Self::SystemData) {
         let color = [0.8, 0.04, 0.6, 1.0];
         debug_lines_resource.draw_line(
             [bounds.left, bounds.bottom, 0.0].into(),
