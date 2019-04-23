@@ -44,6 +44,38 @@ pub struct Movement {
 impl Component for Movement {
     type Storage = DenseVecStorage<Self>;
 }
+impl<'a> amethyst_inspector::Inspect<'a> for Movement {
+    type UserData = &'a mut crate::UserData;
+
+    fn inspect(
+        &mut self,
+        entity: amethyst::ecs::Entity,
+        ui: &amethyst_inspector::imgui::Ui<'_>,
+        _user_data: Self::UserData,
+    ) {
+        let mut v: [f32; 3] = self.velocity.into();
+        ui.drag_float3(
+            amethyst_inspector::imgui::im_str!(
+                "velocity##movement{}{}",
+                entity.id(),
+                entity.gen().id()
+            ),
+            &mut v,
+        )
+        .build();
+        ui.drag_float(
+            amethyst_inspector::imgui::im_str!(
+                "max speed##movement{}{}",
+                entity.id(),
+                entity.gen().id()
+            ),
+            &mut self.max_movement_speed,
+        )
+        .build();
+        self.velocity = v.into();
+        ui.separator();
+    }
+}
 
 ///
 ///
@@ -54,6 +86,32 @@ pub struct Wander {
 }
 impl Component for Wander {
     type Storage = DenseVecStorage<Self>;
+}
+impl<'a> amethyst_inspector::Inspect<'a> for Wander {
+    type UserData = &'a mut crate::UserData;
+
+    fn inspect(
+        &mut self,
+        entity: amethyst::ecs::Entity,
+        ui: &amethyst_inspector::imgui::Ui<'_>,
+        _user_data: Self::UserData,
+    ) {
+        ui.drag_float(
+            amethyst_inspector::imgui::im_str!("angle##wander{}{}", entity.id(), entity.gen().id()),
+            &mut self.angle,
+        )
+        .build();
+        ui.drag_float(
+            amethyst_inspector::imgui::im_str!(
+                "radius##wander{}{}",
+                entity.id(),
+                entity.gen().id()
+            ),
+            &mut self.radius,
+        )
+        .build();
+        ui.separator();
+    }
 }
 
 impl Wander {
@@ -94,6 +152,7 @@ pub fn create_carnivore(
 
     world
         .create_entity()
+        .named("Carnivore")
         .with(CarnivoreTag)
         .with(IntelligenceTag)
         .with(Wander::new(1.0))
@@ -125,6 +184,7 @@ pub fn create_herbivore(
 
     world
         .create_entity()
+        .named("Herbivore")
         .with(HerbivoreTag)
         .with(IntelligenceTag)
         .with(Wander::new(1.0))
@@ -154,6 +214,7 @@ pub fn create_plant(
 
     world
         .create_entity()
+        .named("Plant")
         .with(PlantTag)
         .with(collider::Circle::new(0.8))
         .with(mesh.clone())

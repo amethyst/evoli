@@ -7,4 +7,5 @@ edition = "2018"
 [dependencies]
 amethyst = "0.10.0"
 rand = "0.6.5"
-log = "0.4.6"
+amethyst-imgui = { git = "https://github.com/awpteamoose/amethyst-imgui.git", branch = "amethyst-v0.10" }
+amethyst-inspector = { git = "https://github.com/awpteamoose/amethyst-inspector.git", branch = "amethyst-v0.10" }
