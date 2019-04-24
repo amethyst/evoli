@@ -36,16 +36,6 @@ impl Component for IntelligenceTag {
 ///
 ///
 ///
-pub struct Attributes {
-    pub fullness: f32,
-}
-impl Component for Attributes {
-    type Storage = DenseVecStorage<Self>;
-}
-
-///
-///
-///
 pub struct Movement {
     pub velocity: Vector3<f32>,
     pub max_movement_speed: f32,
@@ -105,13 +95,11 @@ pub fn create_carnivore(
         .create_entity()
         .with(CarnivoreTag)
         .with(IntelligenceTag)
-        .with(Attributes { fullness: 10.0 })
         .with(Wander::new(1.0))
         .with(Movement {
             velocity: [0.0, 0.0, 0.0].into(),
             max_movement_speed: 1.75,
         })
-        .with(Wander::new(1.0))
         .with(digestion::Fullness::new(100.0, 100.0))
         .with(digestion::Digestion::new(5.0))
         .with(mesh.clone())
@@ -137,7 +125,6 @@ pub fn create_herbivore(
         .create_entity()
         .with(HerbivoreTag)
         .with(IntelligenceTag)
-        .with(Attributes { fullness: 10.0 })
         .with(Wander::new(1.0))
         .with(Movement {
             velocity: [0.0, 0.0, 0.0].into(),
