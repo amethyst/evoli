@@ -26,11 +26,7 @@ use crate::resources::world_bounds::*;
 use crate::systems::*;
 use crate::systems::collision::DebugCollisionEventSystem;
 
-#[derive(Default)]
-pub struct UserData;
-
 amethyst_inspector::inspector![
-    UserData,
     Named,
     Transform,
     Movement,
@@ -185,7 +181,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new().with_dep(&["collision_system", "enforce_bounds_system"]))?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with(
-            amethyst_inspector::InspectorHierarchy::<UserData>::default(),
+            amethyst_inspector::InspectorHierarchy,
             "inspector_hierarchy",
             &[],
         )

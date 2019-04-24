@@ -1,7 +1,7 @@
 use amethyst::{
     assets::{AssetLoaderSystemData, Handle, Prefab},
     core::{nalgebra::Vector3, transform::Transform},
-    ecs::{Component, DenseVecStorage, NullStorage, WriteStorage},
+    ecs::{Component, DenseVecStorage, LazyUpdate, NullStorage, Read, ReadStorage, WriteStorage},
     prelude::*,
     renderer::{Mesh, PosNormTex, PosTex, Shape},
     utils::scene::BasicScenePrefab,
@@ -9,6 +9,7 @@ use amethyst::{
 
 use crate::components::digestion;
 use crate::components::collider;
+use amethyst_imgui::imgui;
 
 #[derive(Default)]
 pub struct CarnivoreTag;
@@ -49,57 +50,48 @@ impl Component for Movement {
     type Storage = DenseVecStorage<Self>;
 }
 impl<'a> amethyst_inspector::Inspect<'a> for Movement {
-    type UserData = &'a mut crate::UserData;
+    type SystemData = (ReadStorage<'a, Self>, Read<'a, LazyUpdate>);
     const CAN_ADD: bool = true;
 
     fn inspect(
-        storage: &mut WriteStorage<'_, Self>,
+        (storage, lazy): &Self::SystemData,
         entity: amethyst::ecs::Entity,
-        ui: &amethyst_imgui::imgui::Ui<'_>,
-        _user_data: Self::UserData,
+        ui: &imgui::Ui<'_>,
     ) {
-        let me = if let Some(x) = storage.get_mut(entity) {
+        let &Movement {
+            velocity,
+            mut max_movement_speed,
+        } = if let Some(x) = storage.get(entity) {
             x
         } else {
             return;
         };
-        let mut v: [f32; 3] = me.velocity.into();
-        ui.drag_float3(
-            amethyst_inspector::imgui::im_str!(
-                "velocity##movement{}{}",
-                entity.id(),
-                entity.gen().id()
-            ),
-            &mut v,
-        )
-        .build();
+        let mut v: [f32; 3] = velocity.into();
+        ui.drag_float3(imgui::im_str!("velocity##movement{:?}", entity,), &mut v)
+            .build();
         ui.drag_float(
-            amethyst_inspector::imgui::im_str!(
-                "max speed##movement{}{}",
-                entity.id(),
-                entity.gen().id()
-            ),
-            &mut me.max_movement_speed,
+            imgui::im_str!("max speed##movement{:?}", entity.id(),),
+            &mut max_movement_speed,
         )
         .build();
-        me.velocity = v.into();
+        lazy.insert(
+            entity,
+            Movement {
+                velocity,
+                max_movement_speed,
+            },
+        );
         ui.separator();
     }
 
-    fn add(
-        storage: &mut WriteStorage<'_, Self>,
-        entity: amethyst::ecs::Entity,
-        _user_data: Self::UserData,
-    ) {
-        storage
-            .insert(
-                entity,
-                Movement {
-                    velocity: Vector3::zeros(),
-                    max_movement_speed: 0.,
-                },
-            )
-            .unwrap();
+    fn add((_storage, lazy): &Self::SystemData, entity: amethyst::ecs::Entity) {
+        lazy.insert(
+            entity,
+            Movement {
+                velocity: Vector3::zeros(),
+                max_movement_speed: 0.,
+            },
+        );
     }
 }
 
@@ -114,43 +106,32 @@ impl Component for Wander {
     type Storage = DenseVecStorage<Self>;
 }
 impl<'a> amethyst_inspector::Inspect<'a> for Wander {
-    type UserData = &'a mut crate::UserData;
+    type SystemData = (ReadStorage<'a, Self>, Read<'a, LazyUpdate>);
     const CAN_ADD: bool = true;
 
     fn inspect(
-        storage: &mut WriteStorage<'_, Self>,
+        (storage, lazy): &Self::SystemData,
         entity: amethyst::ecs::Entity,
-        ui: &amethyst_imgui::imgui::Ui<'_>,
-        _user_data: Self::UserData,
+        ui: &imgui::Ui<'_>,
     ) {
-        let me = if let Some(x) = storage.get_mut(entity) {
+        let &Wander {
+            mut angle,
+            mut radius,
+        } = if let Some(x) = storage.get(entity) {
             x
         } else {
             return;
         };
-        ui.drag_float(
-            amethyst_inspector::imgui::im_str!("angle##wander{}{}", entity.id(), entity.gen().id()),
-            &mut me.angle,
-        )
-        .build();
-        ui.drag_float(
-            amethyst_inspector::imgui::im_str!(
-                "radius##wander{}{}",
-                entity.id(),
-                entity.gen().id()
-            ),
-            &mut me.radius,
-        )
-        .build();
+        ui.drag_float(imgui::im_str!("angle##wander{:?}", entity), &mut angle)
+            .build();
+        ui.drag_float(imgui::im_str!("radius##wander{:?}", entity,), &mut radius)
+            .build();
+        lazy.insert(entity, Wander { angle, radius });
         ui.separator();
     }
 
-    fn add(
-        storage: &mut WriteStorage<'_, Self>,
-        entity: amethyst::ecs::Entity,
-        _user_data: Self::UserData,
-    ) {
-        storage.insert(entity, Wander::new(0.)).unwrap();
+    fn add((_storage, lazy): &Self::SystemData, entity: amethyst::ecs::Entity) {
+        lazy.insert(entity, Wander::new(0.));
     }
 }
 

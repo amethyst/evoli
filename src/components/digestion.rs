@@ -1,4 +1,5 @@
-use amethyst::ecs::{Component, DenseVecStorage, WriteStorage};
+use amethyst::ecs::{Component, DenseVecStorage, LazyUpdate, Read, ReadStorage, WriteStorage};
+use amethyst_imgui::imgui;
 
 pub struct Digestion {
     // Points of fullness lost every second
@@ -10,38 +11,30 @@ impl Component for Digestion {
 }
 
 impl<'a> amethyst_inspector::Inspect<'a> for Digestion {
-    type UserData = &'a mut crate::UserData;
+    type SystemData = (ReadStorage<'a, Self>, Read<'a, LazyUpdate>);
     const CAN_ADD: bool = true;
 
     fn inspect(
-        storage: &mut WriteStorage<'_, Self>,
+        (storage, lazy): &Self::SystemData,
         entity: amethyst::ecs::Entity,
-        ui: &amethyst_imgui::imgui::Ui<'_>,
-        _user_data: Self::UserData,
+        ui: &imgui::Ui<'_>,
     ) {
-        let me = if let Some(x) = storage.get_mut(entity) {
-            x
+        let mut burn_rate = if let Some(x) = storage.get(entity) {
+            x.nutrition_burn_rate
         } else {
             return;
         };
         ui.drag_float(
-            amethyst_inspector::imgui::im_str!(
-                "nutrition burn rate##digestion{}{}",
-                entity.id(),
-                entity.gen().id()
-            ),
-            &mut me.nutrition_burn_rate,
+            imgui::im_str!("nutrition burn rate##digestion{:?}", entity,),
+            &mut burn_rate,
         )
         .build();
+        lazy.insert(entity, Digestion::new(burn_rate));
         ui.separator();
     }
 
-    fn add(
-        storage: &mut WriteStorage<'_, Self>,
-        entity: amethyst::ecs::Entity,
-        _user_data: Self::UserData,
-    ) {
-        storage.insert(entity, Digestion::new(0.)).unwrap();
+    fn add((_storage, lazy): &Self::SystemData, entity: amethyst::ecs::Entity) {
+        lazy.insert(entity, Digestion::new(0.));
     }
 }
 
@@ -61,47 +54,35 @@ impl Component for Fullness {
 }
 
 impl<'a> amethyst_inspector::Inspect<'a> for Fullness {
-    type UserData = &'a mut crate::UserData;
+    type SystemData = (ReadStorage<'a, Self>, Read<'a, LazyUpdate>);
     const CAN_ADD: bool = true;
 
     fn inspect(
-        storage: &mut WriteStorage<'_, Self>,
+        (storage, lazy): &Self::SystemData,
         entity: amethyst::ecs::Entity,
-        ui: &amethyst_imgui::imgui::Ui<'_>,
-        _user_data: Self::UserData,
+        ui: &imgui::Ui<'_>,
     ) {
-        let me = if let Some(x) = storage.get_mut(entity) {
+        let &Fullness { mut max, mut value } = if let Some(x) = storage.get(entity) {
             x
         } else {
             return;
         };
         ui.drag_float(
-            amethyst_inspector::imgui::im_str!(
-                "fullness value##fullness{}{}",
-                entity.id(),
-                entity.gen().id()
-            ),
-            &mut me.value,
+            imgui::im_str!("fullness value##fullness{:?}", entity,),
+            &mut value,
         )
         .build();
         ui.drag_float(
-            amethyst_inspector::imgui::im_str!(
-                "fullness max##fullness{}{}",
-                entity.id(),
-                entity.gen().id()
-            ),
-            &mut me.max,
+            imgui::im_str!("fullness max##fullness{:?}", entity,),
+            &mut max,
         )
         .build();
+        lazy.insert(entity, Fullness::new(value, max));
         ui.separator();
     }
 
-    fn add(
-        storage: &mut WriteStorage<'_, Self>,
-        entity: amethyst::ecs::Entity,
-        _user_data: Self::UserData,
-    ) {
-        storage.insert(entity, Fullness::new(0., 0.)).unwrap();
+    fn add((_storage, lazy): &Self::SystemData, entity: amethyst::ecs::Entity) {
+        lazy.insert(entity, Fullness::new(0., 0.));
     }
 }
 
