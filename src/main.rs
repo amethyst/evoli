@@ -12,6 +12,7 @@ use amethyst::{
     prelude::*,
     renderer::*,
     utils::application_root_dir,
+    ui::UiTransform,
 };
 
 mod components;
@@ -29,14 +30,19 @@ use crate::systems::collision::DebugCollisionEventSystem;
 amethyst_inspector::inspector![
     Named,
     Transform,
+    UiTransform,
+    Rgba,
     Movement,
     Wander,
     Digestion,
     Fullness,
+
     CarnivoreTag,
     HerbivoreTag,
     PlantTag,
     IntelligenceTag,
+    Hidden,
+    HiddenPropagate,
 ];
 
 struct ExampleState;
