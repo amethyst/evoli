@@ -19,7 +19,7 @@ mod resources;
 mod systems;
 
 use crate::components::creatures::{
-    self, Attributes, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
+    self, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
 };
 use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::world_bounds::*;
@@ -49,7 +49,6 @@ impl SimpleState for ExampleState {
         data.world.register::<creatures::HerbivoreTag>();
         data.world.register::<creatures::CarnivoreTag>();
         data.world.register::<creatures::IntelligenceTag>();
-        data.world.register::<creatures::Attributes>();
 
         data.world
             .add_resource(DebugLines::new().with_capacity(100));
