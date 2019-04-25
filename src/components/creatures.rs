@@ -8,6 +8,7 @@ use amethyst::{
 };
 
 use crate::components::digestion;
+use crate::components::collider;
 
 #[derive(Default)]
 pub struct CarnivoreTag;
@@ -100,6 +101,7 @@ pub fn create_carnivore(
             velocity: [0.0, 0.0, 0.0].into(),
             max_movement_speed: 1.75,
         })
+        .with(collider::Circle::new(0.45))
         .with(digestion::Fullness::new(100.0, 100.0))
         .with(digestion::Digestion::new(5.0))
         .with(mesh.clone())
@@ -130,6 +132,7 @@ pub fn create_herbivore(
             velocity: [0.0, 0.0, 0.0].into(),
             max_movement_speed: 2.0,
         })
+        .with(collider::Circle::new(0.45))
         .with(mesh.clone())
         .with(handle.clone())
         .with(transform)
@@ -152,6 +155,7 @@ pub fn create_plant(
     world
         .create_entity()
         .with(PlantTag)
+        .with(collider::Circle::new(0.8))
         .with(mesh.clone())
         .with(handle.clone())
         .with(transform)
