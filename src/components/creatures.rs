@@ -1,14 +1,16 @@
 use amethyst::{
     assets::{AssetLoaderSystemData, Handle, Prefab},
     core::{nalgebra::Vector3, transform::Transform},
-    ecs::{Component, DenseVecStorage, LazyUpdate, NullStorage, Read, ReadStorage, WriteStorage},
+    ecs::{Component, DenseVecStorage, LazyUpdate, NullStorage, Read, ReadStorage, WriteStorage, Entity},
     prelude::*,
     renderer::{Mesh, PosNormTex, PosTex, Shape},
     utils::scene::BasicScenePrefab,
 };
 
-use crate::components::digestion;
 use crate::components::collider;
+use crate::components::combat;
+use crate::components::digestion;
+use crate::components::health::Health;
 use amethyst_imgui::imgui;
 
 #[derive(Default)]
@@ -163,6 +165,7 @@ pub fn create_carnivore(
     x: f32,
     y: f32,
     handle: &Handle<Prefab<CreaturePrefabData>>,
+    faction: Entity,
 ) {
     let mut transform = Transform::default();
     transform.set_xyz(x, y, 1.0);
@@ -183,7 +186,11 @@ pub fn create_carnivore(
         })
         .with(collider::Circle::new(0.45))
         .with(digestion::Fullness::new(100.0, 100.0))
-        .with(digestion::Digestion::new(5.0))
+        .with(digestion::Digestion::new(1.0))
+        .with(Health::new(100.0))
+        .with(combat::Speed::new(1.0))
+        .with(combat::Damage::new(20.0))
+        .with(combat::HasFaction::new(faction))
         .with(mesh.clone())
         .with(handle.clone())
         .with(transform)
@@ -195,6 +202,7 @@ pub fn create_herbivore(
     x: f32,
     y: f32,
     handle: &Handle<Prefab<CreaturePrefabData>>,
+    faction: Entity,
 ) {
     let mut transform = Transform::default();
     transform.set_xyz(x, y, 1.0);
@@ -214,6 +222,12 @@ pub fn create_herbivore(
             max_movement_speed: 2.0,
         })
         .with(collider::Circle::new(0.45))
+        .with(digestion::Fullness::new(100.0, 100.0))
+        .with(digestion::Digestion::new(1.0))
+        .with(Health::new(100.0))
+        .with(combat::Speed::new(0.5))
+        .with(combat::Damage::new(20.0))
+        .with(combat::HasFaction::new(faction))
         .with(mesh.clone())
         .with(handle.clone())
         .with(transform)
@@ -225,6 +239,7 @@ pub fn create_plant(
     x: f32,
     y: f32,
     handle: &Handle<Prefab<CreaturePrefabData>>,
+    faction: Entity,
 ) {
     let mut transform = Transform::default();
     transform.set_xyz(x, y, 0.0);
@@ -238,6 +253,8 @@ pub fn create_plant(
         .named("Plant")
         .with(PlantTag)
         .with(collider::Circle::new(0.8))
+        .with(Health::new(20.0))
+        .with(combat::HasFaction::new(faction))
         .with(mesh.clone())
         .with(handle.clone())
         .with(transform)
