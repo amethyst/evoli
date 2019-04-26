@@ -26,6 +26,8 @@ use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::world_bounds::*;
 use crate::systems::*;
 use crate::systems::collision::DebugCollisionEventSystem;
+use crate::components::combat::{create_factions, Damage, Speed, Cooldown, FactionEnemies, HasFaction};
+use crate::components::health::{Health};
 
 amethyst_inspector::inspector![
     Named,
@@ -36,6 +38,13 @@ amethyst_inspector::inspector![
     Wander,
     Digestion,
     Fullness,
+
+    Damage,
+    Speed,
+    Cooldown,
+    HasFaction,
+
+    Health,
 
     CarnivoreTag,
     HerbivoreTag,
@@ -61,6 +70,8 @@ impl SimpleState for ExampleState {
         data.world
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
 
+        let (plants, herbivores, carnivores) = create_factions(data.world);
+
         let carnivore_sprite =
             data.world
                 .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
@@ -76,14 +87,14 @@ impl SimpleState for ExampleState {
         for i in 0..2 {
             for j in 0..2 {
                 let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
-                creatures::create_carnivore(data.world, (x - 5.0), (y - 5.0), &carnivore_sprite);
+                creatures::create_carnivore(data.world, (x - 5.0), (y - 5.0), &carnivore_sprite, carnivores);
             }
         }
 
         for i in 0..2 {
             for j in 0..2 {
                 let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
-                creatures::create_herbivore(data.world, (x - 5.0), (y - 5.0), &herbivore_sprite);
+                creatures::create_herbivore(data.world, (x - 5.0), (y - 5.0), &herbivore_sprite, herbivores);
             }
         }
 
@@ -102,7 +113,7 @@ impl SimpleState for ExampleState {
         for _ in 0..25 {
             let x = rng.gen_range(left, right);
             let y = rng.gen_range(bottom, top);
-            creatures::create_plant(data.world, x, y, &plant_sprite);
+            creatures::create_plant(data.world, x, y, &plant_sprite, plants);
         }
 
         // Setup camera
@@ -183,6 +194,11 @@ fn main() -> amethyst::Result<()> {
         .with(digestion::DigestionSystem, "digestion_system", &[])
         .with(digestion::StarvationSystem, "starvation_system", &["digestion_system"])
         .with(digestion::DebugFullnessSystem, "debug_fullness_system", &["digestion_system"])
+        .with(combat::CooldownSystem, "cooldown_system", &[])
+        .with(combat::FindAttackSystem::default(), "find_attack_system", &["cooldown_system"])
+        .with(combat::PerformDefaultAttackSystem::default(), "perform_default_attack_system", &["find_attack_system"])
+        .with(health::DeathByHealthSystem, "death_by_health_system", &["perform_default_attack_system"])
+        .with(health::DebugHealthSystem, "debug_health_system", &[])
         .with_bundle(TransformBundle::new().with_dep(&["collision_system", "enforce_bounds_system"]))?
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with(
