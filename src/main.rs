@@ -5,22 +5,45 @@ use amethyst;
 use amethyst::assets::{PrefabLoader, PrefabLoaderSystem, RonFormat};
 use amethyst::{
     core::transform::{Transform, TransformBundle},
+    core::Named,
     core::Time,
     ecs::*,
     input::InputBundle,
     prelude::*,
     renderer::*,
     utils::application_root_dir,
+    ui::UiTransform,
 };
 
 mod components;
 mod resources;
 mod systems;
 
-use crate::components::creatures;
+use crate::components::creatures::{
+    self, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
+};
+use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::world_bounds::*;
 use crate::systems::*;
 use crate::systems::collision::DebugCollisionEventSystem;
+
+amethyst_inspector::inspector![
+    Named,
+    Transform,
+    UiTransform,
+    Rgba,
+    Movement,
+    Wander,
+    Digestion,
+    Fullness,
+
+    CarnivoreTag,
+    HerbivoreTag,
+    PlantTag,
+    IntelligenceTag,
+    Hidden,
+    HiddenPropagate,
+];
 
 struct ExampleState;
 impl SimpleState for ExampleState {
@@ -93,6 +116,7 @@ impl SimpleState for ExampleState {
 
         data.world
             .create_entity()
+            .named("Main camera")
             .with(Camera::from(Projection::perspective(
                 width / height,
                 std::f32::consts::FRAC_PI_2,
@@ -117,12 +141,15 @@ fn main() -> amethyst::Result<()> {
                 ALPHA,
                 None,
             ))
-            .with_pass(DrawDebugLines::<PosColorNorm>::new()),
+            .with_pass(DrawDebugLines::<PosColorNorm>::new())
+            .with_pass(amethyst_imgui::DrawUi::default()),
     );
 
     let display_config = DisplayConfig::load(display_config_path);
 
     let game_data = GameDataBuilder::default()
+        .with(amethyst_imgui::BeginFrame::default(), "imgui_begin", &[])
+        .with_barrier()
         .with_bundle(
             InputBundle::<String, String>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
@@ -157,7 +184,15 @@ fn main() -> amethyst::Result<()> {
         .with(digestion::StarvationSystem, "starvation_system", &["digestion_system"])
         .with(digestion::DebugFullnessSystem, "debug_fullness_system", &["digestion_system"])
         .with_bundle(TransformBundle::new().with_dep(&["collision_system", "enforce_bounds_system"]))?
-        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+        .with(
+            amethyst_inspector::InspectorHierarchy,
+            "inspector_hierarchy",
+            &[],
+        )
+        .with(Inspector, "inspector", &["inspector_hierarchy"])
+        .with_barrier()
+        .with(amethyst_imgui::EndFrame::default(), "imgui_end", &["imgui_begin"]);
 
     let mut game = Application::new(resources, ExampleState, game_data)?;
     game.run();
