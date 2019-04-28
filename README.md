@@ -22,7 +22,7 @@ https://vimeo.com/331507073
 
 The current state of the game implementation is explained in our [Dev Planning topic](https://community.amethyst.rs/t/demo-game-evolution-island-initial-prototype-dev-planning/537). In short, we've made good progress and now we'd like to open up the project to anyone interested in contributing. See our [0.1 MVP milestone](https://github.com/amethyst/evolution-island/milestone/1) for available issues.
 
-Don't worry too much about whether you know enough about Rust or game coding yet to contribute. A good way to get started is to run the game, peruse the source code and start asking us questions about stuff you want to understand better.
+Don't worry too much about whether you know enough about Rust or game coding yet to contribute. A good way to get started is to run the game, peruse the source code and start asking us questions about stuff you want to understand better. You can reach us in the `#showcase-team` channel on the [Amethyst Discord](http://discord.gg/amethyst) or by opening an issue here.
 
 **Note:** Amethyst 0.11 is coming soon, so most new implementation work should probably wait until then. We're still in "high friction mode" so be prepared to make stuff, learn from it then throw it out for something better. Iteration is the name of the game here.
 
@@ -30,6 +30,8 @@ Don't worry too much about whether you know enough about Rust or game coding yet
 [Read here for project MVP details](https://community.amethyst-engine.org/t/demo-game-evolution-island-mvp/487)
 
 ## To play
+If you are compiling on Linux, you need to install some dependencies first. They are necessary to compile and run the Amethyst engine. Please follow the instructions in the [Amethyst README](https://github.com/amethyst/amethyst#dependencies).
+
 Ensure you have Cargo installed ([use rustup if you don't](https://rustup.rs/)), and run the following:
 ```
 cargo run
