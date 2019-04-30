@@ -1,3 +1,1 @@
-mod paused;
-
-pub use paused::*;
+pub mod paused;
