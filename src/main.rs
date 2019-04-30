@@ -134,7 +134,18 @@ impl SimpleState for ExampleState {
             if is_key_down(&event, VirtualKeyCode::P) {
                 return Trans::Push(Box::new(PausedState));
             }
+            if is_key_down(&event, VirtualKeyCode::Add) {
+                let mut time_resource = data.world.write_resource::<Time>();
+                let current_time_scale = time_resource.time_scale();
+                time_resource.set_time_scale(2.0 * current_time_scale);
+            }
+            if is_key_down(&event, VirtualKeyCode::Subtract) {
+                let mut time_resource = data.world.write_resource::<Time>();
+                let current_time_scale = time_resource.time_scale();
+                time_resource.set_time_scale(0.5 * current_time_scale);
+            }
         }
+
         return Trans::None;
     }
 

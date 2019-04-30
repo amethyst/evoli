@@ -21,6 +21,7 @@ impl<'s> System<'s> for DecisionSystem {
         &mut self,
         (entities, mut movements, transforms, carnivore_tag, herbivore_tag, intelligence_tag, time): Self::SystemData,
     ) {
+        let delta_time = time.delta_seconds();
         for (movement, transform, _, _) in (
             &mut movements,
             &transforms,
@@ -44,7 +45,7 @@ impl<'s> System<'s> for DecisionSystem {
             }
 
             let turn_rate = 10.0;
-            movement.velocity += shortest * turn_rate * time.fixed_seconds();
+            movement.velocity += shortest * turn_rate * delta_time;
         }
     }
 }
