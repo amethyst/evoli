@@ -11,7 +11,6 @@ use amethyst::{
     input::{is_key_down, InputBundle},
     prelude::*,
     renderer::*,
-    shrev::EventChannel,
     ui::UiTransform,
     utils::application_root_dir,
 };
@@ -26,7 +25,7 @@ use crate::components::creatures::{
 };
 use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::world_bounds::*;
-use crate::states::PausedState;
+use crate::states::paused::PausedState;
 use crate::systems::collision::DebugCollisionEventSystem;
 use crate::systems::*;
 
