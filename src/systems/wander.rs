@@ -19,6 +19,8 @@ impl<'s> System<'s> for WanderSystem {
         &mut self,
         (mut wanders, mut movements, locals, mut debug_lines, time): Self::SystemData,
     ) {
+        let delta_time = time.delta_seconds();
+
         for (wander, movement, local) in (&mut wanders, &mut movements, &locals).join() {
             let position = local.translation();
             let future_position = position + movement.velocity * 0.5;
@@ -29,13 +31,13 @@ impl<'s> System<'s> for WanderSystem {
             let desired_velocity = target - position;
             let turn_rate = 10.0;
 
-            movement.velocity += desired_velocity * turn_rate * time.fixed_seconds();
+            movement.velocity += desired_velocity * turn_rate * delta_time;
 
             let change = 10.0;
             if rand::random() {
-                wander.angle += change * time.fixed_seconds(); // Radians per second
+                wander.angle += change * delta_time; // Radians per second
             } else {
-                wander.angle -= change * time.fixed_seconds();
+                wander.angle -= change * delta_time;
             }
 
             debug_lines.draw_line(
