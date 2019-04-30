@@ -3,3 +3,6 @@
 
 # OS Specific
 .DS_Store
+
+# Vim swp files
+*.swp

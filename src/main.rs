@@ -8,26 +8,31 @@ use amethyst::{
     core::Named,
     core::Time,
     ecs::*,
-    input::InputBundle,
+    input::{is_key_down, InputBundle},
     prelude::*,
     renderer::*,
-    utils::application_root_dir,
+    shrev::EventChannel,
     ui::UiTransform,
+    utils::application_root_dir,
 };
 
 mod components;
 mod resources;
+mod states;
 mod systems;
 
+use crate::components::combat::{
+    create_factions, Cooldown, Damage, FactionEnemies, HasFaction, Speed,
+};
 use crate::components::creatures::{
     self, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
 };
 use crate::components::digestion::{Digestion, Fullness};
+use crate::components::health::Health;
 use crate::resources::world_bounds::*;
-use crate::systems::*;
+use crate::states::PausedState;
 use crate::systems::collision::DebugCollisionEventSystem;
-use crate::components::combat::{create_factions, Damage, Speed, Cooldown, FactionEnemies, HasFaction};
-use crate::components::health::{Health};
+use crate::systems::*;
 
 amethyst_inspector::inspector![
     Named,
@@ -38,14 +43,11 @@ amethyst_inspector::inspector![
     Wander,
     Digestion,
     Fullness,
-
     Damage,
     Speed,
     Cooldown,
     HasFaction,
-
     Health,
-
     CarnivoreTag,
     HerbivoreTag,
     PlantTag,
@@ -54,16 +56,95 @@ amethyst_inspector::inspector![
     HiddenPropagate,
 ];
 
-struct ExampleState;
+struct ExampleState {
+    dispatcher: Dispatcher<'static, 'static>,
+}
+
+impl Default for ExampleState {
+    fn default() -> Self {
+        ExampleState {
+            dispatcher: DispatcherBuilder::new()
+                .with(decision::DecisionSystem, "decision_system", &[])
+                .with(wander::WanderSystem, "wander_system", &["decision_system"])
+                .with(
+                    movement::MovementSystem,
+                    "movement_system",
+                    &["wander_system"],
+                )
+                .with(
+                    collision::CollisionSystem,
+                    "collision_system",
+                    &["movement_system"],
+                )
+                .with(
+                    collision::EnforceBoundsSystem,
+                    "enforce_bounds_system",
+                    &["movement_system"],
+                )
+                .with(
+                    DebugCollisionEventSystem::default(),
+                    "debug_collision_event_system",
+                    &["collision_system"],
+                )
+                .with(collision::DebugColliderSystem, "debug_collider_system", &[])
+                .with(
+                    DebugSystem,
+                    "debug_system",
+                    &["collision_system", "enforce_bounds_system"],
+                )
+                .with(digestion::DigestionSystem, "digestion_system", &[])
+                .with(
+                    digestion::StarvationSystem,
+                    "starvation_system",
+                    &["digestion_system"],
+                )
+                .with(
+                    digestion::DebugFullnessSystem,
+                    "debug_fullness_system",
+                    &["digestion_system"],
+                )
+                .with(combat::CooldownSystem, "cooldown_system", &[])
+                .with(
+                    combat::FindAttackSystem::default(),
+                    "find_attack_system",
+                    &["cooldown_system"],
+                )
+                .with(
+                    combat::PerformDefaultAttackSystem::default(),
+                    "perform_default_attack_system",
+                    &["find_attack_system"],
+                )
+                .with(
+                    health::DeathByHealthSystem,
+                    "death_by_health_system",
+                    &["perform_default_attack_system"],
+                )
+                .with(health::DebugHealthSystem, "debug_health_system", &[])
+                .build(),
+        }
+    }
+}
+
 impl SimpleState for ExampleState {
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn handle_event(
+        &mut self,
+        data: StateData<'_, GameData<'_, '_>>,
+        event: StateEvent,
+    ) -> SimpleTrans {
+        if let StateEvent::Window(event) = &event {
+            if is_key_down(&event, VirtualKeyCode::P) {
+                return Trans::Push(Box::new(PausedState));
+            }
+        }
+        return Trans::None;
+    }
+
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+        self.dispatcher.setup(&mut data.world.res);
+
         data.world.add_resource(DebugLinesParams {
             line_width: 1.0 / 20.0,
         });
-
-        data.world.register::<creatures::HerbivoreTag>();
-        data.world.register::<creatures::CarnivoreTag>();
-        data.world.register::<creatures::IntelligenceTag>();
 
         data.world
             .add_resource(DebugLines::new().with_capacity(100));
@@ -87,19 +168,30 @@ impl SimpleState for ExampleState {
         for i in 0..2 {
             for j in 0..2 {
                 let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
-                creatures::create_carnivore(data.world, (x - 5.0), (y - 5.0), &carnivore_sprite, carnivores);
+                creatures::create_carnivore(
+                    data.world,
+                    (x - 5.0),
+                    (y - 5.0),
+                    &carnivore_sprite,
+                    carnivores,
+                );
             }
         }
 
         for i in 0..2 {
             for j in 0..2 {
                 let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
-                creatures::create_herbivore(data.world, (x - 5.0), (y - 5.0), &herbivore_sprite, herbivores);
+                creatures::create_herbivore(
+                    data.world,
+                    (x - 5.0),
+                    (y - 5.0),
+                    &herbivore_sprite,
+                    herbivores,
+                );
             }
         }
 
         // Add some plants
-        data.world.register::<creatures::PlantTag>(); // Need to manually register component, not part of a system yet.
         let plant_sprite =
             data.world
                 .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
@@ -135,6 +227,11 @@ impl SimpleState for ExampleState {
             .with(transform)
             .build();
     }
+
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        self.dispatcher.dispatch(&mut data.world.res);
+        Trans::None
+    }
 }
 
 fn main() -> amethyst::Result<()> {
@@ -159,48 +256,17 @@ fn main() -> amethyst::Result<()> {
     let display_config = DisplayConfig::load(display_config_path);
 
     let game_data = GameDataBuilder::default()
-        .with(amethyst_imgui::BeginFrame::default(), "imgui_begin", &[])
-        .with_barrier()
         .with_bundle(
             InputBundle::<String, String>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
+        .with(amethyst_imgui::BeginFrame::default(), "imgui_begin", &[])
+        .with_barrier()
         .with(
             PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
             "",
             &[],
         )
-        .with(decision::DecisionSystem, "decision_system", &[])
-        .with(wander::WanderSystem, "wander_system", &["decision_system"])
-        .with(
-            movement::MovementSystem,
-            "movement_system",
-            &["wander_system"],
-        )
-        .with(
-            collision::CollisionSystem,
-            "collision_system",
-            &["movement_system"],
-        )
-        .with(collision::EnforceBoundsSystem,
-            "enforce_bounds_system",
-            &["movement_system"],
-        )
-        .with(DebugCollisionEventSystem::default(),
-            "debug_collision_event_system",
-            &["collision_system"],
-        )
-        .with(collision::DebugColliderSystem, "debug_collider_system", &[])
-        .with(DebugSystem, "debug_system", &["collision_system", "enforce_bounds_system"])
-        .with(digestion::DigestionSystem, "digestion_system", &[])
-        .with(digestion::StarvationSystem, "starvation_system", &["digestion_system"])
-        .with(digestion::DebugFullnessSystem, "debug_fullness_system", &["digestion_system"])
-        .with(combat::CooldownSystem, "cooldown_system", &[])
-        .with(combat::FindAttackSystem::default(), "find_attack_system", &["cooldown_system"])
-        .with(combat::PerformDefaultAttackSystem::default(), "perform_default_attack_system", &["find_attack_system"])
-        .with(health::DeathByHealthSystem, "death_by_health_system", &["perform_default_attack_system"])
-        .with(health::DebugHealthSystem, "debug_health_system", &[])
-        .with_bundle(TransformBundle::new().with_dep(&["collision_system", "enforce_bounds_system"]))?
-        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+        .with_bundle(TransformBundle::new())?
         .with(
             amethyst_inspector::InspectorHierarchy,
             "inspector_hierarchy",
@@ -208,9 +274,14 @@ fn main() -> amethyst::Result<()> {
         )
         .with(Inspector, "inspector", &["inspector_hierarchy"])
         .with_barrier()
-        .with(amethyst_imgui::EndFrame::default(), "imgui_end", &["imgui_begin"]);
+        .with(
+            amethyst_imgui::EndFrame::default(),
+            "imgui_end",
+            &["imgui_begin"],
+        )
+        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
 
-    let mut game = Application::new(resources, ExampleState, game_data)?;
+    let mut game = Application::new(resources, ExampleState::default(), game_data)?;
     game.run();
     Ok(())
 }
