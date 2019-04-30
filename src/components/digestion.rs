@@ -1,4 +1,4 @@
-use amethyst::ecs::{Component, DenseVecStorage, LazyUpdate, Read, ReadStorage, WriteStorage};
+use amethyst::ecs::{Component, DenseVecStorage, LazyUpdate, Read, ReadStorage};
 use amethyst_imgui::imgui;
 
 pub struct Digestion {

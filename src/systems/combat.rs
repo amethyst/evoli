@@ -1,11 +1,12 @@
-use amethyst::core::Time;
-use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::{core::Transform, ecs::*, Error};
-use amethyst_test::AmethystApplication;
+use amethyst::{
+    core::Time,
+    shrev::{EventChannel, ReaderId},
+    ecs::*,
+
+};
 
 use crate::components::combat;
 use crate::components::combat::{Cooldown, Damage, Speed};
-use crate::components::creatures::{CarnivoreTag, HerbivoreTag, PlantTag};
 use crate::components::health::Health;
 use crate::systems::collision::CollisionEvent;
 use std::time::Duration;
@@ -83,7 +84,10 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
             }
 
             if let Some(value) = cooldown {
-                cooldowns.insert(event.attacker, value);
+                match cooldowns.insert(event.attacker, value) {
+                    Ok(_) => (),
+                    Err(_) => println!("Error when inserting in cooldowns"),
+                };
             }
         }
     }

@@ -6,3 +6,6 @@
 
 # Vim swp files
 *.swp
+
+# IntelliJ folder
+.idea
