@@ -15,6 +15,7 @@ use amethyst::{
 
 use crate::components::combat::create_factions;
 use crate::components::creatures;
+use crate::resources::audio::initialise_audio;
 use crate::resources::world_bounds::*;
 use crate::states::paused::PausedState;
 use crate::systems::*;
@@ -124,6 +125,8 @@ impl SimpleState for MainGameState {
             .add_resource(DebugLines::new().with_capacity(100));
         data.world
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
+
+        initialise_audio(data.world);
 
         let (plants, herbivores, carnivores) = create_factions(data.world);
 
