@@ -81,7 +81,7 @@ dependencies = [
 [[package]]
 name = "amethyst-inspector"
 version = "0.1.0"
-source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#1eb97b38be15b1eb104e42b05f6b1aae4129abcd"
+source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#a78edecbd8b874734d6c5bf4e952c22e907e943e"
 dependencies = [
  "amethyst 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "amethyst-imgui 0.1.0 (git+https://github.com/awpteamoose/amethyst-imgui.git?branch=amethyst-v0.10)",
@@ -95,7 +95,7 @@ dependencies = [
 [[package]]
 name = "amethyst-inspector-derive"
 version = "0.1.0"
-source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#1eb97b38be15b1eb104e42b05f6b1aae4129abcd"
+source = "git+https://github.com/awpteamoose/amethyst-inspector.git?branch=amethyst-v0.10#a78edecbd8b874734d6c5bf4e952c22e907e943e"
 dependencies = [
  "darling 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 0.4.28 (registry+https://github.com/rust-lang/crates.io-index)",
