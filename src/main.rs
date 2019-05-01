@@ -8,7 +8,7 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::*,
-    ui::UiTransform,
+    ui::{NoCustomUi, UiBundle, DrawUi, UiTransform},
     utils::application_root_dir,
 };
 
@@ -68,6 +68,7 @@ fn main() -> amethyst::Result<()> {
                 None,
             ))
             .with_pass(DrawDebugLines::<PosColorNorm>::new())
+            .with_pass(DrawUi::new())
             .with_pass(amethyst_imgui::DrawUi::default()),
     );
 
@@ -98,7 +99,8 @@ fn main() -> amethyst::Result<()> {
             "imgui_end",
             &["imgui_begin"],
         )
-        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?;
+        .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
+        .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?;
 
     let mut game = Application::new(resources, MainGameState::default(), game_data)?;
     game.run();
