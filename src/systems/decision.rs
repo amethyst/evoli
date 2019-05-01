@@ -32,7 +32,7 @@ impl<'s> System<'s> for DecisionSystem {
         {
             let mut shortest = Vector3::<f32>::new(99999.0, 99999.0, 99999.0);
 
-            for (other_transform, entity, _) in (&transforms, &entities, &herbivore_tag).join() {
+            for (other_transform, _entity, _) in (&transforms, &entities, &herbivore_tag).join() {
                 let position = transform.translation();
                 let other_position = other_transform.translation();
 

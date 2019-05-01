@@ -1,7 +1,7 @@
 use amethyst::{
     assets::{AssetLoaderSystemData, Handle, Prefab},
     core::{nalgebra::Vector3, transform::Transform},
-    ecs::{Component, DenseVecStorage, LazyUpdate, NullStorage, Read, ReadStorage, WriteStorage, Entity},
+    ecs::{Component, DenseVecStorage, LazyUpdate, NullStorage, Read, ReadStorage, Entity},
     prelude::*,
     renderer::{Mesh, PosNormTex, PosTex, Shape},
     utils::scene::BasicScenePrefab,
