@@ -84,10 +84,7 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
             }
 
             if let Some(value) = cooldown {
-                match cooldowns.insert(event.attacker, value) {
-                    Ok(_) => (),
-                    Err(_) => println!("Error when inserting in cooldowns"),
-                };
+                cooldowns.insert(event.attacker, value).expect("Unreachable: we ar einserting now.");
             }
         }
     }
