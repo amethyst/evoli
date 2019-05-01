@@ -5,7 +5,9 @@ use amethyst::ecs::{
 use amethyst::prelude::*;
 use amethyst_imgui::imgui;
 use std::time::Duration;
+use amethyst_inspector::Inspect;
 
+#[derive(Clone, Default, Inspect)]
 pub struct Damage {
     // Points subtracted from target's health per hit
     pub damage: f32,
@@ -21,24 +23,10 @@ impl Damage {
     }
 }
 
-impl<'a> amethyst_inspector::Inspect<'a> for Damage {
-    type SystemData = (ReadStorage<'a, Self>,);
-
-    fn inspect((storage,): &Self::SystemData, entity: amethyst::ecs::Entity, ui: &imgui::Ui<'_>) {
-        let &Damage { mut damage } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        ui.drag_float(imgui::im_str!("value##damage{:?}", entity), &mut damage)
-            .build();
-        ui.separator();
-    }
-}
-
 ///
 ///
 ///
+#[derive(Clone, Default, Inspect)]
 pub struct Speed {
     pub attacks_per_second: f32,
 }
@@ -53,31 +41,11 @@ impl Speed {
     }
 }
 
-impl<'a> amethyst_inspector::Inspect<'a> for Speed {
-    type SystemData = (ReadStorage<'a, Self>,);
-
-    fn inspect((storage,): &Self::SystemData, entity: amethyst::ecs::Entity, ui: &imgui::Ui<'_>) {
-        let &Speed {
-            mut attacks_per_second,
-        } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        ui.drag_float(
-            imgui::im_str!("attacks per second##speed{:?}", entity),
-            &mut attacks_per_second,
-        )
-        .build();
-        ui.separator();
-    }
-}
-
 ///
 ///
 ///
 // As long as the cooldown component is attached to an entity, that entity won't be able to attack.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Inspect)]
 pub struct Cooldown {
     pub time_left: Duration,
 }
@@ -89,24 +57,6 @@ impl Component for Cooldown {
 impl Cooldown {
     pub fn new(time_left: Duration) -> Cooldown {
         Cooldown { time_left }
-    }
-}
-
-impl<'a> amethyst_inspector::Inspect<'a> for Cooldown {
-    type SystemData = (ReadStorage<'a, Self>,);
-
-    fn inspect((storage,): &Self::SystemData, entity: amethyst::ecs::Entity, ui: &imgui::Ui<'_>) {
-        let &Cooldown { time_left } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        ui.drag_float(
-            imgui::im_str!("time left##cooldown{:?}", entity),
-            &mut (time_left.as_millis() as f32),
-        )
-        .build();
-        ui.separator();
     }
 }
 

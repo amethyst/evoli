@@ -152,6 +152,8 @@ impl SimpleState for ExampleState {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.dispatcher.setup(&mut data.world.res);
 
+        data.world.add_resource(amethyst_imgui::ImguiIni::new("imgui.ini"));
+
         data.world.add_resource(DebugLinesParams {
             line_width: 1.0 / 20.0,
         });
@@ -278,7 +280,7 @@ fn main() -> amethyst::Result<()> {
         )
         .with_bundle(TransformBundle::new())?
         .with(
-            amethyst_inspector::InspectorHierarchy,
+            amethyst_inspector::InspectorHierarchy::default(),
             "inspector_hierarchy",
             &[],
         )
