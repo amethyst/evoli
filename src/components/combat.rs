@@ -1,6 +1,6 @@
 use amethyst::core::Named;
 use amethyst::ecs::{
-    Component, DenseVecStorage, Entity, HashMapStorage, LazyUpdate, Read, ReadStorage, VecStorage,
+    Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage,
 };
 use amethyst::prelude::*;
 use amethyst_imgui::imgui;
@@ -134,7 +134,7 @@ impl<'a> amethyst_inspector::Inspect<'a> for HasFaction {
     type SystemData = (ReadStorage<'a, Self>,);
 
     fn inspect((storage,): &Self::SystemData, entity: amethyst::ecs::Entity, ui: &imgui::Ui<'_>) {
-        let &HasFaction { mut faction } = if let Some(x) = storage.get(entity) {
+        let &HasFaction { faction } = if let Some(x) = storage.get(entity) {
             x
         } else {
             return;

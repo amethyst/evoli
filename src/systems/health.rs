@@ -1,5 +1,5 @@
 use amethyst::renderer::*;
-use amethyst::{core::Time, core::Transform, ecs::*};
+use amethyst::{core::Transform, ecs::*};
 use std::f32;
 
 use crate::components::health::Health;

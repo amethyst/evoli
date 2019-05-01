@@ -1,3 +1,4 @@
+pub mod debug;
 pub mod collision;
 pub mod decision;
 pub mod movement;
