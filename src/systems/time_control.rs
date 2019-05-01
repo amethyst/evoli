@@ -13,13 +13,11 @@ pub fn create_time_control_ui(world: &mut World) {
     world.add_resource(AssetStorage::<FontAsset>::new());
     let font_handle = {
         let mut loader = world.write_resource::<Loader>();
-        loader.add_source("fonts", Directory::new("D:/Rust/evoli/resources/assets/fonts"));
         let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
-        loader.load_from(
-            "OpenSans-Regular.ttf",
+        loader.load(
+            "assets/fonts/OpenSans-Regular.ttf",
             TtfFormat,
             (),
-            "fonts",
             (),
             &font_storage,
         )
