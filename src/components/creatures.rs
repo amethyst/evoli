@@ -6,6 +6,7 @@ use amethyst::{
     renderer::{Mesh, PosNormTex, PosTex, Shape},
     utils::scene::BasicScenePrefab,
 };
+use amethyst_inspector::Inspect;
 
 use crate::components::collider;
 use crate::components::combat;
@@ -13,128 +14,53 @@ use crate::components::digestion;
 use crate::components::health::Health;
 use amethyst_imgui::imgui;
 
-#[derive(Default)]
+#[derive(Default, Inspect)]
 pub struct CarnivoreTag;
 impl Component for CarnivoreTag {
     type Storage = NullStorage<Self>;
 }
-amethyst_inspector::inspect_marker!(CarnivoreTag);
 
-#[derive(Default)]
+#[derive(Default, Inspect)]
 pub struct HerbivoreTag;
 impl Component for HerbivoreTag {
     type Storage = NullStorage<Self>;
 }
-amethyst_inspector::inspect_marker!(HerbivoreTag);
 
-#[derive(Default)]
+#[derive(Default, Inspect)]
 pub struct PlantTag;
 impl Component for PlantTag {
     type Storage = NullStorage<Self>;
 }
-amethyst_inspector::inspect_marker!(PlantTag);
 
-#[derive(Default)]
+#[derive(Default, Inspect)]
 pub struct IntelligenceTag;
 impl Component for IntelligenceTag {
     type Storage = NullStorage<Self>;
 }
-amethyst_inspector::inspect_marker!(IntelligenceTag);
 
 ///
 ///
 ///
+#[derive(Clone, smart_default::SmartDefault, Inspect)]
 pub struct Movement {
+    #[default(Vector3::zeros())]
     pub velocity: Vector3<f32>,
     pub max_movement_speed: f32,
 }
 impl Component for Movement {
     type Storage = DenseVecStorage<Self>;
 }
-impl<'a> amethyst_inspector::Inspect<'a> for Movement {
-    type SystemData = (ReadStorage<'a, Self>, Read<'a, LazyUpdate>);
-    const CAN_ADD: bool = true;
-
-    fn inspect(
-        (storage, lazy): &Self::SystemData,
-        entity: amethyst::ecs::Entity,
-        ui: &imgui::Ui<'_>,
-    ) {
-        let &Movement {
-            velocity,
-            mut max_movement_speed,
-        } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        let mut v: [f32; 3] = velocity.into();
-        ui.drag_float3(imgui::im_str!("velocity##movement{:?}", entity,), &mut v)
-            .build();
-        ui.drag_float(
-            imgui::im_str!("max speed##movement{:?}", entity.id(),),
-            &mut max_movement_speed,
-        )
-        .build();
-        lazy.insert(
-            entity,
-            Movement {
-                velocity,
-                max_movement_speed,
-            },
-        );
-        ui.separator();
-    }
-
-    fn add((_storage, lazy): &Self::SystemData, entity: amethyst::ecs::Entity) {
-        lazy.insert(
-            entity,
-            Movement {
-                velocity: Vector3::zeros(),
-                max_movement_speed: 0.,
-            },
-        );
-    }
-}
 
 ///
 ///
 ///
+#[derive(Default, Clone, Inspect)]
 pub struct Wander {
     pub angle: f32,
     pub radius: f32,
 }
 impl Component for Wander {
     type Storage = DenseVecStorage<Self>;
-}
-impl<'a> amethyst_inspector::Inspect<'a> for Wander {
-    type SystemData = (ReadStorage<'a, Self>, Read<'a, LazyUpdate>);
-    const CAN_ADD: bool = true;
-
-    fn inspect(
-        (storage, lazy): &Self::SystemData,
-        entity: amethyst::ecs::Entity,
-        ui: &imgui::Ui<'_>,
-    ) {
-        let &Wander {
-            mut angle,
-            mut radius,
-        } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        ui.drag_float(imgui::im_str!("angle##wander{:?}", entity), &mut angle)
-            .build();
-        ui.drag_float(imgui::im_str!("radius##wander{:?}", entity,), &mut radius)
-            .build();
-        lazy.insert(entity, Wander { angle, radius });
-        ui.separator();
-    }
-
-    fn add((_storage, lazy): &Self::SystemData, entity: amethyst::ecs::Entity) {
-        lazy.insert(entity, Wander::new(0.));
-    }
 }
 
 impl Wander {

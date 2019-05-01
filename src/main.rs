@@ -50,7 +50,10 @@ amethyst_inspector::inspector![
     HiddenPropagate,
 ];
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> Awpteamoose-master
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
@@ -85,7 +88,7 @@ fn main() -> amethyst::Result<()> {
         )
         .with_bundle(TransformBundle::new())?
         .with(
-            amethyst_inspector::InspectorHierarchy,
+            amethyst_inspector::InspectorHierarchy::default(),
             "inspector_hierarchy",
             &[],
         )

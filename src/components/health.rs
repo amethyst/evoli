@@ -1,6 +1,8 @@
 use amethyst::ecs::{Component, DenseVecStorage, ReadStorage};
 use amethyst_imgui::imgui;
+use amethyst_inspector::Inspect;
 
+#[derive(Clone, Default, Inspect)]
 pub struct Health {
     pub max_health: f32,
     pub value: f32,
@@ -16,29 +18,5 @@ impl Health {
             max_health,
             value: max_health,
         }
-    }
-}
-
-impl<'a> amethyst_inspector::Inspect<'a> for Health {
-    type SystemData = (ReadStorage<'a, Self>,);
-
-    fn inspect(
-        (storage,): &Self::SystemData,
-        entity: amethyst::ecs::Entity,
-        ui: &imgui::Ui<'_>,
-    ) {
-        let &Health {
-            mut value,
-            mut max_health,
-        } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        ui.drag_float(imgui::im_str!("max health##health{:?}", entity), &mut max_health)
-            .build();
-        ui.drag_float(imgui::im_str!("value##health{:?}", entity), &mut value)
-            .build();
-        ui.separator();
     }
 }
