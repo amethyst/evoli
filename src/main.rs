@@ -1,6 +1,7 @@
 use amethyst;
 use amethyst::assets::PrefabLoaderSystem;
 use amethyst::{
+    audio::AudioBundle,
     core::transform::{Transform, TransformBundle},
     core::Named,
     ecs::*,
@@ -24,6 +25,7 @@ use crate::components::creatures::{
 };
 use crate::components::digestion::{Digestion, Fullness};
 use crate::components::health::Health;
+use crate::resources::audio::Music;
 use crate::states::{
     main_game::MainGameState
 };
@@ -50,10 +52,6 @@ amethyst_inspector::inspector![
     HiddenPropagate,
 ];
 
-<<<<<<< HEAD
-
-=======
->>>>>>> Awpteamoose-master
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
@@ -87,6 +85,7 @@ fn main() -> amethyst::Result<()> {
             &[],
         )
         .with_bundle(TransformBundle::new())?
+        .with_bundle(AudioBundle::new(|music: &mut Music| music.music.next()))?
         .with(
             amethyst_inspector::InspectorHierarchy::default(),
             "inspector_hierarchy",
