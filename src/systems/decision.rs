@@ -30,22 +30,30 @@ impl<'s> System<'s> for DecisionSystem {
         )
             .join()
         {
-            let mut shortest = Vector3::<f32>::new(99999.0, 99999.0, 99999.0);
+            let mut shortest: Option<Vector3<f32>> = None;
 
             for (other_transform, _entity, _) in (&transforms, &entities, &herbivore_tag).join() {
                 let position = transform.translation();
                 let other_position = other_transform.translation();
-
                 let difference = other_position - position;
                 if difference.magnitude_squared() < 5.0_f32.powi(2) {
-                    if difference.magnitude_squared() < shortest.magnitude_squared() {
-                        shortest = difference;
+                    shortest = match shortest {
+                        Some(vector) => {
+                            if difference.magnitude_squared() < vector.magnitude_squared() {
+                                Some(difference)
+                            } else {
+                                Some(vector)
+                            }
+                        }
+                        None => Some(difference),
                     }
                 }
             }
 
-            let turn_rate = 10.0;
-            movement.velocity += shortest * turn_rate * delta_time;
+            if let Some(vector) = shortest {
+                let turn_rate = 10.0;
+                movement.velocity += vector * turn_rate * delta_time;
+            }
         }
     }
 }
