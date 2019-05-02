@@ -2,13 +2,15 @@ use amethyst::{
     core::Time,
     ecs::*,
     shrev::{EventChannel, ReaderId},
-    Error,
 };
 
 use crate::components::combat;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::health::Health;
 use crate::systems::collision::CollisionEvent;
+#[cfg(test)]
+use amethyst::Error;
+#[cfg(test)]
 use amethyst_test::AmethystApplication;
 use std::time::Duration;
 

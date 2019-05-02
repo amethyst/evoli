@@ -26,7 +26,6 @@ pipeline {
             }
         }
         stage('Cargo Check') {
-	    parallel {
 		stage("stable") {
 		    environment {
 			RUSTFLAGS = "-D warnings"
@@ -42,22 +41,6 @@ pipeline {
 			sh 'cargo check --all --all-targets'
 		    }
 		}
-		stage("nightly") {
-		    environment {
-			RUSTFLAGS = "-D warnings"
-		    }
-		    agent {
-			docker {
-			    image 'amethystrs/builder-linux:nightly'
-			    label 'docker'
-			}
-		    }
-		    steps {
-			echo 'Running Cargo check...'
-			sh 'cargo check --all --all-targets --features nightly'
-		    }
-		}
-	    }
         }
         stage('Run Tests') {
             parallel {

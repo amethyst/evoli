@@ -1,7 +1,7 @@
 use amethyst::{
     assets::{AssetLoaderSystemData, Handle, Prefab},
     core::{nalgebra::Vector3, transform::Transform},
-    ecs::{Component, DenseVecStorage, Entity, LazyUpdate, NullStorage, Read, ReadStorage},
+    ecs::{Component, DenseVecStorage, Entity, NullStorage},
     prelude::*,
     renderer::{Mesh, PosNormTex, PosTex, Shape},
     utils::scene::BasicScenePrefab,
@@ -12,7 +12,6 @@ use crate::components::collider;
 use crate::components::combat;
 use crate::components::digestion;
 use crate::components::health::Health;
-use amethyst_imgui::imgui;
 
 #[derive(Default, Inspect)]
 pub struct CarnivoreTag;

@@ -1,8 +1,7 @@
 use amethyst::{
-    assets::{AssetStorage, Directory, Loader},
+    assets::{AssetStorage, Loader},
     core::timing::Time,
     ecs::*,
-    prelude::*,
     shrev::{EventChannel, ReaderId},
     ui::*,
 };
@@ -10,7 +9,7 @@ use amethyst::{
 pub fn create_time_control_ui(world: &mut World) {
     world.add_resource(AssetStorage::<FontAsset>::new());
     let font_handle = {
-        let mut loader = world.write_resource::<Loader>();
+        let loader = world.write_resource::<Loader>();
         let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
         loader.load(
             "assets/fonts/OpenSans-Regular.ttf",
