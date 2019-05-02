@@ -245,6 +245,8 @@ impl SimpleState for MainGameState {
 
     fn on_resume(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         {
+            // We re-register the ReaderId when switching back to the state to avoid reading events
+            // that happened when the state was inactive.
             let mut input_event_channel = data
                 .world
                 .write_resource::<EventChannel<InputEvent<String>>>();
