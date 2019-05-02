@@ -100,26 +100,6 @@ impl Default for MainGameState {
 }
 
 impl SimpleState for MainGameState {
-    fn handle_event(&mut self, data: StateData<'_, GameData>, event: StateEvent) -> SimpleTrans {
-        match event {
-            StateEvent::Window(window_event) => {
-                if is_key_down(&window_event, VirtualKeyCode::Add) {
-                    let mut time_resource = data.world.write_resource::<Time>();
-                    let current_time_scale = time_resource.time_scale();
-                    time_resource.set_time_scale(2.0 * current_time_scale);
-                }
-                if is_key_down(&window_event, VirtualKeyCode::Subtract) {
-                    let mut time_resource = data.world.write_resource::<Time>();
-                    let current_time_scale = time_resource.time_scale();
-                    time_resource.set_time_scale(0.5 * current_time_scale);
-                }
-            }
-            _ => (),
-        }
-
-        return Trans::None;
-    }
-
     fn on_start(&mut self, mut data: StateData<'_, GameData>) {
         self.dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
@@ -228,8 +208,19 @@ impl SimpleState for MainGameState {
         for event in input_event_channel.read(self.input_event_reader_id.as_mut().unwrap()) {
             match event {
                 InputEvent::ActionPressed(action_name) => {
-                    if action_name == "Pause" {
-                        return Trans::Push(Box::new(PausedState::default()));
+                    match action_name.as_ref() {
+                        "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
+                        "SpeedUp" => {
+                            let mut time_resource = data.world.write_resource::<Time>();
+                            let current_time_scale = time_resource.time_scale();
+                            time_resource.set_time_scale(2.0 * current_time_scale);
+                        }
+                        "SlowDown" => {
+                            let mut time_resource = data.world.write_resource::<Time>();
+                            let current_time_scale = time_resource.time_scale();
+                            time_resource.set_time_scale(0.5 * current_time_scale);
+                        }
+                        _ => (),
                     }
                 }
                 _ => (),

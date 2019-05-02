@@ -42,7 +42,7 @@ impl SimpleState for PausedState {
         for event in input_event_channel.read(self.input_event_reader_id.as_mut().unwrap()) {
             match event {
                 InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
-                    "Pause" => return Trans::Pop,
+                    "TogglePause" => return Trans::Pop,
                     _ => (),
                 },
                 _ => (),

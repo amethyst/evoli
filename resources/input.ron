@@ -3,8 +3,14 @@
 
   },
   actions: {
-    "Pause": [
+    "TogglePause": [
             [Key(P)]
+    ],
+    "SpeedUp": [
+        [Key(Add)]
+    ],
+    "SlowDown": [
+        [Key(Subtract)]
     ],
   },
 )
