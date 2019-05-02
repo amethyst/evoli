@@ -26,7 +26,6 @@ pipeline {
             }
         }
         stage('Cargo Check') {
-		stage("stable") {
 		    environment {
 			RUSTFLAGS = "-D warnings"
 		    }
@@ -40,7 +39,6 @@ pipeline {
 			echo 'Running Cargo check...'
 			sh 'cargo check --all --all-targets'
 		    }
-		}
         }
         stage('Run Tests') {
             parallel {
