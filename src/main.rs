@@ -8,7 +8,7 @@ use amethyst::{
     input::InputBundle,
     prelude::*,
     renderer::*,
-    ui::{NoCustomUi, UiBundle, DrawUi, UiTransform},
+    ui::{DrawUi, NoCustomUi, UiBundle, UiTransform},
     utils::application_root_dir,
 };
 
@@ -17,18 +17,14 @@ mod resources;
 mod states;
 mod systems;
 
-use crate::components::combat::{
-    Cooldown, Damage, HasFaction, Speed,
-};
+use crate::components::combat::{Cooldown, Damage, HasFaction, Speed};
 use crate::components::creatures::{
     self, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
 };
 use crate::components::digestion::{Digestion, Fullness};
 use crate::components::health::Health;
 use crate::resources::audio::Music;
-use crate::states::{
-    main_game::MainGameState
-};
+use crate::states::main_game::MainGameState;
 
 amethyst_inspector::inspector![
     Named,
@@ -106,4 +102,3 @@ fn main() -> amethyst::Result<()> {
     game.run();
     Ok(())
 }
-

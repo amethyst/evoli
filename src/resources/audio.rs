@@ -1,5 +1,5 @@
 use amethyst::{
-    assets::{Loader},
+    assets::Loader,
     audio::{AudioSink, OggFormat, SourceHandle},
     ecs::prelude::World,
 };
@@ -7,9 +7,7 @@ use amethyst::{
 use std::iter::Cycle;
 use std::vec::IntoIter;
 
-const BACKGROUND_MUSIC: &'static [&'static str] = &[
-    "assets/ambient.ogg"
-];
+const BACKGROUND_MUSIC: &'static [&'static str] = &["assets/ambient.ogg"];
 
 pub struct Music {
     pub music: Cycle<IntoIter<SourceHandle>>,

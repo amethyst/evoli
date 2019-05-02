@@ -14,7 +14,9 @@ impl Component for Digestion {
 
 impl Digestion {
     pub fn new(nutrition_burn_rate: f32) -> Digestion {
-        Digestion { nutrition_burn_rate }
+        Digestion {
+            nutrition_burn_rate,
+        }
     }
 }
 
@@ -30,6 +32,9 @@ impl Component for Fullness {
 
 impl Fullness {
     pub fn new(initial: f32, max: f32) -> Fullness {
-        Fullness { value: initial, max }
+        Fullness {
+            value: initial,
+            max,
+        }
     }
 }

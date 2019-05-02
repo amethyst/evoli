@@ -1,11 +1,9 @@
 use amethyst::{
-    prelude::*,
+    assets::{AssetStorage, Directory, Loader},
     core::timing::Time,
-    assets::{Directory, AssetStorage, Loader},
     ecs::*,
-    shrev::{
-        EventChannel, ReaderId,
-    },
+    prelude::*,
+    shrev::{EventChannel, ReaderId},
     ui::*,
 };
 
@@ -31,7 +29,7 @@ pub fn create_time_control_ui(world: &mut World) {
         .with_font_size(24.0f32)
         .with_text_color([0.0f32, 0.0, 0.0, 1.0])
         .with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-        .with_press_text_color([0.5,0.5,0.5,1.0])
+        .with_press_text_color([0.5, 0.5, 0.5, 1.0])
         .build_from_world(world);
 }
 
@@ -50,10 +48,7 @@ impl<'s> System<'s> for TimeControlSystem {
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        self.reader_id = Some(
-            res.fetch_mut::<EventChannel<UiEvent>>()
-                .register_reader(),
-        );
+        self.reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
     }
 
     fn run(&mut self, (ui_events, mut ui_texts, finder, mut time): Self::SystemData) {
@@ -75,7 +70,7 @@ impl<'s> System<'s> for TimeControlSystem {
                                     text.text = new_text.to_string();
                                 }
                             }
-                        },
+                        }
                         _ => (),
                     }
                 }

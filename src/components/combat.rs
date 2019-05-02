@@ -1,11 +1,9 @@
 use amethyst::core::Named;
-use amethyst::ecs::{
-    Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage,
-};
+use amethyst::ecs::{Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage};
 use amethyst::prelude::*;
 use amethyst_imgui::imgui;
-use std::time::Duration;
 use amethyst_inspector::Inspect;
+use std::time::Duration;
 
 #[derive(Clone, Default, Inspect)]
 pub struct Damage {
