@@ -17,7 +17,7 @@ impl Default for PausedState {
 }
 
 impl SimpleState for PausedState {
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_start(&mut self, data: StateData<'_, GameData>) {
         {
             let mut input_event_channel = data
                 .world
@@ -26,7 +26,7 @@ impl SimpleState for PausedState {
         }
     }
 
-    fn on_resume(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_resume(&mut self, data: StateData<'_, GameData>) {
         {
             // We re-register the ReaderId when switching back to the state to avoid reading events
             // that happened when the state was inactive.
@@ -37,7 +37,7 @@ impl SimpleState for PausedState {
         }
     }
 
-    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+    fn update(&mut self, data: &mut StateData<'_, GameData>) -> SimpleTrans {
         let input_event_channel = data
             .world
             .read_resource::<EventChannel<InputEvent<String>>>();

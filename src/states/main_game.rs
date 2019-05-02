@@ -100,11 +100,7 @@ impl Default for MainGameState {
 }
 
 impl SimpleState for MainGameState {
-    fn handle_event(
-        &mut self,
-        data: StateData<'_, GameData<'_, '_>>,
-        event: StateEvent,
-    ) -> SimpleTrans {
+    fn handle_event(&mut self, data: StateData<'_, GameData>, event: StateEvent) -> SimpleTrans {
         match event {
             StateEvent::Window(window_event) => {
                 if is_key_down(&window_event, VirtualKeyCode::Add) {
@@ -124,7 +120,7 @@ impl SimpleState for MainGameState {
         return Trans::None;
     }
 
-    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData>) {
         self.dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
 
@@ -224,7 +220,7 @@ impl SimpleState for MainGameState {
             .build();
     }
 
-    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+    fn update(&mut self, data: &mut StateData<'_, GameData>) -> SimpleTrans {
         self.dispatcher.dispatch(&mut data.world.res);
 
         let input_event_channel = data
@@ -243,7 +239,7 @@ impl SimpleState for MainGameState {
         Trans::None
     }
 
-    fn on_resume(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_resume(&mut self, data: StateData<'_, GameData>) {
         {
             // We re-register the ReaderId when switching back to the state to avoid reading events
             // that happened when the state was inactive.
@@ -254,7 +250,7 @@ impl SimpleState for MainGameState {
         }
     }
 
-    fn shadow_update(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn shadow_update(&mut self, data: StateData<'_, GameData>) {
         self.ui_dispatcher.dispatch(&mut data.world.res);
     }
 }
