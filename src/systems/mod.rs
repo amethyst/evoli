@@ -6,3 +6,4 @@ pub mod wander;
 pub mod digestion;
 pub mod combat;
 pub mod health;
+pub mod time_control;

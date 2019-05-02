@@ -84,6 +84,7 @@ impl Default for MainGameState {
                     &["perform_default_attack_system"],
                 )
                 .with(health::DebugHealthSystem, "debug_health_system", &[])
+                .with(time_control::TimeControlSystem::default(), "time_control", &[])
                 .build(),
         }
     }
@@ -95,26 +96,30 @@ impl SimpleState for MainGameState {
         data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
-        if let StateEvent::Window(event) = &event {
-            if is_key_down(&event, VirtualKeyCode::P) {
-                return Trans::Push(Box::new(PausedState));
-            }
-            if is_key_down(&event, VirtualKeyCode::Add) {
-                let mut time_resource = data.world.write_resource::<Time>();
-                let current_time_scale = time_resource.time_scale();
-                time_resource.set_time_scale(2.0 * current_time_scale);
-            }
-            if is_key_down(&event, VirtualKeyCode::Subtract) {
-                let mut time_resource = data.world.write_resource::<Time>();
-                let current_time_scale = time_resource.time_scale();
-                time_resource.set_time_scale(0.5 * current_time_scale);
-            }
+
+        match event {
+            StateEvent::Window(window_event) => {
+                if is_key_down(&window_event, VirtualKeyCode::P) {
+                    return Trans::Push(Box::new(PausedState));
+                }
+                if is_key_down(&window_event, VirtualKeyCode::Add) {
+                    let mut time_resource = data.world.write_resource::<Time>();
+                    let current_time_scale = time_resource.time_scale();
+                    time_resource.set_time_scale(2.0 * current_time_scale);
+                }
+                if is_key_down(&window_event, VirtualKeyCode::Subtract) {
+                    let mut time_resource = data.world.write_resource::<Time>();
+                    let current_time_scale = time_resource.time_scale();
+                    time_resource.set_time_scale(0.5 * current_time_scale);
+                }
+            },
+            _ => (),
         }
 
         return Trans::None;
     }
 
-    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.dispatcher.setup(&mut data.world.res);
 
         data.world.add_resource(DebugLinesParams {
@@ -127,6 +132,7 @@ impl SimpleState for MainGameState {
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
 
         initialise_audio(data.world);
+        time_control::create_time_control_ui(&mut data.world);
 
         let (plants, herbivores, carnivores) = create_factions(data.world);
 
