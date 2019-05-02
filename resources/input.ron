@@ -3,6 +3,8 @@
 
   },
   actions: {
-
+    "Pause": [
+            [Key(P)]
+    ],
   },
 )

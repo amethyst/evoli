@@ -1,7 +1,13 @@
 use amethyst;
 use amethyst::assets::{PrefabLoader, RonFormat};
 use amethyst::{
-    core::transform::Transform, core::Time, ecs::*, input::is_key_down, prelude::*, renderer::*,
+    core::transform::Transform,
+    core::Time,
+    ecs::*,
+    input::{is_key_down, InputEvent},
+    prelude::*,
+    renderer::*,
+    shrev::{EventChannel, ReaderId},
 };
 use rand::{thread_rng, Rng};
 
@@ -14,6 +20,9 @@ use crate::systems::*;
 
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
+    ui_dispatcher: Dispatcher<'static, 'static>,
+
+    input_event_reader_id: Option<ReaderId<InputEvent<String>>>,
 }
 
 impl Default for MainGameState {
@@ -76,12 +85,16 @@ impl Default for MainGameState {
                     &["perform_default_attack_system"],
                 )
                 .with(health::DebugHealthSystem, "debug_health_system", &[])
+                .build(),
+            ui_dispatcher: DispatcherBuilder::new()
                 .with(
                     time_control::TimeControlSystem::default(),
                     "time_control",
                     &[],
                 )
                 .build(),
+
+            input_event_reader_id: None,
         }
     }
 }
@@ -94,9 +107,6 @@ impl SimpleState for MainGameState {
     ) -> SimpleTrans {
         match event {
             StateEvent::Window(window_event) => {
-                if is_key_down(&window_event, VirtualKeyCode::P) {
-                    return Trans::Push(Box::new(PausedState));
-                }
                 if is_key_down(&window_event, VirtualKeyCode::Add) {
                     let mut time_resource = data.world.write_resource::<Time>();
                     let current_time_scale = time_resource.time_scale();
@@ -116,6 +126,14 @@ impl SimpleState for MainGameState {
 
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
         self.dispatcher.setup(&mut data.world.res);
+        self.ui_dispatcher.setup(&mut data.world.res);
+
+        {
+            let mut input_event_channel = data
+                .world
+                .write_resource::<EventChannel<InputEvent<String>>>();
+            self.input_event_reader_id = Some(input_event_channel.register_reader());
+        }
 
         data.world.add_resource(DebugLinesParams {
             line_width: 1.0 / 20.0,
@@ -208,6 +226,33 @@ impl SimpleState for MainGameState {
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
         self.dispatcher.dispatch(&mut data.world.res);
+
+        let input_event_channel = data
+            .world
+            .read_resource::<EventChannel<InputEvent<String>>>();
+        for event in input_event_channel.read(self.input_event_reader_id.as_mut().unwrap()) {
+            match event {
+                InputEvent::ActionPressed(action_name) => {
+                    if action_name == "Pause" {
+                        return Trans::Push(Box::new(PausedState::default()));
+                    }
+                }
+                _ => (),
+            }
+        }
         Trans::None
+    }
+
+    fn on_resume(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+        {
+            let mut input_event_channel = data
+                .world
+                .write_resource::<EventChannel<InputEvent<String>>>();
+            self.input_event_reader_id = Some(input_event_channel.register_reader());
+        }
+    }
+
+    fn shadow_update(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+        self.ui_dispatcher.dispatch(&mut data.world.res);
     }
 }

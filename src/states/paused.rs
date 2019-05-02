@@ -1,22 +1,53 @@
-use amethyst::{input::is_key_down, prelude::*, renderer::VirtualKeyCode};
+use amethyst::{
+    input::InputEvent,
+    prelude::*,
+    shrev::{EventChannel, ReaderId},
+};
 
-pub struct PausedState;
+pub struct PausedState {
+    input_event_reader_id: Option<ReaderId<InputEvent<String>>>,
+}
+
+impl Default for PausedState {
+    fn default() -> Self {
+        PausedState {
+            input_event_reader_id: None,
+        }
+    }
+}
 
 impl SimpleState for PausedState {
-    fn handle_event(
-        &mut self,
-        _data: StateData<'_, GameData<'_, '_>>,
-        event: StateEvent,
-    ) -> SimpleTrans {
-        if let StateEvent::Window(event) = &event {
-            if is_key_down(&event, VirtualKeyCode::Escape) {
-                return Trans::Pop;
-            }
-            if is_key_down(&event, VirtualKeyCode::P) {
-                return Trans::Pop;
+    fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+        {
+            let mut input_event_channel = data
+                .world
+                .write_resource::<EventChannel<InputEvent<String>>>();
+            self.input_event_reader_id = Some(input_event_channel.register_reader());
+        }
+    }
+
+    fn on_resume(&mut self, data: StateData<'_, GameData<'_, '_>>) {
+        {
+            let mut input_event_channel = data
+                .world
+                .write_resource::<EventChannel<InputEvent<String>>>();
+            self.input_event_reader_id = Some(input_event_channel.register_reader());
+        }
+    }
+
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        let input_event_channel = data
+            .world
+            .read_resource::<EventChannel<InputEvent<String>>>();
+        for event in input_event_channel.read(self.input_event_reader_id.as_mut().unwrap()) {
+            match event {
+                InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
+                    "Pause" => return Trans::Pop,
+                    _ => (),
+                },
+                _ => (),
             }
         }
-
         Trans::None
     }
 }

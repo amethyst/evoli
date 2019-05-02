@@ -1,7 +1,7 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    core::timing::Time,
     ecs::*,
+    input::InputEvent,
     shrev::{EventChannel, ReaderId},
     ui::*,
 };
@@ -34,45 +34,60 @@ pub fn create_time_control_ui(world: &mut World) {
 
 #[derive(Default)]
 pub struct TimeControlSystem {
-    reader_id: Option<ReaderId<UiEvent>>,
+    ui_reader_id: Option<ReaderId<UiEvent>>,
+    input_reader_id: Option<ReaderId<InputEvent<String>>>,
 }
 
 impl<'s> System<'s> for TimeControlSystem {
     type SystemData = (
+        UiFinder<'s>,
         Read<'s, EventChannel<UiEvent>>,
         WriteStorage<'s, UiText>,
-        UiFinder<'s>,
-        Write<'s, Time>,
+        Write<'s, EventChannel<InputEvent<String>>>,
     );
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        self.reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
+        self.ui_reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
+        self.input_reader_id = Some(
+            res.fetch_mut::<EventChannel<InputEvent<String>>>()
+                .register_reader(),
+        );
     }
 
-    fn run(&mut self, (ui_events, mut ui_texts, finder, mut time): Self::SystemData) {
-        for event in ui_events.read(self.reader_id.as_mut().unwrap()) {
+    fn run(&mut self, (finder, ui_events, mut ui_texts, mut input_events): Self::SystemData) {
+        for event in ui_events.read(self.ui_reader_id.as_mut().unwrap()) {
             if let Some(pause_button_entity) = finder.find("pause button") {
                 if pause_button_entity == event.target {
                     match event.event_type {
-                        UiEventType::ClickStart => {
-                            let mut new_text = "Pause";
-                            let current_time_scale = time.time_scale();
-                            if current_time_scale == 0.0 {
-                                time.set_time_scale(1.0);
-                            } else {
-                                time.set_time_scale(0.0);
-                                new_text = "Play";
-                            }
-                            if let Some(button_entity) = finder.find("pause button_btn_txt") {
-                                if let Some(text) = ui_texts.get_mut(button_entity) {
-                                    text.text = new_text.to_string();
-                                }
-                            }
+                        UiEventType::Click => {
+                            input_events
+                                .single_write(InputEvent::ActionPressed("Pause".to_string()));
                         }
                         _ => (),
                     }
                 }
+            }
+        }
+        for event in input_events.read(self.input_reader_id.as_mut().unwrap()) {
+            match event {
+                InputEvent::ActionPressed(action_name) => {
+                    if let Some(button_entity) = finder.find("pause button_btn_txt") {
+                        if let Some(text) = ui_texts.get_mut(button_entity) {
+                            match action_name.as_ref() {
+                                "Pause" => {
+                                    if text.text == "Pause" {
+                                        text.text = "Play".to_string();
+                                    } else if text.text == "Play" {
+                                        text.text = "Pause".to_string();
+                                    }
+                                }
+                                _ => (),
+                            }
+                        }
+                    }
+                }
+                _ => (),
             }
         }
     }
