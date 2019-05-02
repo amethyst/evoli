@@ -1,11 +1,16 @@
-use amethyst::{core::Time, ecs::*, shrev::{EventChannel, ReaderId}, Error};
+use amethyst::{
+    core::Time,
+    ecs::*,
+    shrev::{EventChannel, ReaderId},
+    Error,
+};
 
 use crate::components::combat;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::health::Health;
 use crate::systems::collision::CollisionEvent;
-use std::time::Duration;
 use amethyst_test::AmethystApplication;
+use std::time::Duration;
 
 pub struct CooldownSystem;
 
