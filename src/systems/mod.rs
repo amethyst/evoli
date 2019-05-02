@@ -1,9 +1,9 @@
-pub mod debug;
 pub mod collision;
-pub mod decision;
-pub mod movement;
-pub mod wander;
-pub mod digestion;
 pub mod combat;
+pub mod debug;
+pub mod decision;
+pub mod digestion;
 pub mod health;
+pub mod movement;
 pub mod time_control;
+pub mod wander;

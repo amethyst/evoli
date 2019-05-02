@@ -1,17 +1,9 @@
-use rand::{
-    thread_rng,
-    Rng
-};
 use amethyst;
 use amethyst::assets::{PrefabLoader, RonFormat};
 use amethyst::{
-    core::transform::Transform,
-    core::Time,
-    ecs::*,
-    input::is_key_down,
-    prelude::*,
-    renderer::*,
+    core::transform::Transform, core::Time, ecs::*, input::is_key_down, prelude::*, renderer::*,
 };
+use rand::{thread_rng, Rng};
 
 use crate::components::combat::create_factions;
 use crate::components::creatures;
@@ -84,7 +76,11 @@ impl Default for MainGameState {
                     &["perform_default_attack_system"],
                 )
                 .with(health::DebugHealthSystem, "debug_health_system", &[])
-                .with(time_control::TimeControlSystem::default(), "time_control", &[])
+                .with(
+                    time_control::TimeControlSystem::default(),
+                    "time_control",
+                    &[],
+                )
                 .build(),
         }
     }
@@ -96,7 +92,6 @@ impl SimpleState for MainGameState {
         data: StateData<'_, GameData<'_, '_>>,
         event: StateEvent,
     ) -> SimpleTrans {
-
         match event {
             StateEvent::Window(window_event) => {
                 if is_key_down(&window_event, VirtualKeyCode::P) {
@@ -112,7 +107,7 @@ impl SimpleState for MainGameState {
                     let current_time_scale = time_resource.time_scale();
                     time_resource.set_time_scale(0.5 * current_time_scale);
                 }
-            },
+            }
             _ => (),
         }
 

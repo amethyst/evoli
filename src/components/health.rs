@@ -1,5 +1,4 @@
-use amethyst::ecs::{Component, DenseVecStorage, ReadStorage};
-use amethyst_imgui::imgui;
+use amethyst::ecs::{Component, DenseVecStorage};
 use amethyst_inspector::Inspect;
 
 #[derive(Clone, Default, Inspect)]

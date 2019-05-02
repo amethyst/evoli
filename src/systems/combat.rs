@@ -1,14 +1,17 @@
 use amethyst::{
     core::Time,
-    shrev::{EventChannel, ReaderId},
     ecs::*,
-
+    shrev::{EventChannel, ReaderId},
 };
 
 use crate::components::combat;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::health::Health;
 use crate::systems::collision::CollisionEvent;
+#[cfg(test)]
+use amethyst::Error;
+#[cfg(test)]
+use amethyst_test::AmethystApplication;
 use std::time::Duration;
 
 pub struct CooldownSystem;
@@ -84,7 +87,9 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
             }
 
             if let Some(value) = cooldown {
-                cooldowns.insert(event.attacker, value).expect("Unreachable: we are inserting now.");
+                cooldowns
+                    .insert(event.attacker, value)
+                    .expect("Unreachable: we are inserting now.");
             }
         }
     }
@@ -114,12 +119,7 @@ impl<'s> System<'s> for FindAttackSystem {
 
     fn run(
         &mut self,
-        (
-            collision_events,
-            mut attack_events,
-            has_faction,
-            faction_enemies,
-        ): Self::SystemData,
+        (collision_events, mut attack_events, has_faction, faction_enemies): Self::SystemData,
     ) {
         let event_reader = self
             .event_reader
