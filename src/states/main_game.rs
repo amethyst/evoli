@@ -7,10 +7,9 @@ use amethyst::{
     },
     State,
     ecs::*,
-    input::{is_key_down, InputEvent},
+    input::{InputEvent},
     prelude::*,
     renderer::*,
-    shrev::{EventChannel, ReaderId},
 };
 use rand::{thread_rng, Rng};
 
@@ -21,15 +20,12 @@ use crate::resources::world_bounds::*;
 use crate::states::{
     paused::PausedState,
     CustomStateEvent,
-    CustomStateEventReader,
 };
 use crate::systems::*;
 
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
     ui_dispatcher: Dispatcher<'static, 'static>,
-
-    input_event_reader_id: Option<ReaderId<InputEvent<String>>>,
 }
 
 impl Default for MainGameState {
@@ -100,32 +96,43 @@ impl Default for MainGameState {
                     &[],
                 )
                 .build(),
-
-            input_event_reader_id: None,
         }
     }
 }
 
 impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
-    fn handle_event(&mut self, _data: StateData<GameData<'a, 'a>>, event: CustomStateEvent) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn handle_event(&mut self, data: StateData<GameData<'a, 'a>>, event: CustomStateEvent) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         match event {
-            CustomStateEvent::Window(ev) => println!("Got window event {:?}", ev), // Events related to the window and inputs.
-            CustomStateEvent::Ui(_) => {}, // Ui event. Button presses, mouse hover, etc...
-            CustomStateEvent::Input(ev) => println!("Got an input event: {:?}", ev),
+            CustomStateEvent::Window(_) => (), // Events related to the window and inputs.
+            CustomStateEvent::Ui(_) => (), // Ui event. Button presses, mouse hover, etc...
+            CustomStateEvent::Input(input_event) => {
+                match input_event {
+                    InputEvent::ActionPressed(action_name) => {
+                        match action_name.as_ref() {
+                            "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
+                            "SpeedUp" => {
+                                let mut time_resource = data.world.write_resource::<Time>();
+                                let current_time_scale = time_resource.time_scale();
+                                time_resource.set_time_scale(2.0 * current_time_scale);
+                            }
+                            "SlowDown" => {
+                                let mut time_resource = data.world.write_resource::<Time>();
+                                let current_time_scale = time_resource.time_scale();
+                                time_resource.set_time_scale(0.5 * current_time_scale);
+                            }
+                            _ => (),
+                        }
+                    }
+                    _ => (),
+                }
+            },
         };
-
         Trans::None
     }
 
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
         self.dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
-
-        self.input_event_reader_id = Some(
-            data.world
-                .write_resource::<EventChannel<InputEvent<String>>>()
-                .register_reader(),
-        );
 
         data.world.add_resource(DebugLinesParams {
             line_width: 1.0 / 20.0,
@@ -218,42 +225,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
     fn update(&mut self, data: StateData<'_, GameData<'a, 'a>>) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         self.dispatcher.dispatch(&mut data.world.res);
-
-        let input_event_channel = data
-            .world
-            .read_resource::<EventChannel<InputEvent<String>>>();
-        for event in input_event_channel.read(self.input_event_reader_id.as_mut().unwrap()) {
-            match event {
-                InputEvent::ActionPressed(action_name) => {
-                    match action_name.as_ref() {
-                        "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
-                        "SpeedUp" => {
-                            let mut time_resource = data.world.write_resource::<Time>();
-                            let current_time_scale = time_resource.time_scale();
-                            time_resource.set_time_scale(2.0 * current_time_scale);
-                        }
-                        "SlowDown" => {
-                            let mut time_resource = data.world.write_resource::<Time>();
-                            let current_time_scale = time_resource.time_scale();
-                            time_resource.set_time_scale(0.5 * current_time_scale);
-                        }
-                        _ => (),
-                    }
-                }
-                _ => (),
-            }
-        }
+        data.data.update(&data.world);
         Trans::None
-    }
-
-    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        // We re-register the ReaderId when switching back to the state to avoid reading events
-        // that happened when the state was inactive.
-        self.input_event_reader_id = Some(
-            data.world
-                .write_resource::<EventChannel<InputEvent<String>>>()
-                .register_reader(),
-        );
     }
 
     fn shadow_update(&mut self, data: StateData<'_, GameData<'a, 'a>>) {

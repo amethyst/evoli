@@ -1,6 +1,5 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    core::timing::Time,
     ecs::*,
     input::InputEvent,
     shrev::{EventChannel, ReaderId},

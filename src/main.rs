@@ -4,7 +4,6 @@ extern crate amethyst_derive;
 
 use amethyst;
 use amethyst::assets::PrefabLoaderSystem;
-use amethyst::derive;
 use amethyst::{
     audio::AudioBundle,
     core::transform::{Transform, TransformBundle},
