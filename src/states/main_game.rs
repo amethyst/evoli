@@ -1,8 +1,11 @@
 use amethyst;
 use amethyst::assets::{PrefabLoader, RonFormat};
 use amethyst::{
-    core::transform::Transform,
-    core::Time,
+    core::{
+        transform::Transform,
+        Time,
+    },
+    State,
     ecs::*,
     input::{is_key_down, InputEvent},
     prelude::*,
@@ -15,7 +18,11 @@ use crate::components::combat::create_factions;
 use crate::components::creatures;
 use crate::resources::audio::initialise_audio;
 use crate::resources::world_bounds::*;
-use crate::states::paused::PausedState;
+use crate::states::{
+    paused::PausedState,
+    CustomStateEvent,
+    CustomStateEventReader,
+};
 use crate::systems::*;
 
 pub struct MainGameState {
@@ -99,8 +106,18 @@ impl Default for MainGameState {
     }
 }
 
-impl SimpleState for MainGameState {
-    fn on_start(&mut self, mut data: StateData<'_, GameData>) {
+impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
+    fn handle_event(&mut self, _data: StateData<GameData<'a, 'a>>, event: CustomStateEvent) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+        match event {
+            CustomStateEvent::Window(ev) => println!("Got window event {:?}", ev), // Events related to the window and inputs.
+            CustomStateEvent::Ui(_) => {}, // Ui event. Button presses, mouse hover, etc...
+            CustomStateEvent::Input(ev) => println!("Got an input event: {:?}", ev),
+        };
+
+        Trans::None
+    }
+
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
         self.dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
 
@@ -199,7 +216,7 @@ impl SimpleState for MainGameState {
             .build();
     }
 
-    fn update(&mut self, data: &mut StateData<'_, GameData>) -> SimpleTrans {
+    fn update(&mut self, data: StateData<'_, GameData<'a, 'a>>) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         self.dispatcher.dispatch(&mut data.world.res);
 
         let input_event_channel = data
@@ -229,7 +246,7 @@ impl SimpleState for MainGameState {
         Trans::None
     }
 
-    fn on_resume(&mut self, data: StateData<'_, GameData>) {
+    fn on_resume(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         // We re-register the ReaderId when switching back to the state to avoid reading events
         // that happened when the state was inactive.
         self.input_event_reader_id = Some(
@@ -239,7 +256,7 @@ impl SimpleState for MainGameState {
         );
     }
 
-    fn shadow_update(&mut self, data: StateData<'_, GameData>) {
+    fn shadow_update(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         self.ui_dispatcher.dispatch(&mut data.world.res);
     }
 }

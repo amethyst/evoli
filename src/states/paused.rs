@@ -4,6 +4,11 @@ use amethyst::{
     shrev::{EventChannel, ReaderId},
 };
 
+use crate::states::{
+    CustomStateEvent,
+    CustomStateEventReader,
+};
+
 pub struct PausedState {
     input_event_reader_id: Option<ReaderId<InputEvent<String>>>,
 }
@@ -16,8 +21,8 @@ impl Default for PausedState {
     }
 }
 
-impl SimpleState for PausedState {
-    fn on_start(&mut self, data: StateData<'_, GameData>) {
+impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for PausedState {
+    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
         self.input_event_reader_id = Some(
             data.world
                 .write_resource::<EventChannel<InputEvent<String>>>()
@@ -35,7 +40,7 @@ impl SimpleState for PausedState {
         );
     }
 
-    fn update(&mut self, data: &mut StateData<'_, GameData>) -> SimpleTrans {
+    fn update(&mut self, data: StateData<'_, GameData<'a, 'a>>) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         let input_event_channel = data
             .world
             .read_resource::<EventChannel<InputEvent<String>>>();
