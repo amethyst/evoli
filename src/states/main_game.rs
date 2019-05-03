@@ -21,73 +21,79 @@ use crate::states::paused::PausedState;
 use crate::systems::*;
 
 pub struct MainGameState {
-    dispatcher: Dispatcher<'static, 'static>,
+    dispatcher: Option<Box<Dispatcher<'static, 'static>>>,
 }
 
 impl Default for MainGameState {
-    fn default() -> Self {
+    fn default() -> MainGameState {
         MainGameState {
-            dispatcher: DispatcherBuilder::new()
-                .with(decision::DecisionSystem, "decision_system", &[])
-                .with(wander::WanderSystem, "wander_system", &["decision_system"])
-                .with(
-                    movement::MovementSystem,
-                    "movement_system",
-                    &["wander_system"],
-                )
-                .with(
-                    collision::CollisionSystem,
-                    "collision_system",
-                    &["movement_system"],
-                )
-                .with(
-                    collision::EnforceBoundsSystem,
-                    "enforce_bounds_system",
-                    &["movement_system"],
-                )
-                .with(
-                    collision::DebugCollisionEventSystem::default(),
-                    "debug_collision_event_system",
-                    &["collision_system"],
-                )
-                .with(collision::DebugColliderSystem, "debug_collider_system", &[])
-                .with(
-                    debug::DebugSystem,
-                    "debug_system",
-                    &["collision_system", "enforce_bounds_system"],
-                )
-                .with(digestion::DigestionSystem, "digestion_system", &[])
-                .with(
-                    digestion::StarvationSystem,
-                    "starvation_system",
-                    &["digestion_system"],
-                )
-                .with(
-                    digestion::DebugFullnessSystem,
-                    "debug_fullness_system",
-                    &["digestion_system"],
-                )
-                .with(combat::CooldownSystem, "cooldown_system", &[])
-                .with(
-                    combat::FindAttackSystem::default(),
-                    "find_attack_system",
-                    &["cooldown_system"],
-                )
-                .with(
-                    combat::PerformDefaultAttackSystem::default(),
-                    "perform_default_attack_system",
-                    &["find_attack_system"],
-                )
-                .with(
-                    health::DeathByHealthSystem,
-                    "death_by_health_system",
-                    &["perform_default_attack_system"],
-                )
-                .with(health::DebugHealthSystem, "debug_health_system", &[])
-                .with(time_control::TimeControlSystem::default(), "time_control", &[])
-                .build(),
+            dispatcher: None,
         }
     }
+}
+
+fn make_dispatcher(world: &mut World) -> Dispatcher<'static, 'static> {
+    let entity = world.create_entity().build();
+
+    DispatcherBuilder::new()
+        .with(decision::DecisionSystem, "decision_system", &[])
+        .with(wander::WanderSystem, "wander_system", &["decision_system"])
+        .with(
+            movement::MovementSystem,
+            "movement_system",
+            &["wander_system"],
+        )
+        .with(
+            collision::CollisionSystem,
+            "collision_system",
+            &["movement_system"],
+        )
+        .with(
+            collision::EnforceBoundsSystem,
+            "enforce_bounds_system",
+            &["movement_system"],
+        )
+        .with(
+            collision::DebugCollisionEventSystem::new(entity),
+            "debug_collision_event_system",
+            &["collision_system"],
+        )
+        .with(collision::DebugColliderSystem, "debug_collider_system", &[])
+        .with(
+            debug::DebugSystem,
+            "debug_system",
+            &["collision_system", "enforce_bounds_system"],
+        )
+        .with(digestion::DigestionSystem, "digestion_system", &[])
+        .with(
+            digestion::StarvationSystem,
+            "starvation_system",
+            &["digestion_system"],
+        )
+        .with(
+            digestion::DebugFullnessSystem,
+            "debug_fullness_system",
+            &["digestion_system"],
+        )
+        .with(combat::CooldownSystem, "cooldown_system", &[])
+        .with(
+            combat::FindAttackSystem::default(),
+            "find_attack_system",
+            &["cooldown_system"],
+        )
+        .with(
+            combat::PerformDefaultAttackSystem::default(),
+            "perform_default_attack_system",
+            &["find_attack_system"],
+        )
+        .with(
+            health::DeathByHealthSystem,
+            "death_by_health_system",
+            &["perform_default_attack_system"],
+        )
+        .with(health::DebugHealthSystem, "debug_health_system", &[])
+        .with(time_control::TimeControlSystem::default(), "time_control", &[])
+        .build()
 }
 
 impl SimpleState for MainGameState {
@@ -120,7 +126,11 @@ impl SimpleState for MainGameState {
     }
 
     fn on_start(&mut self, mut data: StateData<'_, GameData<'_, '_>>) {
-        self.dispatcher.setup(&mut data.world.res);
+        {
+            let mut dispatcher = make_dispatcher(&mut data.world);
+            dispatcher.setup(&mut data.world.res);
+            self.dispatcher = Some(Box::new(dispatcher));
+        }
 
         data.world.add_resource(DebugLinesParams {
             line_width: 1.0 / 20.0,
@@ -212,7 +222,9 @@ impl SimpleState for MainGameState {
     }
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
-        self.dispatcher.dispatch(&mut data.world.res);
+        if let Some(ref mut d) = self.dispatcher {
+            d.dispatch(&mut data.world.res)
+        }
         Trans::None
     }
 }

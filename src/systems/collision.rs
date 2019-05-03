@@ -1,6 +1,6 @@
 use amethyst::renderer::DebugLines;
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::{core::Transform, ecs::*};
+use amethyst::{core::Transform, ecs::*, ecs::world::Generation};
 use log::info;
 use std::f32;
 
@@ -108,30 +108,42 @@ impl<'s> System<'s> for DebugColliderSystem {
     }
 }
 
-#[derive(Default)]
 pub struct DebugCollisionEventSystem {
-    event_reader: Option<ReaderId<CollisionEvent>>,
+    entity: Entity
+}
+
+impl DebugCollisionEventSystem {
+    pub fn new(entity: Entity) -> DebugCollisionEventSystem {
+        DebugCollisionEventSystem {
+            entity
+        }
+    }
+}
+
+pub struct MyReader(ReaderId<CollisionEvent>);
+impl Component for MyReader {
+    type Storage = HashMapStorage<Self>;
 }
 
 impl<'s> System<'s> for DebugCollisionEventSystem {
-    type SystemData = (Write<'s, EventChannel<CollisionEvent>>,);
+    type SystemData = (
+        Write<'s, EventChannel<CollisionEvent>>,
+        WriteStorage<'s, MyReader>,
+    );
 
-    fn run(&mut self, (collision_events,): Self::SystemData) {
-        let event_reader = self
-            .event_reader
-            .as_mut()
-            .expect("`DebugCollisionEventSystem::setup` was not called before `DebugCollisionEventSystem::run`");
+    fn run(&mut self, (mut collision_events, mut readers): Self::SystemData) {
+        let mut reader_opt = readers.get_mut(self.entity);
+        let mut reader = if reader_opt.is_none() {
+            readers.insert(self.entity, MyReader(collision_events.register_reader()))
+                .expect("unreachable");
+            readers.get_mut(self.entity).unwrap()
+        }
+        else {
+            reader_opt.unwrap()
+        };
 
-        for event in collision_events.read(event_reader) {
+        for event in collision_events.read(&mut reader.0) {
             info!("Received collision event {:?}", event)
         }
-    }
-
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-        self.event_reader = Some(
-            res.fetch_mut::<EventChannel<CollisionEvent>>()
-                .register_reader(),
-        );
     }
 }
