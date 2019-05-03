@@ -1,4 +1,3 @@
-
 #[macro_use]
 extern crate amethyst_derive;
 
@@ -28,11 +27,7 @@ use crate::components::creatures::{
 use crate::components::digestion::{Digestion, Fullness};
 use crate::components::health::Health;
 use crate::resources::audio::Music;
-use crate::states::{
-    CustomStateEvent,
-    CustomStateEventReader,
-    main_game::MainGameState,
-};
+use crate::states::{main_game::MainGameState, CustomStateEvent, CustomStateEventReader};
 
 amethyst_inspector::inspector![
     Named,
@@ -106,7 +101,11 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?;
 
-    let mut game = CoreApplication::<GameData, CustomStateEvent, CustomStateEventReader>::new(resources, MainGameState::default(), game_data)?;
+    let mut game = CoreApplication::<GameData, CustomStateEvent, CustomStateEventReader>::new(
+        resources,
+        MainGameState::default(),
+        game_data,
+    )?;
     game.run();
     Ok(())
 }

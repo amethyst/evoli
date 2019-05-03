@@ -1,15 +1,12 @@
 use amethyst;
 use amethyst::assets::{PrefabLoader, RonFormat};
 use amethyst::{
-    core::{
-        transform::Transform,
-        Time,
-    },
-    State,
+    core::{transform::Transform, Time},
     ecs::*,
-    input::{InputEvent},
+    input::InputEvent,
     prelude::*,
     renderer::*,
+    State,
 };
 use rand::{thread_rng, Rng};
 
@@ -17,10 +14,7 @@ use crate::components::combat::create_factions;
 use crate::components::creatures;
 use crate::resources::audio::initialise_audio;
 use crate::resources::world_bounds::*;
-use crate::states::{
-    paused::PausedState,
-    CustomStateEvent,
-};
+use crate::states::{paused::PausedState, CustomStateEvent};
 use crate::systems::*;
 
 pub struct MainGameState {
@@ -101,30 +95,30 @@ impl Default for MainGameState {
 }
 
 impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
-    fn handle_event(&mut self, data: StateData<GameData<'a, 'a>>, event: CustomStateEvent) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn handle_event(
+        &mut self,
+        data: StateData<GameData<'a, 'a>>,
+        event: CustomStateEvent,
+    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         match event {
             CustomStateEvent::Window(_) => (), // Events related to the window and inputs.
-            CustomStateEvent::Ui(_) => (), // Ui event. Button presses, mouse hover, etc...
-            CustomStateEvent::Input(input_event) => {
-                match input_event {
-                    InputEvent::ActionPressed(action_name) => {
-                        match action_name.as_ref() {
-                            "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
-                            "SpeedUp" => {
-                                let mut time_resource = data.world.write_resource::<Time>();
-                                let current_time_scale = time_resource.time_scale();
-                                time_resource.set_time_scale(2.0 * current_time_scale);
-                            }
-                            "SlowDown" => {
-                                let mut time_resource = data.world.write_resource::<Time>();
-                                let current_time_scale = time_resource.time_scale();
-                                time_resource.set_time_scale(0.5 * current_time_scale);
-                            }
-                            _ => (),
-                        }
+            CustomStateEvent::Ui(_) => (),     // Ui event. Button presses, mouse hover, etc...
+            CustomStateEvent::Input(input_event) => match input_event {
+                InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
+                    "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
+                    "SpeedUp" => {
+                        let mut time_resource = data.world.write_resource::<Time>();
+                        let current_time_scale = time_resource.time_scale();
+                        time_resource.set_time_scale(2.0 * current_time_scale);
+                    }
+                    "SlowDown" => {
+                        let mut time_resource = data.world.write_resource::<Time>();
+                        let current_time_scale = time_resource.time_scale();
+                        time_resource.set_time_scale(0.5 * current_time_scale);
                     }
                     _ => (),
-                }
+                },
+                _ => (),
             },
         };
         Trans::None
@@ -223,7 +217,10 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             .build();
     }
 
-    fn update(&mut self, data: StateData<'_, GameData<'a, 'a>>) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn update(
+        &mut self,
+        data: StateData<'_, GameData<'a, 'a>>,
+    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         self.dispatcher.dispatch(&mut data.world.res);
         data.data.update(&data.world);
         Trans::None

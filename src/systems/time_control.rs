@@ -78,16 +78,15 @@ impl<'s> System<'s> for TimeControlSystem {
     }
 
     fn run(&mut self, (finder, ui_events, mut ui_texts, mut input_events): Self::SystemData) {
-
         for event in ui_events.read(self.ui_reader_id.as_mut().unwrap()) {
-
             let mut handle_button = |button_name: &str, action_name: &str| {
                 if let Some(button_entity) = finder.find(button_name) {
                     if button_entity == event.target {
                         match event.event_type {
                             UiEventType::Click => {
-                                input_events
-                                    .single_write(InputEvent::ActionPressed(action_name.to_string()));
+                                input_events.single_write(InputEvent::ActionPressed(
+                                    action_name.to_string(),
+                                ));
                             }
                             _ => (),
                         }

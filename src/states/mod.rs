@@ -3,11 +3,11 @@ pub mod paused;
 
 use amethyst::{
     core::EventReader,
-    ui::UiEvent,
+    ecs::{Read, Resources, SystemData},
     input::InputEvent,
     renderer::Event,
-    ecs::{Read, Resources, SystemData},
     shrev::{EventChannel, ReaderId},
+    ui::UiEvent,
 };
 
 #[derive(Clone, EventReader)]
