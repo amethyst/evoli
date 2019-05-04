@@ -6,21 +6,15 @@ use amethyst::{
     input::InputEvent,
     prelude::*,
     renderer::*,
-    State,
     shrev::EventChannel,
+    State,
 };
 use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{creatures, creatures::CreatureType},
-    resources::{audio::initialise_audio, prefabs::{
-        CreaturePrefabs,
-        initialize_prefabs,
-    }, world_bounds::WorldBounds},
-    states::{
-        paused::PausedState,
-        CustomStateEvent
-    },
+    components::creatures::CreatureType,
+    resources::{audio::initialise_audio, prefabs::initialize_prefabs, world_bounds::WorldBounds},
+    states::{paused::PausedState, CustomStateEvent},
     systems::*,
 };
 use std::f32::consts::PI;

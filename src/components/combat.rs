@@ -1,9 +1,7 @@
 use amethyst::{
     assets::{PrefabData, PrefabError, ProgressCounter},
     derive::PrefabData,
-    ecs::{
-        Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage, WriteStorage,
-    },
+    ecs::{Component, DenseVecStorage, Entity, ReadStorage, VecStorage, WriteStorage},
 };
 use amethyst_imgui::imgui;
 use amethyst_inspector::Inspect;
@@ -146,25 +144,6 @@ impl<'a> amethyst_inspector::Inspect<'a> for HasFaction {
         ui.separator();
     }
 }
-
-///
-///
-///
-// Store the faction entities this component's owner is hostile towards
-#[derive(Default, Debug, Clone)]
-pub struct FactionEnemies {
-    pub enemies: Vec<Entity>,
-}
-
-impl Component for FactionEnemies {
-    type Storage = HashMapStorage<Self>;
-}
-
-//impl FactionEnemies {
-//    pub fn is_enemy(&self, other: &Entity) -> bool {
-//        self.enemies.contains(other)
-//    }
-//}
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[serde(default)]
