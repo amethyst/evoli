@@ -31,22 +31,15 @@ impl<'s> System<'s> for DecisionSystem {
             .join()
         {
             let mut shortest: Option<Vector3<f32>> = None;
-
+            let mut min_sq_distance = 5.0f32.powi(2);
             for (other_transform, _entity, _) in (&transforms, &entities, &herbivore_tag).join() {
                 let position = transform.translation();
                 let other_position = other_transform.translation();
                 let difference = other_position - position;
-                if difference.magnitude_squared() < 5.0_f32.powi(2) {
-                    shortest = match shortest {
-                        Some(vector) => {
-                            if difference.magnitude_squared() < vector.magnitude_squared() {
-                                Some(difference)
-                            } else {
-                                Some(vector)
-                            }
-                        }
-                        None => Some(difference),
-                    }
+                let sq_distance = difference.magnitude_squared();
+                if sq_distance < min_sq_distance {
+                    min_sq_distance = sq_distance;
+                    shortest = Some(difference);
                 }
             }
 
