@@ -1,7 +1,13 @@
 use amethyst::{
+    core::timing::Time,
     core::transform::Transform,
     ecs::*,
     shrev::{EventChannel, ReaderId},
+};
+
+use rand::{
+    distributions::{Distribution, Standard},
+    thread_rng, Rng, RngCore,
 };
 
 use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
@@ -10,6 +16,16 @@ use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePre
 pub struct CreatureSpawnEvent {
     pub creature_type: CreatureType,
     pub position: (f32, f32),
+}
+
+impl Distribution<CreatureType> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> CreatureType {
+        match rng.gen_range(0, 3) {
+            0 => CreatureType::Carnivore,
+            1 => CreatureType::Herbivore,
+            _ => CreatureType::Plant,
+        }
+    }
 }
 
 #[derive(Default)]
@@ -49,6 +65,33 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
                 }
                 None => (),
             }
+        }
+    }
+}
+
+// For debugging purposes this system sends spawn events regularly
+#[derive(Default)]
+pub struct DebugSpawnTriggerSystem {
+    timer_to_next_spawn: f32,
+}
+
+impl<'s> System<'s> for DebugSpawnTriggerSystem {
+    type SystemData = (Write<'s, EventChannel<CreatureSpawnEvent>>, Read<'s, Time>);
+
+    fn run(&mut self, (mut spawn_events, time): Self::SystemData) {
+        let delta_seconds = time.delta_seconds();
+        self.timer_to_next_spawn -= delta_seconds;
+        if self.timer_to_next_spawn <= 0.0 {
+            self.timer_to_next_spawn = 2.0;
+            let mut rng = thread_rng();
+            let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let creature_type: CreatureType = rand::random();
+
+            spawn_events.single_write(CreatureSpawnEvent {
+                creature_type: creature_type,
+                position: (x, y),
+            });
         }
     }
 }
