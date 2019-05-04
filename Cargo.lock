@@ -1055,6 +1055,7 @@ dependencies = [
  "amethyst_test 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
  "smart-default 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

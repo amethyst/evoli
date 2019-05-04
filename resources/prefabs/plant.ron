@@ -9,6 +9,13 @@ Prefab (
                         albedo: File("assets/simply_plant.png", Png, (channel: Srgb),),
                     ),
                 ),
+                combat: (
+                    health: (
+                        max_health: 20.0,
+                        value: 20.0,
+                    ),
+                   faction: Plant,
+                ),
             ),
         ),
     ],

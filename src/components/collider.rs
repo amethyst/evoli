@@ -1,5 +1,12 @@
-use amethyst::ecs::{Component, DenseVecStorage};
+use amethyst::{
+    assets::{ PrefabData, PrefabError},
+    ecs::{Component, DenseVecStorage, WriteStorage, Entity},
+    derive::PrefabData,
+};
+use serde::{Deserialize, Serialize};
 
+#[derive(Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
 pub struct Circle {
     pub radius: f32,
 }

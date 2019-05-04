@@ -10,12 +10,15 @@ use amethyst::{
 };
 use rand::{thread_rng, Rng};
 
-use crate::components::combat::create_factions;
-use crate::components::creatures;
-use crate::resources::audio::initialise_audio;
-use crate::resources::world_bounds::*;
-use crate::states::{paused::PausedState, CustomStateEvent};
-use crate::systems::*;
+use crate::{
+    components::{combat::create_factions, creatures},
+    resources::{audio::initialise_audio, world_bounds::WorldBounds},
+    states::{
+        paused::PausedState,
+        CustomStateEvent
+    },
+    systems::*,
+};
 
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
@@ -89,6 +92,11 @@ impl Default for MainGameState {
                     "time_control",
                     &[],
                 )
+                .with(
+                    spawner::CreatureSpawnerSystem::default(),
+                    "creature_spawner",
+                    &[],
+                )
                 .build(),
         }
     }
@@ -141,6 +149,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         time_control::create_time_control_ui(&mut data.world);
 
         let (plants, herbivores, carnivores) = create_factions(data.world);
+
+        creatures::initialize_prefabs(&mut data.world);
 
         let carnivore_sprite =
             data.world

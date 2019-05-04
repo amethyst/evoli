@@ -9,10 +9,38 @@ Prefab (
                         albedo: File("assets/herbivore.png", Png, (channel: Srgb),),
                     ),
                 ),
-                transform: (
-                    rotation: (1, 0, 0, 0),
-                    scale: (0.5, 0.5, -0.5),
-                    translation: (0.0, 0.0, 0.02),
+                movement: (
+                    velocity: [0.0, 0.0, 0.0],
+                    max_movement_speed: 1.75,
+                ),
+                wander: (
+                    angle: 0.0,
+                    radius: 1.0,
+                ),
+                collider: (
+                    radius: 0.45,
+                ),
+                digestion: (
+                    digestion: (
+                        nutrition_burn_rate: 1.0,
+                    ),
+                    fullness: (
+                        max: 100.0,
+                        value: 100.0,
+                    ),
+                ),
+                combat: (
+                    health: (
+                        max_health: 100.0,
+                        value: 100.0,
+                    ),
+                    speed: (
+                        attacks_per_second: 1.0,
+                    ),
+                    damage: (
+                        damage: 20.0,
+                   ),
+                   faction: Herbivore,
                 ),
             ),
         ),

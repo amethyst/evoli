@@ -25,7 +25,7 @@ use crate::components::creatures::{
     self, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
 };
 use crate::components::digestion::{Digestion, Fullness};
-use crate::components::health::Health;
+use crate::components::combat::Health;
 use crate::resources::audio::Music;
 use crate::states::{main_game::MainGameState, CustomStateEvent, CustomStateEventReader};
 

@@ -5,5 +5,6 @@ pub mod decision;
 pub mod digestion;
 pub mod health;
 pub mod movement;
+pub mod spawner;
 pub mod time_control;
 pub mod wander;

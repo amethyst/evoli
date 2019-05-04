@@ -2,7 +2,7 @@ use amethyst::renderer::*;
 use amethyst::{core::Transform, ecs::*};
 use std::f32;
 
-use crate::components::health::Health;
+use crate::components::combat::Health;
 
 pub struct DeathByHealthSystem;
 
