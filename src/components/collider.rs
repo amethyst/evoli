@@ -15,8 +15,8 @@ impl Component for Circle {
     type Storage = DenseVecStorage<Self>;
 }
 
-impl Circle {
-    pub fn new(radius: f32) -> Circle {
-        Circle { radius }
-    }
-}
+//impl Circle {
+//    pub fn new(radius: f32) -> Circle {
+//        Circle { radius }
+//    }
+//}

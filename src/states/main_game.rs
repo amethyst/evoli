@@ -7,18 +7,23 @@ use amethyst::{
     prelude::*,
     renderer::*,
     State,
+    shrev::EventChannel,
 };
 use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{combat::create_factions, creatures, creatures::CreatureType},
-    resources::{audio::initialise_audio, prefabs::CreaturePrefabs, world_bounds::WorldBounds},
+    components::{creatures, creatures::CreatureType},
+    resources::{audio::initialise_audio, prefabs::{
+        CreaturePrefabs,
+        initialize_prefabs,
+    }, world_bounds::WorldBounds},
     states::{
         paused::PausedState,
         CustomStateEvent
     },
     systems::*,
 };
+use std::f32::consts::PI;
 
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
@@ -152,27 +157,33 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
         initialise_audio(data.world);
         time_control::create_time_control_ui(&mut data.world);
-
-        let (plants, _herbivores, _carnivores) = create_factions(data.world);
-
-        creatures::initialize_prefabs(&mut data.world);
+        initialize_prefabs(&mut data.world);
 
         // Add some plants
-        let plant_sprite = data
-            .world
-            .read_resource::<CreaturePrefabs>()
-            .get_prefab(&CreatureType::Plant)
-            .unwrap()
-            .clone();
         let (left, right, bottom, top) = {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
         };
-        let mut rng = thread_rng();
-        for _ in 0..10 {
-            let x = rng.gen_range(left, right);
-            let y = rng.gen_range(bottom, top);
-            creatures::create_plant(data.world, x, y, &plant_sprite, plants);
+
+        {
+            let mut spawn_events = data
+                .world
+                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+            let mut rng = thread_rng();
+            for _ in 0..25 {
+                let x = rng.gen_range(left, right);
+                let y = rng.gen_range(bottom, top);
+                let scale = rng.gen_range(0.8f32, 1.2f32);
+                let rotation = rng.gen_range(0.0f32, PI);
+                let mut transform = Transform::default();
+                transform.set_xyz(x, y, 0.0);
+                transform.set_scale(scale, scale, 1.0);
+                transform.set_rotation_euler(0.0, 0.0, rotation);
+                spawn_events.single_write(spawner::CreatureSpawnEvent {
+                    creature_type: CreatureType::Plant,
+                    transform,
+                });
+            }
         }
 
         // Setup camera

@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use amethyst::assets::{Handle, Prefab};
+use amethyst::{
+    assets::{Handle, Prefab, PrefabLoader, RonFormat},
+    ecs::World,
+};
 
 use crate::components::creatures::{CreaturePrefabData, CreatureType};
 
@@ -24,4 +27,26 @@ impl CreaturePrefabs {
     ) -> Option<&Handle<Prefab<CreaturePrefabData>>> {
         self.prefabs.get(creature_type)
     }
+}
+
+// Here we load all prefabs for the different creatures in the game.
+// These prefabs are then stored in a resource of type CreaturePrefabs that is used by the spawner system.
+pub fn initialize_prefabs(world: &mut World) {
+    let mut creature_prefabs = CreaturePrefabs::default();
+    let carnivore_prefab = world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
+        loader.load("prefabs/carnivore.ron", RonFormat, (), ())
+    });
+    creature_prefabs.insert(CreatureType::Carnivore, carnivore_prefab);
+
+    let herbivore_prefab = world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
+        loader.load("prefabs/herbivore.ron", RonFormat, (), ())
+    });
+    creature_prefabs.insert(CreatureType::Herbivore, herbivore_prefab);
+
+    let plant_prefab = world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
+        loader.load("prefabs/plant.ron", RonFormat, (), ())
+    });
+    creature_prefabs.insert(CreatureType::Plant, plant_prefab);
+
+    world.add_resource(creature_prefabs);
 }

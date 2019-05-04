@@ -1,21 +1,16 @@
 use amethyst::{
-    assets::{
-        AssetLoaderSystemData, Handle, Prefab, PrefabData, PrefabError, PrefabLoader,
-        ProgressCounter, RonFormat,
-    },
-    core::{nalgebra::Vector3, transform::Transform, Named},
+    assets::{PrefabData, PrefabError, ProgressCounter},
+    core::{nalgebra::Vector3, Named},
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, NullStorage, WriteStorage},
-    prelude::*,
-    renderer::{GraphicsPrefab, Mesh, ObjFormat, PosNormTex, PosTex, Shape, TextureFormat},
+    renderer::{GraphicsPrefab, ObjFormat, PosNormTex, TextureFormat},
 };
 use amethyst_inspector::Inspect;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    components::{collider::Circle, combat::CombatPrefabData, digestion::DigestionPrefabData},
-    resources::prefabs::CreaturePrefabs,
+use crate::components::{
+    collider::Circle, combat::CombatPrefabData, digestion::DigestionPrefabData,
 };
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
@@ -97,6 +92,10 @@ impl Wander {
     }
 }
 
+// This is the main prefab data for creatures.
+// It defines all the components that a creature could have.
+// In the prefab, it is not necessary to define all of them (due to Option).
+// Only define the ones you want to add to your entity.
 #[derive(Default, Deserialize, Serialize, PrefabData)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
@@ -115,51 +114,4 @@ pub struct CreaturePrefabData {
     herbivore_tag: Option<HerbivoreTag>,
     plant_tag: Option<PlantTag>,
     intelligence_tag: Option<IntelligenceTag>,
-}
-
-pub fn initialize_prefabs(world: &mut World) {
-    let mut creature_prefabs = CreaturePrefabs::default();
-    let carnivore_prefab = world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
-        loader.load("prefabs/carnivore.ron", RonFormat, (), ())
-    });
-    creature_prefabs.insert(CreatureType::Carnivore, carnivore_prefab);
-
-    let herbivore_prefab = world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
-        loader.load("prefabs/herbivore.ron", RonFormat, (), ())
-    });
-    creature_prefabs.insert(CreatureType::Herbivore, herbivore_prefab);
-
-    let plant_prefab = world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
-        loader.load("prefabs/plant.ron", RonFormat, (), ())
-    });
-    creature_prefabs.insert(CreatureType::Plant, plant_prefab);
-
-    world.add_resource(creature_prefabs);
-}
-
-pub fn create_plant(
-    world: &mut World,
-    x: f32,
-    y: f32,
-    handle: &Handle<Prefab<CreaturePrefabData>>,
-    _faction: Entity,
-) {
-    let mut transform = Transform::default();
-    transform.set_xyz(x, y, 0.0);
-
-    let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
-        loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
-    });
-
-    world
-        .create_entity()
-        .named("Plant")
-        .with(PlantTag)
-        .with(Circle::new(0.8))
-        //        .with(Health::new(20.0))
-        //        .with(combat::HasFaction::new(faction))
-        .with(mesh.clone())
-        .with(handle.clone())
-        .with(transform)
-        .build();
 }

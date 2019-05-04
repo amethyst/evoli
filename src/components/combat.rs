@@ -1,11 +1,9 @@
 use amethyst::{
     assets::{PrefabData, PrefabError, ProgressCounter},
-    core::Named,
     derive::PrefabData,
     ecs::{
         Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage, WriteStorage,
     },
-    prelude::*,
 };
 use amethyst_imgui::imgui;
 use amethyst_inspector::Inspect;
@@ -167,19 +165,6 @@ impl Component for FactionEnemies {
 //        self.enemies.contains(other)
 //    }
 //}
-
-///
-///
-///
-pub fn create_factions(world: &mut World) -> (Entity, Entity, Entity) {
-    let plants = world.create_entity().with(Named::new("Plants")).build();
-
-    let herbivores = world.create_entity().with(Named::new("Herbivores")).build();
-
-    let carnivores = world.create_entity().with(Named::new("Carnivores")).build();
-
-    return (plants, herbivores, carnivores);
-}
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[serde(default)]
