@@ -92,14 +92,14 @@ impl Default for MainGameState {
                     &[],
                 )
                 .with(
-                    spawner::CreatureSpawnerSystem::default(),
-                    "creature_spawner",
-                    &[],
-                )
-                .with(
                     spawner::DebugSpawnTriggerSystem::default(),
                     "debug_spawn_trigger",
                     &[],
+                )
+                .with(
+                    spawner::CreatureSpawnerSystem::default(),
+                    "creature_spawner",
+                    &["debug_spawn_trigger"],
                 )
                 .build(),
         }
