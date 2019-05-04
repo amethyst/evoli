@@ -1,11 +1,35 @@
-use amethyst::core::Named;
-use amethyst::ecs::{Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage};
-use amethyst::prelude::*;
+use amethyst::{
+    assets::{PrefabData, PrefabError, ProgressCounter},
+    derive::PrefabData,
+    ecs::{Component, DenseVecStorage, Entity, ReadStorage, VecStorage, WriteStorage},
+};
 use amethyst_imgui::imgui;
 use amethyst_inspector::Inspect;
+use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-#[derive(Clone, Default, Inspect)]
+#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
+pub struct Health {
+    pub max_health: f32,
+    pub value: f32,
+}
+
+impl Component for Health {
+    type Storage = DenseVecStorage<Self>;
+}
+
+impl Health {
+    pub fn new(max_health: f32) -> Health {
+        Health {
+            max_health,
+            value: max_health,
+        }
+    }
+}
+
+#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
 pub struct Damage {
     // Points subtracted from target's health per hit
     pub damage: f32,
@@ -24,7 +48,8 @@ impl Damage {
 ///
 ///
 ///
-#[derive(Clone, Default, Inspect)]
+#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
 pub struct Speed {
     pub attacks_per_second: f32,
 }
@@ -43,7 +68,8 @@ impl Speed {
 ///
 ///
 // As long as the cooldown component is attached to an entity, that entity won't be able to attack.
-#[derive(Debug, Clone, PartialEq, Eq, Default, Inspect)]
+#[derive(Default, Debug, PartialEq, Eq, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
 pub struct Cooldown {
     pub time_left: Duration,
 }
@@ -58,12 +84,35 @@ impl Cooldown {
     }
 }
 
+#[derive(PartialEq, Eq, Debug, Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
+pub enum Faction {
+    Carnivore,
+    Herbivore,
+    Plant,
+}
+
+impl Component for Faction {
+    type Storage = VecStorage<Self>;
+}
+
+impl Faction {
+    pub fn is_enemy(&self, other: &Self) -> bool {
+        match self {
+            Faction::Carnivore => *other == Faction::Herbivore,
+            Faction::Herbivore => *other == Faction::Plant,
+            Faction::Plant => false,
+        }
+    }
+}
+
 ///
 ///
 ///
 // Indicate whether the entity is part of a faction. Factions are used to represent groups of
 // entities that attack each other, see `HasFaction`. A faction is an entity of its own and might
 // specify properties using components.
+#[derive(Debug, Clone)]
 pub struct HasFaction {
     pub faction: Entity,
 }
@@ -96,50 +145,12 @@ impl<'a> amethyst_inspector::Inspect<'a> for HasFaction {
     }
 }
 
-///
-///
-///
-#[derive(Default)]
-// Store the faction entities this component's owner is hostile towards
-pub struct FactionEnemies {
-    pub enemies: Vec<Entity>,
-}
-
-impl Component for FactionEnemies {
-    type Storage = HashMapStorage<Self>;
-}
-
-impl FactionEnemies {
-    pub fn is_enemy(&self, other: &Entity) -> bool {
-        self.enemies.contains(other)
-    }
-}
-
-///
-///
-///
-pub fn create_factions(world: &mut World) -> (Entity, Entity, Entity) {
-    let plants = world
-        .create_entity()
-        .with(Named::new("Plants"))
-        .with(FactionEnemies::default())
-        .build();
-
-    let herbivores = world
-        .create_entity()
-        .with(Named::new("Herbivores"))
-        .with(FactionEnemies {
-            enemies: vec![plants],
-        })
-        .build();
-
-    let carnivores = world
-        .create_entity()
-        .with(Named::new("Carnivores"))
-        .with(FactionEnemies {
-            enemies: vec![herbivores],
-        })
-        .build();
-
-    return (plants, herbivores, carnivores);
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
+#[serde(default)]
+#[serde(deny_unknown_fields)]
+pub struct CombatPrefabData {
+    health: Option<Health>,
+    speed: Option<Speed>,
+    damage: Option<Damage>,
+    faction: Option<Faction>,
 }
