@@ -3,6 +3,9 @@ Prefab (
     entities: [
         (
             data: (
+                name: (
+                    name: "Carnivore"
+                ),
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
@@ -11,7 +14,7 @@ Prefab (
                 ),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
-                    max_movement_speed: 1.75,
+                    max_movement_speed: 2.0,
                 ),
                 wander: (
                     angle: 0.0,
@@ -22,7 +25,7 @@ Prefab (
                 ),
                 digestion: (
                     digestion: (
-                        nutrition_burn_rate: 4.0,
+                        nutrition_burn_rate: 2.0,
                     ),
                     fullness: (
                         max: 100.0,
@@ -42,6 +45,8 @@ Prefab (
                    ),
                    faction: Carnivore,
                 ),
+                carnivore_tag: (),
+                intelligence_tag: (),
             ),
         ),
     ],

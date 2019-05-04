@@ -3,7 +3,7 @@ use amethyst::{
         AssetLoaderSystemData, Handle, Prefab, PrefabData, PrefabError, PrefabLoader,
         ProgressCounter, RonFormat,
     },
-    core::{nalgebra::Vector3, transform::Transform},
+    core::{nalgebra::Vector3, transform::Transform, Named},
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, NullStorage, WriteStorage},
     prelude::*,
@@ -25,25 +25,29 @@ pub enum CreatureType {
     Plant,
 }
 
-#[derive(Default, Inspect)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
+#[prefab(Component)]
 pub struct CarnivoreTag;
 impl Component for CarnivoreTag {
     type Storage = NullStorage<Self>;
 }
 
-#[derive(Default, Inspect)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
+#[prefab(Component)]
 pub struct HerbivoreTag;
 impl Component for HerbivoreTag {
     type Storage = NullStorage<Self>;
 }
 
-#[derive(Default, Inspect)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
+#[prefab(Component)]
 pub struct PlantTag;
 impl Component for PlantTag {
     type Storage = NullStorage<Self>;
 }
 
-#[derive(Default, Inspect)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
+#[prefab(Component)]
 pub struct IntelligenceTag;
 impl Component for IntelligenceTag {
     type Storage = NullStorage<Self>;
@@ -93,21 +97,24 @@ impl Wander {
     }
 }
 
-///
-///
-///
-//pub type CreaturePrefabData = BasicScenePrefab<Vec<PosNormTex>>;
-
 #[derive(Default, Deserialize, Serialize, PrefabData)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 pub struct CreaturePrefabData {
+    name: Option<Named>,
     graphics: Option<GraphicsPrefab<Vec<PosNormTex>, ObjFormat, TextureFormat>>,
     movement: Option<Movement>,
     wander: Option<Wander>,
     collider: Option<Circle>,
     digestion: Option<DigestionPrefabData>,
     combat: Option<CombatPrefabData>,
+
+    // Tags for carnivores and herbivores
+    // Should probably be reworked to avoid having too many fields here.
+    carnivore_tag: Option<CarnivoreTag>,
+    herbivore_tag: Option<HerbivoreTag>,
+    plant_tag: Option<PlantTag>,
+    intelligence_tag: Option<IntelligenceTag>,
 }
 
 pub fn initialize_prefabs(world: &mut World) {
@@ -128,57 +135,6 @@ pub fn initialize_prefabs(world: &mut World) {
     creature_prefabs.insert(CreatureType::Plant, plant_prefab);
 
     world.add_resource(creature_prefabs);
-}
-
-// TODO: Turn this into a generic `create` function
-pub fn create_carnivore(
-    world: &mut World,
-    x: f32,
-    y: f32,
-    handle: &Handle<Prefab<CreaturePrefabData>>,
-    _faction: Entity,
-) {
-    let mut transform = Transform::default();
-    transform.set_xyz(x, y, 1.0);
-    transform.set_scale(0.5, 0.5, 1.0);
-
-    let _mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
-        loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
-    });
-
-    world
-        .create_entity()
-        .named("Carnivore")
-        .with(CarnivoreTag)
-        .with(IntelligenceTag)
-        .with(handle.clone())
-        .with(transform)
-        .build();
-}
-
-pub fn create_herbivore(
-    world: &mut World,
-    x: f32,
-    y: f32,
-    handle: &Handle<Prefab<CreaturePrefabData>>,
-    _faction: Entity,
-) {
-    let mut transform = Transform::default();
-    transform.set_xyz(x, y, 1.0);
-    transform.set_scale(0.5, 0.5, 1.0);
-
-    let _mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
-        loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
-    });
-
-    world
-        .create_entity()
-        .named("Herbivore")
-        .with(HerbivoreTag)
-        .with(IntelligenceTag)
-        .with(handle.clone())
-        .with(transform)
-        .build();
 }
 
 pub fn create_plant(

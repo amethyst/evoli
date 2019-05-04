@@ -3,11 +3,17 @@ Prefab (
     entities: [
         (
             data: (
+                name: (
+                    name: "Plant"
+                ),
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
                         albedo: File("assets/simply_plant.png", Png, (channel: Srgb),),
                     ),
+                ),
+                collider: (
+                    radius: 0.8,
                 ),
                 combat: (
                     health: (
@@ -16,6 +22,7 @@ Prefab (
                     ),
                    faction: Plant,
                 ),
+                plant_tag: (),
             ),
         ),
     ],

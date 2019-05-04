@@ -3,6 +3,9 @@ Prefab (
     entities: [
         (
             data: (
+                name: (
+                    name: "Herbivore"
+                ),
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
@@ -42,6 +45,8 @@ Prefab (
                    ),
                    faction: Herbivore,
                 ),
+                herbivore_tag: (),
+                intelligence_tag: (),
             ),
         ),
     ],

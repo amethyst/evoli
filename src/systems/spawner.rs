@@ -10,12 +10,14 @@ use rand::{
     thread_rng, Rng, RngCore,
 };
 
+use std::f32::consts::PI;
+
 use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
 
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
     pub creature_type: CreatureType,
-    pub position: (f32, f32),
+    pub transform: Transform,
 }
 
 impl Distribution<CreatureType> for Standard {
@@ -51,16 +53,13 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
 
     fn run(&mut self, (entities, spawn_events, prefabs, lazy_update): Self::SystemData) {
         for event in spawn_events.read(self.spawn_reader_id.as_mut().unwrap()) {
-            let mut transform = Transform::default();
-            transform.set_xyz(event.position.0, event.position.1, 0.02);
-            transform.set_scale(0.5, 0.5, 1.0);
             let creature_prefab = prefabs.get_prefab(&event.creature_type);
             match creature_prefab {
                 Some(prefab) => {
                     lazy_update
                         .create_entity(&entities)
                         .with(prefab.clone())
-                        .with(transform)
+                        .with(event.transform.clone())
                         .build();
                 }
                 None => (),
@@ -82,15 +81,30 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
         let delta_seconds = time.delta_seconds();
         self.timer_to_next_spawn -= delta_seconds;
         if self.timer_to_next_spawn <= 0.0 {
-            self.timer_to_next_spawn = 2.0;
+            self.timer_to_next_spawn = 1.5;
             let mut rng = thread_rng();
             let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
             let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let mut transform = Transform::default();
+            transform.set_xyz(x, y, 0.02);
             let creature_type: CreatureType = rand::random();
 
+            match creature_type {
+                CreatureType::Carnivore | CreatureType::Herbivore => {
+                    transform.set_scale(0.5, 0.5, 1.0);
+                }
+                CreatureType::Plant => {
+                    let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
+                    let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
+                    transform.set_z(0.0);
+                    transform.set_scale(scale, scale, 1.0);
+                    transform.set_rotation_euler(0.0, 0.0, rotation);
+                }
+            }
+
             spawn_events.single_write(CreatureSpawnEvent {
-                creature_type: creature_type,
-                position: (x, y),
+                creature_type,
+                transform,
             });
         }
     }

@@ -1,5 +1,5 @@
 use amethyst;
-use amethyst::assets::{PrefabLoader, RonFormat};
+
 use amethyst::{
     core::{transform::Transform, Time},
     ecs::*,
@@ -11,8 +11,8 @@ use amethyst::{
 use rand::{thread_rng, Rng};
 
 use crate::{
-    components::{combat::create_factions, creatures},
-    resources::{audio::initialise_audio, world_bounds::WorldBounds},
+    components::{combat::create_factions, creatures, creatures::CreatureType},
+    resources::{audio::initialise_audio, prefabs::CreaturePrefabs, world_bounds::WorldBounds},
     states::{
         paused::PausedState,
         CustomStateEvent
@@ -153,60 +153,23 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         initialise_audio(data.world);
         time_control::create_time_control_ui(&mut data.world);
 
-        let (plants, herbivores, carnivores) = create_factions(data.world);
+        let (plants, _herbivores, _carnivores) = create_factions(data.world);
 
         creatures::initialize_prefabs(&mut data.world);
 
-        let carnivore_sprite =
-            data.world
-                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
-                    loader.load("prefabs/carnivore.ron", RonFormat, (), ())
-                });
-
-        let herbivore_sprite =
-            data.world
-                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
-                    loader.load("prefabs/herbivore.ron", RonFormat, (), ())
-                });
-
-        for i in 0..2 {
-            for j in 0..2 {
-                let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
-                creatures::create_carnivore(
-                    data.world,
-                    x - 5.0,
-                    y - 5.0,
-                    &carnivore_sprite,
-                    carnivores,
-                );
-            }
-        }
-
-        for i in 0..2 {
-            for j in 0..2 {
-                let (x, y) = (4.0 * i as f32, 4.0 * j as f32);
-                creatures::create_herbivore(
-                    data.world,
-                    x - 5.0,
-                    y - 5.0,
-                    &herbivore_sprite,
-                    herbivores,
-                );
-            }
-        }
-
         // Add some plants
-        let plant_sprite =
-            data.world
-                .exec(|loader: PrefabLoader<'_, creatures::CreaturePrefabData>| {
-                    loader.load("prefabs/plant.ron", RonFormat, (), ())
-                });
+        let plant_sprite = data
+            .world
+            .read_resource::<CreaturePrefabs>()
+            .get_prefab(&CreatureType::Plant)
+            .unwrap()
+            .clone();
         let (left, right, bottom, top) = {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
         };
         let mut rng = thread_rng();
-        for _ in 0..25 {
+        for _ in 0..10 {
             let x = rng.gen_range(left, right);
             let y = rng.gen_range(bottom, top);
             creatures::create_plant(data.world, x, y, &plant_sprite, plants);
