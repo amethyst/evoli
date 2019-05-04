@@ -1,9 +1,9 @@
-use amethyst_inspector::Inspect;
 use amethyst::{
-    assets::{ ProgressCounter,PrefabData, PrefabError},
-    ecs::{Component, DenseVecStorage, WriteStorage, Entity},
+    assets::{PrefabData, PrefabError, ProgressCounter},
     derive::PrefabData,
+    ecs::{Component, DenseVecStorage, Entity, WriteStorage},
 };
+use amethyst_inspector::Inspect;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]

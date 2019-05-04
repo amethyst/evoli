@@ -1,14 +1,16 @@
-use std::time::Duration;
-use amethyst_inspector::Inspect;
-use amethyst_imgui::imgui;
 use amethyst::{
-    prelude::*,
+    assets::{PrefabData, PrefabError, ProgressCounter},
     core::Named,
-    assets::{ ProgressCounter,PrefabData, PrefabError},
-    ecs::{Component, HashMapStorage, ReadStorage, VecStorage, DenseVecStorage, WriteStorage, Entity},
     derive::PrefabData,
+    ecs::{
+        Component, DenseVecStorage, Entity, HashMapStorage, ReadStorage, VecStorage, WriteStorage,
+    },
+    prelude::*,
 };
+use amethyst_imgui::imgui;
+use amethyst_inspector::Inspect;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 
 #[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
@@ -86,11 +88,12 @@ impl Cooldown {
     }
 }
 
-
 #[derive(PartialEq, Eq, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub enum Faction {
-    Carnivore, Herbivore, Plant
+    Carnivore,
+    Herbivore,
+    Plant,
 }
 
 impl Component for Faction {
@@ -169,24 +172,14 @@ impl FactionEnemies {
 ///
 ///
 pub fn create_factions(world: &mut World) -> (Entity, Entity, Entity) {
-    let plants = world
-        .create_entity()
-        .with(Named::new("Plants"))
-        .build();
+    let plants = world.create_entity().with(Named::new("Plants")).build();
 
-    let herbivores = world
-        .create_entity()
-        .with(Named::new("Herbivores"))
-        .build();
+    let herbivores = world.create_entity().with(Named::new("Herbivores")).build();
 
-    let carnivores = world
-        .create_entity()
-        .with(Named::new("Carnivores"))
-        .build();
+    let carnivores = world.create_entity().with(Named::new("Carnivores")).build();
 
     return (plants, herbivores, carnivores);
 }
-
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[serde(default)]

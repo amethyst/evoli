@@ -1,20 +1,18 @@
 use amethyst::{
     assets::{
-        AssetStorage, Handle, Prefab, PrefabData, PrefabLoader, PrefabLoaderSystem,
-        ProgressCounter, RonFormat, PrefabError, AssetLoaderSystemData,
+        AssetLoaderSystemData, AssetStorage, Handle, Prefab, PrefabData, PrefabError, PrefabLoader,
+        PrefabLoaderSystem, ProgressCounter, RonFormat,
     },
-    derive::PrefabData,
     core::{nalgebra::Vector3, transform::Transform},
+    derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, NullStorage, WriteStorage},
     prelude::*,
-    renderer::{ObjFormat, GraphicsPrefab, Mesh, TextureFormat, PosNormTex, PosTex, Shape},
+    renderer::{GraphicsPrefab, Mesh, ObjFormat, PosNormTex, PosTex, Shape, TextureFormat},
     utils::scene::BasicScenePrefab,
 };
 use amethyst_inspector::Inspect;
 
-use serde::{
-    Deserialize, Serialize,
-};
+use serde::{Deserialize, Serialize};
 
 use std::{
     cmp::{Eq, PartialEq},
@@ -143,7 +141,7 @@ pub fn create_carnivore(
 ) {
     let mut transform = Transform::default();
     transform.set_xyz(x, y, 1.0);
-    transform.set_scale(0.5,0.5, 1.0);
+    transform.set_scale(0.5, 0.5, 1.0);
 
     let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
         loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
@@ -168,7 +166,7 @@ pub fn create_herbivore(
 ) {
     let mut transform = Transform::default();
     transform.set_xyz(x, y, 1.0);
-    transform.set_scale(0.5,0.5, 1.0);
+    transform.set_scale(0.5, 0.5, 1.0);
 
     let mesh = world.exec(|loader: AssetLoaderSystemData<'_, Mesh>| {
         loader.load_from_data(Shape::Plane(None).generate::<Vec<PosTex>>(None), ())
@@ -203,8 +201,8 @@ pub fn create_plant(
         .named("Plant")
         .with(PlantTag)
         .with(Circle::new(0.8))
-//        .with(Health::new(20.0))
-//        .with(combat::HasFaction::new(faction))
+        //        .with(Health::new(20.0))
+        //        .with(combat::HasFaction::new(faction))
         .with(mesh.clone())
         .with(handle.clone())
         .with(transform)

@@ -1,9 +1,6 @@
 use amethyst::{
     assets::{AssetStorage, Loader},
-    core::{
-        timing::Time,
-        transform::Transform,
-    },
+    core::{timing::Time, transform::Transform},
     ecs::*,
     shrev::{EventChannel, ReaderId},
     ui::*,
@@ -11,11 +8,7 @@ use amethyst::{
 
 use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
 
-use rand::{
-    thread_rng,
-    Rng,
-    RngCore,
-};
+use rand::{thread_rng, Rng, RngCore};
 
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
@@ -38,7 +31,10 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
-        self.spawn_reader_id = Some(res.fetch_mut::<EventChannel<CreatureSpawnEvent>>().register_reader());
+        self.spawn_reader_id = Some(
+            res.fetch_mut::<EventChannel<CreatureSpawnEvent>>()
+                .register_reader(),
+        );
     }
 
     fn run(&mut self, (entities, spawn_events, prefabs, mut lazy_update): Self::SystemData) {

@@ -5,7 +5,7 @@ use amethyst::{
 };
 
 use crate::components::combat;
-use crate::components::combat::{Health, Cooldown, Damage, Speed};
+use crate::components::combat::{Cooldown, Damage, Health, Speed};
 use crate::systems::collision::CollisionEvent;
 #[cfg(test)]
 use amethyst::Error;
@@ -115,10 +115,7 @@ impl<'s> System<'s> for FindAttackSystem {
         ReadStorage<'s, combat::Faction>,
     );
 
-    fn run(
-        &mut self,
-        (collision_events, mut attack_events, factions): Self::SystemData,
-    ) {
+    fn run(&mut self, (collision_events, mut attack_events, factions): Self::SystemData) {
         let event_reader = self
             .event_reader
             .as_mut()
