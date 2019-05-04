@@ -1,4 +1,3 @@
-use std::boxed::Box;
 use std::collections::HashMap;
 
 use amethyst::assets::{Handle, Prefab};

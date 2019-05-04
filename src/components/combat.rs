@@ -162,11 +162,11 @@ impl Component for FactionEnemies {
     type Storage = HashMapStorage<Self>;
 }
 
-impl FactionEnemies {
-    pub fn is_enemy(&self, other: &Entity) -> bool {
-        self.enemies.contains(other)
-    }
-}
+//impl FactionEnemies {
+//    pub fn is_enemy(&self, other: &Entity) -> bool {
+//        self.enemies.contains(other)
+//    }
+//}
 
 ///
 ///
