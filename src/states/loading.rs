@@ -7,6 +7,7 @@ use crate::{
     states::{main_game::MainGameState, CustomStateEvent},
 };
 
+use crate::components::combat::load_factions;
 use amethyst::{
     assets::ProgressCounter,
     prelude::*,
@@ -27,6 +28,7 @@ impl Default for LoadingState {
 
 impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for LoadingState {
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
+        load_factions(data.world);
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
         data.world.add_resource(DebugLinesParams {

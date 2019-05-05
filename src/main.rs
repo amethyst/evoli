@@ -20,6 +20,7 @@ mod resources;
 mod states;
 mod systems;
 
+use crate::components::combat;
 use crate::components::combat::Health;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::creatures::{self, IntelligenceTag, Movement, Wander};
@@ -75,6 +76,11 @@ fn main() -> amethyst::Result<()> {
         .with_barrier()
         .with(
             PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
+            "",
+            &[],
+        )
+        .with(
+            PrefabLoaderSystem::<combat::FactionPrefabData>::default(),
             "",
             &[],
         )

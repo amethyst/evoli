@@ -11,7 +11,6 @@ use amethyst::{
 };
 use rand::{thread_rng, Rng};
 
-use crate::components::combat::create_factions;
 use crate::{
     resources::world_bounds::WorldBounds,
     states::{paused::PausedState, CustomStateEvent},
@@ -141,8 +140,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         self.ui_dispatcher.setup(&mut data.world.res);
 
         time_control::create_time_control_ui(&mut data.world);
-
-        create_factions(data.world);
 
         // Add some plants
         let (left, right, bottom, top) = {
