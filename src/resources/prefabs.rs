@@ -38,6 +38,8 @@ impl CreaturePrefabs {
 
 // Here we load all prefabs for the different creatures in the game.
 // These prefabs are then stored in a resource of type CreaturePrefabs that is used by the spawner system.
+// At initialization time, we put temporary keys for the prefabs since they're not loaded yet.
+// When their loading is finished, we read the name of the entity inside to change the keys. This is done in the update_prefabs function.
 pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     let mut creature_prefabs = CreaturePrefabs::default();
     let mut progress_counter = ProgressCounter::new();
@@ -65,6 +67,8 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     progress_counter
 }
 
+// Once the prefabs are loaded, this function is called to update the ekeys in the CreaturePrefabs struct.
+// We use the Named component of the entity to determine which key to use.
 pub fn update_prefabs(world: &mut World) {
     let updated_prefabs = {
         let creature_prefabs = world.read_resource::<CreaturePrefabs>();
