@@ -25,7 +25,7 @@ Prefab (
                 ),
                 digestion: (
                     digestion: (
-                        nutrition_burn_rate: 2.0,
+                        nutrition_burn_rate: 3.0,
                     ),
                     fullness: (
                         max: 100.0,

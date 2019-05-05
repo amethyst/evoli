@@ -1,6 +1,7 @@
 use amethyst;
 
 use amethyst::{
+    assets::ProgressCounter,
     core::{transform::Transform, Time},
     ecs::*,
     input::InputEvent,
@@ -13,7 +14,11 @@ use rand::{thread_rng, Rng};
 
 use crate::components::combat::create_factions;
 use crate::{
-    resources::{audio::initialise_audio, prefabs::initialize_prefabs, world_bounds::WorldBounds},
+    resources::{
+        audio::initialise_audio,
+        prefabs::{initialize_prefabs, update_prefabs},
+        world_bounds::WorldBounds,
+    },
     states::{paused::PausedState, CustomStateEvent},
     systems::*,
 };
@@ -22,6 +27,8 @@ use std::f32::consts::PI;
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
     ui_dispatcher: Dispatcher<'static, 'static>,
+
+    prefab_loading_progress: Option<ProgressCounter>,
 }
 
 impl Default for MainGameState {
@@ -84,13 +91,6 @@ impl Default for MainGameState {
                     &["perform_default_attack_system"],
                 )
                 .with(health::DebugHealthSystem, "debug_health_system", &[])
-                .build(),
-            ui_dispatcher: DispatcherBuilder::new()
-                .with(
-                    time_control::TimeControlSystem::default(),
-                    "time_control",
-                    &[],
-                )
                 .with(
                     spawner::DebugSpawnTriggerSystem::default(),
                     "debug_spawn_trigger",
@@ -102,6 +102,14 @@ impl Default for MainGameState {
                     &["debug_spawn_trigger"],
                 )
                 .build(),
+            ui_dispatcher: DispatcherBuilder::new()
+                .with(
+                    time_control::TimeControlSystem::default(),
+                    "time_control",
+                    &[],
+                )
+                .build(),
+            prefab_loading_progress: None,
         }
     }
 }
@@ -153,34 +161,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
         initialise_audio(data.world);
         time_control::create_time_control_ui(&mut data.world);
-        initialize_prefabs(&mut data.world);
-
-        // Add some plants
-        let (left, right, bottom, top) = {
-            let wb = data.world.read_resource::<WorldBounds>();
-            (wb.left, wb.right, wb.bottom, wb.top)
-        };
-
-        {
-            let mut spawn_events = data
-                .world
-                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
-            let mut rng = thread_rng();
-            for _ in 0..25 {
-                let x = rng.gen_range(left, right);
-                let y = rng.gen_range(bottom, top);
-                let scale = rng.gen_range(0.8f32, 1.2f32);
-                let rotation = rng.gen_range(0.0f32, PI);
-                let mut transform = Transform::default();
-                transform.set_xyz(x, y, 0.0);
-                transform.set_scale(scale, scale, 1.0);
-                transform.set_rotation_euler(0.0, 0.0, rotation);
-                spawn_events.single_write(spawner::CreatureSpawnEvent {
-                    creature_type: "Plant".to_string(),
-                    transform,
-                });
-            }
-        }
+        self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
 
         // Setup camera
         let (width, height) = {
@@ -204,10 +185,44 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
     fn update(
         &mut self,
-        data: StateData<'_, GameData<'a, 'a>>,
+        mut data: StateData<'_, GameData<'a, 'a>>,
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         self.dispatcher.dispatch(&mut data.world.res);
         data.data.update(&data.world);
+
+        if let Some(ref counter) = self.prefab_loading_progress.as_ref() {
+            if counter.is_complete() {
+                self.prefab_loading_progress = None;
+                update_prefabs(&mut data.world);
+
+                // Add some plants
+                let (left, right, bottom, top) = {
+                    let wb = data.world.read_resource::<WorldBounds>();
+                    (wb.left, wb.right, wb.bottom, wb.top)
+                };
+
+                {
+                    let mut spawn_events = data
+                        .world
+                        .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+                    let mut rng = thread_rng();
+                    for _ in 0..25 {
+                        let x = rng.gen_range(left, right);
+                        let y = rng.gen_range(bottom, top);
+                        let scale = rng.gen_range(0.8f32, 1.2f32);
+                        let rotation = rng.gen_range(0.0f32, PI);
+                        let mut transform = Transform::default();
+                        transform.set_xyz(x, y, 0.0);
+                        transform.set_scale(scale, scale, 1.0);
+                        transform.set_rotation_euler(0.0, 0.0, rotation);
+                        spawn_events.single_write(spawner::CreatureSpawnEvent {
+                            creature_type: "Plant".to_string(),
+                            transform,
+                        });
+                    }
+                }
+            }
+        }
         Trans::None
     }
 
