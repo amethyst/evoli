@@ -42,10 +42,11 @@ Prefab (
                     ),
                     damage: (
                         damage: 20.0,
-                   ),
-                   faction: Carnivore,
+                    ),
+                    has_faction: (
+                        faction: "Carnivores",
+                    ),
                 ),
-                carnivore_tag: (),
                 intelligence_tag: (),
             ),
         ),

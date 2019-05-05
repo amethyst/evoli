@@ -13,33 +13,7 @@ use crate::components::{
     collider::Circle, combat::CombatPrefabData, digestion::DigestionPrefabData,
 };
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
-pub enum CreatureType {
-    Carnivore,
-    Herbivore,
-    Plant,
-}
-
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
-#[prefab(Component)]
-pub struct CarnivoreTag;
-impl Component for CarnivoreTag {
-    type Storage = NullStorage<Self>;
-}
-
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
-#[prefab(Component)]
-pub struct HerbivoreTag;
-impl Component for HerbivoreTag {
-    type Storage = NullStorage<Self>;
-}
-
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
-#[prefab(Component)]
-pub struct PlantTag;
-impl Component for PlantTag {
-    type Storage = NullStorage<Self>;
-}
+pub type CreatureType = String;
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
 #[prefab(Component)]
@@ -107,11 +81,5 @@ pub struct CreaturePrefabData {
     collider: Option<Circle>,
     digestion: Option<DigestionPrefabData>,
     combat: Option<CombatPrefabData>,
-
-    // Tags for carnivores and herbivores
-    // Should probably be reworked to avoid having too many fields here.
-    carnivore_tag: Option<CarnivoreTag>,
-    herbivore_tag: Option<HerbivoreTag>,
-    plant_tag: Option<PlantTag>,
     intelligence_tag: Option<IntelligenceTag>,
 }

@@ -11,8 +11,8 @@ use amethyst::{
 };
 use rand::{thread_rng, Rng};
 
+use crate::components::combat::create_factions;
 use crate::{
-    components::creatures::CreatureType,
     resources::{audio::initialise_audio, prefabs::initialize_prefabs, world_bounds::WorldBounds},
     states::{paused::PausedState, CustomStateEvent},
     systems::*,
@@ -149,6 +149,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         data.world
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
 
+        create_factions(data.world);
+
         initialise_audio(data.world);
         time_control::create_time_control_ui(&mut data.world);
         initialize_prefabs(&mut data.world);
@@ -174,7 +176,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 transform.set_scale(scale, scale, 1.0);
                 transform.set_rotation_euler(0.0, 0.0, rotation);
                 spawn_events.single_write(spawner::CreatureSpawnEvent {
-                    creature_type: CreatureType::Plant,
+                    creature_type: "Plant".to_string(),
                     transform,
                 });
             }
