@@ -22,9 +22,7 @@ mod systems;
 
 use crate::components::combat::Health;
 use crate::components::combat::{Cooldown, Damage, Speed};
-use crate::components::creatures::{
-    self, IntelligenceTag, Movement, Wander,
-};
+use crate::components::creatures::{self, IntelligenceTag, Movement, Wander};
 use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::audio::Music;
 use crate::states::{main_game::MainGameState, CustomStateEvent, CustomStateEventReader};

@@ -3,8 +3,8 @@ use amethyst::core::transform::Transform;
 use amethyst::core::Time;
 use amethyst::ecs::*;
 
+use crate::components::combat::{FactionEnemies, HasFaction};
 use crate::components::creatures::*;
-use crate::components::combat::{HasFaction, FactionEnemies};
 
 pub struct DecisionSystem;
 impl<'s> System<'s> for DecisionSystem {
@@ -23,13 +23,8 @@ impl<'s> System<'s> for DecisionSystem {
         (entities, mut movements, transforms, has_faction, faction_enemies, intelligence_tag, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
-        for (movement, transform, faction, _) in (
-            &mut movements,
-            &transforms,
-            &has_faction,
-            &intelligence_tag,
-        )
-            .join()
+        for (movement, transform, faction, _) in
+            (&mut movements, &transforms, &has_faction, &intelligence_tag).join()
         {
             let enemies_opt = faction_enemies.get(faction.faction);
             if enemies_opt.is_none() {
@@ -41,7 +36,9 @@ impl<'s> System<'s> for DecisionSystem {
 
             let enemies = enemies_opt.unwrap();
 
-            for (other_transform, _entity, enemy_faction) in (&transforms, &entities, &has_faction).join() {
+            for (other_transform, _entity, enemy_faction) in
+                (&transforms, &entities, &has_faction).join()
+            {
                 if !enemies.is_enemy(&enemy_faction.faction) {
                     continue;
                 }
