@@ -104,10 +104,7 @@ impl Component for HasFaction<Entity> {
 }
 
 impl<'a> PrefabData<'a> for HasFaction<String> {
-    type SystemData = (
-        WriteStorage<'a, HasFaction<Entity>>,
-        Read<'a, HashMap<String, Entity>>,
-    );
+    type SystemData = (WriteStorage<'a, HasFaction<Entity>>, Read<'a, Factions>);
     type Result = ();
 
     fn add_to_entity(
@@ -116,7 +113,7 @@ impl<'a> PrefabData<'a> for HasFaction<String> {
         system_data: &mut Self::SystemData,
         _entities: &[Entity],
     ) -> Result<Self::Result, Error> {
-        let faction = system_data.1.get(&self.faction);
+        let faction = (system_data.1).0.get(&self.faction);
         if let Some(f) = faction {
             system_data
                 .0
@@ -146,6 +143,9 @@ impl FactionEnemies {
     }
 }
 
+#[derive(Default)]
+pub struct Factions(HashMap<String, Entity>);
+
 pub fn create_factions(world: &mut World) {
     let plants = world
         .create_entity()
@@ -173,7 +173,7 @@ pub fn create_factions(world: &mut World) {
     factions.insert("Plants".to_string(), plants);
     factions.insert("Herbivores".to_string(), herbivores);
     factions.insert("Carnivores".to_string(), carnivores);
-    world.add_resource(factions);
+    world.add_resource(Factions(factions));
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
