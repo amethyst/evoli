@@ -1,0 +1,35 @@
+#![enable(implicit_some)]
+Prefab (
+    entities: [
+        PrefabEntity(
+            data: (
+                name: (
+                    name: "Plants"
+                ),
+                faction_enemies: (
+                    enemies: [],
+                ),
+            ),
+        ),
+        PrefabEntity(
+            data: (
+                name: (
+                    name: "Herbivores"
+                ),
+                faction_enemies: (
+                    enemies: ["Plants"],
+                ),
+            ),
+        ),
+        PrefabEntity(
+            data: (
+                name: (
+                    name: "Carnivores"
+                ),
+                faction_enemies: (
+                    enemies: ["Herbivores"],
+                ),
+            ),
+        ),
+    ],
+)

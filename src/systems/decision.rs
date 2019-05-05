@@ -13,7 +13,7 @@ impl<'s> System<'s> for DecisionSystem {
         WriteStorage<'s, Movement>,
         ReadStorage<'s, Transform>,
         ReadStorage<'s, HasFaction<Entity>>,
-        ReadStorage<'s, FactionEnemies>,
+        ReadStorage<'s, FactionEnemies<Entity>>,
         ReadStorage<'s, IntelligenceTag>,
         Read<'s, Time>,
     );

@@ -113,7 +113,7 @@ impl<'s> System<'s> for FindAttackSystem {
         Read<'s, EventChannel<CollisionEvent>>,
         Write<'s, EventChannel<AttackEvent>>,
         ReadStorage<'s, combat::HasFaction<Entity>>,
-        ReadStorage<'s, combat::FactionEnemies>,
+        ReadStorage<'s, combat::FactionEnemies<Entity>>,
     );
 
     fn run(
