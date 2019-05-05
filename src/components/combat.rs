@@ -3,9 +3,7 @@ use amethyst::{
     assets::{PrefabData, PrefabError, PrefabLoader, ProgressCounter, RonFormat},
     core::Named,
     derive::PrefabData,
-    ecs::{
-        Component, DenseVecStorage, Entity, HashMapStorage, Read, Write, WriteStorage,
-    },
+    ecs::{Component, DenseVecStorage, Entity, HashMapStorage, Read, Write, WriteStorage},
     prelude::*,
 };
 use amethyst_inspector::Inspect;
