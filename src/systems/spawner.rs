@@ -83,20 +83,14 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
 #[derive(Default)]
 pub struct DebugSpawnTriggerSystem {
     timer_to_next_spawn: f32,
-    bee_timer: f32,
 }
 
 impl<'s> System<'s> for DebugSpawnTriggerSystem {
-    type SystemData = (
-        Write<'s, EventChannel<CreatureSpawnEvent>>,
-        Read<'s, Time>,
-        Read<'s, CreaturePrefabs>,
-    );
+    type SystemData = (Write<'s, EventChannel<CreatureSpawnEvent>>, Read<'s, Time>);
 
-    fn run(&mut self, (mut spawn_events, time, _creature_prefabs): Self::SystemData) {
+    fn run(&mut self, (mut spawn_events, time): Self::SystemData) {
         let delta_seconds = time.delta_seconds();
         self.timer_to_next_spawn -= delta_seconds;
-        self.bee_timer -= delta_seconds;
         if self.timer_to_next_spawn <= 0.0 {
             self.timer_to_next_spawn = 1.5;
             let mut rng = thread_rng();
@@ -122,7 +116,20 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
                 transform,
             });
         }
+    }
+}
 
+#[derive(Default)]
+pub struct DebugBeeSpawnSystem {
+    bee_timer: f32,
+}
+
+impl<'s> System<'s> for DebugBeeSpawnSystem {
+    type SystemData = (Write<'s, EventChannel<CreatureSpawnEvent>>, Read<'s, Time>);
+
+    fn run(&mut self, (mut spawn_events, time): Self::SystemData) {
+        let delta_seconds = time.delta_seconds();
+        self.bee_timer -= delta_seconds;
         if self.bee_timer <= 0.0 {
             let mut rng = thread_rng();
             self.bee_timer = 1.0f32;

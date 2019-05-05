@@ -42,14 +42,14 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     let mut creature_prefabs = CreaturePrefabs::default();
     let mut progress_counter = ProgressCounter::new();
     let prefab_iter = {
-        let prefab_dir_path = application_root_dir() + "/resources/prefabs";
+        let prefab_dir_path = application_root_dir() + "/resources/prefabs/creatures";
         let prefab_iter = read_dir(prefab_dir_path).unwrap();
         prefab_iter.map(|prefab_dir_entry| {
             world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
                 let prefab_path_buf = prefab_dir_entry.unwrap().path();
                 let prefab_filename = prefab_path_buf.file_name().unwrap();
                 loader.load(
-                    "prefabs/".to_string() + prefab_filename.to_str().unwrap(),
+                    "prefabs/creatures/".to_string() + prefab_filename.to_str().unwrap(),
                     RonFormat,
                     (),
                     &mut progress_counter,
@@ -58,10 +58,8 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
         })
     };
 
-    let mut count = 0;
-    for prefab in prefab_iter {
+    for (count, prefab) in prefab_iter.enumerate() {
         creature_prefabs.insert("temp_prefab_".to_string() + &count.to_string(), prefab);
-        count += 1;
     }
     world.add_resource(creature_prefabs);
     progress_counter
@@ -70,23 +68,24 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
 pub fn update_prefabs(world: &mut World) {
     let updated_prefabs = {
         let creature_prefabs = world.read_resource::<CreaturePrefabs>();
-
-        let prefabs = creature_prefabs.get_prefabs().clone();
+        let prefabs = creature_prefabs.get_prefabs();
         let mut prefab_resource =
             world.write_resource::<AssetStorage<Prefab<CreaturePrefabData>>>();
         let mut new_prefabs = HashMap::new();
         for (_key, handle) in prefabs.iter() {
-            let prefab = prefab_resource.get_mut(handle).unwrap();
-            let prefab_data = prefab.entity(0).unwrap();
-            let name = prefab_data
-                .data()
-                .unwrap()
-                .name
-                .as_ref()
-                .unwrap()
-                .name
-                .to_string();
-            new_prefabs.insert(name, handle.clone());
+            if let Some(prefab) = prefab_resource.get_mut(handle) {
+                if let Some(prefab_data) = prefab.entity(0) {
+                    let name = prefab_data
+                        .data()
+                        .unwrap()
+                        .name
+                        .as_ref()
+                        .unwrap()
+                        .name
+                        .to_string();
+                    new_prefabs.insert(name, handle.clone());
+                }
+            }
         }
         new_prefabs
     };
