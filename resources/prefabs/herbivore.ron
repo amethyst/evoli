@@ -42,8 +42,10 @@ Prefab (
                     ),
                     damage: (
                         damage: 20.0,
-                   ),
-                   faction: Herbivore,
+                    ),
+                    has_faction: (
+                        faction: "Herbivores",
+                    ),
                 ),
                 herbivore_tag: (),
                 intelligence_tag: (),

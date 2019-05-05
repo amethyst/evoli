@@ -20,7 +20,9 @@ Prefab (
                         max_health: 20.0,
                         value: 20.0,
                     ),
-                   faction: Plant,
+                    has_faction: (
+                        faction: "Plants",
+                    ),
                 ),
                 plant_tag: (),
             ),

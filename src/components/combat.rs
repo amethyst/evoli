@@ -1,11 +1,15 @@
+use amethyst::ecs::error::Error;
 use amethyst::{
     assets::{PrefabData, PrefabError, ProgressCounter},
+    core::Named,
     derive::PrefabData,
-    ecs::{Component, DenseVecStorage, Entity, ReadStorage, VecStorage, WriteStorage},
+    ecs::{Component, DenseVecStorage, Entity, HashMapStorage, Read, WriteStorage},
+    prelude::*,
 };
-use amethyst_imgui::imgui;
 use amethyst_inspector::Inspect;
+use log::error;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::time::Duration;
 
 #[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
@@ -84,65 +88,92 @@ impl Cooldown {
     }
 }
 
-#[derive(PartialEq, Eq, Debug, Clone, Deserialize, Serialize, PrefabData)]
-#[prefab(Component)]
-pub enum Faction {
-    Carnivore,
-    Herbivore,
-    Plant,
-}
-
-impl Component for Faction {
-    type Storage = VecStorage<Self>;
-}
-
-impl Faction {
-    pub fn is_enemy(&self, other: &Self) -> bool {
-        match self {
-            Faction::Carnivore => *other == Faction::Herbivore,
-            Faction::Herbivore => *other == Faction::Plant,
-            Faction::Plant => false,
-        }
-    }
-}
-
 ///
 ///
 ///
 // Indicate whether the entity is part of a faction. Factions are used to represent groups of
 // entities that attack each other, see `HasFaction`. A faction is an entity of its own and might
 // specify properties using components.
-#[derive(Debug, Clone)]
-pub struct HasFaction {
-    pub faction: Entity,
+#[derive(Default, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]
+pub struct HasFaction<T> {
+    pub faction: T,
 }
 
-impl Component for HasFaction {
-    type Storage = VecStorage<Self>;
+impl Component for HasFaction<Entity> {
+    type Storage = DenseVecStorage<Self>;
 }
 
-impl HasFaction {
-    pub fn new(faction: Entity) -> HasFaction {
-        HasFaction { faction }
+impl<'a> PrefabData<'a> for HasFaction<String> {
+    type SystemData = (
+        WriteStorage<'a, HasFaction<Entity>>,
+        Read<'a, HashMap<String, Entity>>,
+    );
+    type Result = ();
+
+    fn add_to_entity(
+        &self,
+        entity: Entity,
+        system_data: &mut Self::SystemData,
+        _entities: &[Entity],
+    ) -> Result<Self::Result, Error> {
+        let faction = system_data.1.get(self.faction.as_str());
+        if let Some(f) = faction {
+            system_data
+                .0
+                .insert(entity, HasFaction { faction: *f })
+                .expect("Unreachable: we are inserting now.");
+            return Ok(());
+        }
+
+        error!("Failed to load faction data");
+        Ok(())
     }
 }
 
-impl<'a> amethyst_inspector::Inspect<'a> for HasFaction {
-    type SystemData = (ReadStorage<'a, Self>,);
+// Store the faction entities this component's owner is hostile towards
+#[derive(Default, Debug, PartialEq, Eq, Clone)]
+pub struct FactionEnemies {
+    pub enemies: Vec<Entity>,
+}
 
-    fn inspect((storage,): &Self::SystemData, entity: amethyst::ecs::Entity, ui: &imgui::Ui<'_>) {
-        let &HasFaction { faction } = if let Some(x) = storage.get(entity) {
-            x
-        } else {
-            return;
-        };
-        ui.drag_int(
-            imgui::im_str!("faction##has faction{:?}", entity),
-            &mut (faction.id() as i32),
-        )
+impl Component for FactionEnemies {
+    type Storage = HashMapStorage<Self>;
+}
+
+impl FactionEnemies {
+    pub fn is_enemy(&self, other: &Entity) -> bool {
+        self.enemies.contains(other)
+    }
+}
+
+pub fn create_factions(world: &mut World) {
+    let plants = world
+        .create_entity()
+        .with(Named::new("Plants"))
+        .with(FactionEnemies::default())
         .build();
-        ui.separator();
-    }
+
+    let herbivores = world
+        .create_entity()
+        .with(Named::new("Herbivores"))
+        .with(FactionEnemies {
+            enemies: vec![plants],
+        })
+        .build();
+
+    let carnivores = world
+        .create_entity()
+        .with(Named::new("Carnivores"))
+        .with(FactionEnemies {
+            enemies: vec![herbivores],
+        })
+        .build();
+
+    let mut factions = HashMap::new();
+    factions.insert("Plants".to_string(), plants);
+    factions.insert("Herbivores".to_string(), herbivores);
+    factions.insert("Carnivores".to_string(), carnivores);
+    world.add_resource(factions);
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
@@ -152,5 +183,5 @@ pub struct CombatPrefabData {
     health: Option<Health>,
     speed: Option<Speed>,
     damage: Option<Damage>,
-    faction: Option<Faction>,
+    has_faction: Option<HasFaction<String>>,
 }

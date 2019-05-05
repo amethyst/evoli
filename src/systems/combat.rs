@@ -112,32 +112,43 @@ impl<'s> System<'s> for FindAttackSystem {
     type SystemData = (
         Read<'s, EventChannel<CollisionEvent>>,
         Write<'s, EventChannel<AttackEvent>>,
-        ReadStorage<'s, combat::Faction>,
+        ReadStorage<'s, combat::HasFaction<Entity>>,
+        ReadStorage<'s, combat::FactionEnemies>,
     );
 
-    fn run(&mut self, (collision_events, mut attack_events, factions): Self::SystemData) {
+    fn run(
+        &mut self,
+        (collision_events, mut attack_events, has_faction, faction_enemies): Self::SystemData,
+    ) {
         let event_reader = self
             .event_reader
             .as_mut()
             .expect("`FindAttackSystem::setup` was not called before `FindAttackSystem::run`");
 
         for event in collision_events.read(event_reader) {
-            let opt_factions = factions
+            let opt_factions = has_faction
                 .get(event.entity_a)
-                .and_then(|a| factions.get(event.entity_b).map(|b| (a, b)));
+                .and_then(|a| has_faction.get(event.entity_b).map(|b| (a, b)));
 
             if let Some((faction_a, faction_b)) = opt_factions {
-                if faction_a.is_enemy(faction_b) {
-                    attack_events.single_write(AttackEvent {
-                        attacker: event.entity_a,
-                        defender: event.entity_b,
-                    });
+                let enemies_a = faction_enemies.get(faction_a.faction);
+                if let Some(enemies) = enemies_a {
+                    if enemies.is_enemy(&faction_b.faction) {
+                        attack_events.single_write(AttackEvent {
+                            attacker: event.entity_a,
+                            defender: event.entity_b,
+                        });
+                    }
                 }
-                if faction_b.is_enemy(faction_a) {
-                    attack_events.single_write(AttackEvent {
-                        attacker: event.entity_b,
-                        defender: event.entity_a,
-                    });
+
+                let enemies_b = faction_enemies.get(faction_b.faction);
+                if let Some(enemies) = enemies_b {
+                    if enemies.is_enemy(&faction_a.faction) {
+                        attack_events.single_write(AttackEvent {
+                            attacker: event.entity_b,
+                            defender: event.entity_a,
+                        });
+                    }
                 }
             }
         }
