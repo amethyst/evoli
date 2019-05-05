@@ -20,13 +20,13 @@ mod resources;
 mod states;
 mod systems;
 
+use crate::components::combat;
 use crate::components::combat::Health;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::creatures::{self, IntelligenceTag, Movement, Wander};
 use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::audio::Music;
 use crate::states::{loading::LoadingState, CustomStateEvent, CustomStateEventReader};
-use crate::components::combat;
 
 amethyst_inspector::inspector![
     Named,

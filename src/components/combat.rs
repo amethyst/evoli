@@ -1,9 +1,11 @@
 use amethyst::ecs::error::Error;
 use amethyst::{
-    assets::{PrefabData, PrefabError, ProgressCounter, RonFormat, PrefabLoader},
+    assets::{PrefabData, PrefabError, PrefabLoader, ProgressCounter, RonFormat},
     core::Named,
     derive::PrefabData,
-    ecs::{Component, DenseVecStorage, Entity, HashMapStorage, Read, WriteStorage, ReadStorage, Write},
+    ecs::{
+        Component, DenseVecStorage, Entity, HashMapStorage, Read, Write, WriteStorage,
+    },
     prelude::*,
 };
 use amethyst_inspector::Inspect;
@@ -142,7 +144,9 @@ impl Component for FactionEnemies<Entity> {
 
 impl<T> FactionEnemies<T> {
     pub fn is_enemy(&self, other: &T) -> bool
-    where T: PartialEq {
+    where
+        T: PartialEq,
+    {
         self.enemies.contains(other)
     }
 }
@@ -150,13 +154,20 @@ impl<T> FactionEnemies<T> {
 impl<'a> PrefabData<'a> for FactionEnemies<String> {
     type SystemData = (
         Write<'a, Factions>,
-        WriteStorage<'a, FactionEnemies<Entity>>
+        WriteStorage<'a, FactionEnemies<Entity>>,
     );
     type Result = ();
 
-    fn add_to_entity(&self, entity: Entity, system_data: &mut Self::SystemData, entities: &[Entity]) -> Result<Self::Result, Error> {
+    fn add_to_entity(
+        &self,
+        entity: Entity,
+        system_data: &mut Self::SystemData,
+        _entities: &[Entity],
+    ) -> Result<Self::Result, Error> {
         let ref factions = (system_data.0).0;
-        let enemies: Vec<Entity> = self.enemies.iter()
+        let enemies: Vec<Entity> = self
+            .enemies
+            .iter()
             .map(|enemy| {
                 let faction = factions.get(enemy);
                 if faction.is_none() {
@@ -167,7 +178,9 @@ impl<'a> PrefabData<'a> for FactionEnemies<String> {
             .filter(|faction| faction.is_some())
             .map(|faction| *faction.unwrap())
             .collect();
-        system_data.1.insert(entity, FactionEnemies { enemies })
+        system_data
+            .1
+            .insert(entity, FactionEnemies { enemies })
             .expect("unreachable: we are inserting");
         Ok(())
     }
@@ -184,19 +197,23 @@ impl<'a> PrefabData<'a> for FactionPrefabData {
     );
     type Result = ();
 
-    fn add_to_entity(&self, entity: Entity, system_data: &mut Self::SystemData, entities: &[Entity]) -> Result<Self::Result, Error> {
-        let (
-            ref mut named,
-            ref mut factions_enemies,
-        ) = system_data;
+    fn add_to_entity(
+        &self,
+        entity: Entity,
+        system_data: &mut Self::SystemData,
+        entities: &[Entity],
+    ) -> Result<Self::Result, Error> {
+        let (ref mut named, ref mut factions_enemies) = system_data;
 
         // Update our faction lookup table
         if let Some(ref name) = self.name {
             (factions_enemies.0).0.insert(name.name.to_string(), entity);
         }
-        self.name.add_to_entity(entity, named, entities)
+        self.name
+            .add_to_entity(entity, named, entities)
             .expect("unreachable");
-        self.faction_enemies.add_to_entity(entity, factions_enemies, entities)
+        self.faction_enemies
+            .add_to_entity(entity, factions_enemies, entities)
             .expect("unreachable");
         Ok(())
     }
@@ -218,9 +235,7 @@ pub fn load_factions(world: &mut World) {
         loader.load("prefabs/factions.ron", RonFormat, (), ())
     });
 
-    world.create_entity()
-        .with(prefab_handle.clone())
-        .build();
+    world.create_entity().with(prefab_handle.clone()).build();
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]

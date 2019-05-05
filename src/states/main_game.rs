@@ -11,7 +11,7 @@ use amethyst::{
 };
 use rand::{thread_rng, Rng};
 
-use crate::components::combat::{load_factions};
+use crate::components::combat::load_factions;
 use crate::{
     resources::world_bounds::WorldBounds,
     states::{paused::PausedState, CustomStateEvent},
