@@ -47,7 +47,6 @@ Prefab (
                         faction: "Carnivores",
                     ),
                 ),
-                carnivore_tag: (),
                 intelligence_tag: (),
             ),
         ),

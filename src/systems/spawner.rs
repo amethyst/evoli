@@ -16,16 +16,19 @@ use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePre
 
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
-    pub creature_type: CreatureType,
+    pub creature_type: String,
     pub transform: Transform,
 }
 
-impl Distribution<CreatureType> for Standard {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> CreatureType {
+struct CreatureTypeDistribution {
+    creature_type: CreatureType,
+}
+impl Distribution<CreatureTypeDistribution> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> CreatureTypeDistribution {
         match rng.gen_range(0, 3) {
-            0 => CreatureType::Carnivore,
-            1 => CreatureType::Herbivore,
-            _ => CreatureType::Plant,
+            0 => CreatureTypeDistribution { creature_type: "Carnivore".to_string() },
+            1 => CreatureTypeDistribution { creature_type: "Herbivore".to_string() },
+            _ => CreatureTypeDistribution { creature_type: "Plant".to_string() },
         }
     }
 }
@@ -87,19 +90,20 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
             let mut transform = Transform::default();
             transform.set_xyz(x, y, 0.02);
-            let creature_type: CreatureType = rand::random();
+            let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution = rand::random();
 
             match creature_type {
-                CreatureType::Carnivore | CreatureType::Herbivore => {
+                _ if creature_type == "Carnivore" || creature_type == "Herbivore" => {
                     transform.set_scale(0.5, 0.5, 1.0);
                 }
-                CreatureType::Plant => {
+                _ if creature_type == "Plant" => {
                     let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
                     let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
                     transform.set_z(0.0);
                     transform.set_scale(scale, scale, 1.0);
                     transform.set_rotation_euler(0.0, 0.0, rotation);
                 }
+                _ => {}
             }
 
             spawn_events.single_write(CreatureSpawnEvent {

@@ -23,7 +23,7 @@ mod systems;
 use crate::components::combat::Health;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::creatures::{
-    self, CarnivoreTag, HerbivoreTag, IntelligenceTag, Movement, PlantTag, Wander,
+    self, IntelligenceTag, Movement, Wander,
 };
 use crate::components::digestion::{Digestion, Fullness};
 use crate::resources::audio::Music;
@@ -42,9 +42,6 @@ amethyst_inspector::inspector![
     Speed,
     Cooldown,
     Health,
-    CarnivoreTag,
-    HerbivoreTag,
-    PlantTag,
     IntelligenceTag,
     Hidden,
     HiddenPropagate,

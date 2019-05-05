@@ -24,7 +24,6 @@ Prefab (
                         faction: "Plants",
                     ),
                 ),
-                plant_tag: (),
             ),
         ),
     ],

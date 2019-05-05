@@ -47,7 +47,6 @@ Prefab (
                         faction: "Herbivores",
                     ),
                 ),
-                herbivore_tag: (),
                 intelligence_tag: (),
             ),
         ),

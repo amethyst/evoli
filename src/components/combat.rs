@@ -116,7 +116,7 @@ impl<'a> PrefabData<'a> for HasFaction<String> {
         system_data: &mut Self::SystemData,
         _entities: &[Entity],
     ) -> Result<Self::Result, Error> {
-        let faction = system_data.1.get(self.faction.as_str());
+        let faction = system_data.1.get(&self.faction);
         if let Some(f) = faction {
             system_data
                 .0

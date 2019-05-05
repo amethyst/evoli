@@ -41,8 +41,8 @@ pub fn initialize_prefabs(world: &mut World) {
                 loader.load("prefabs/plant.ron", RonFormat, (), ()),
             )
         });
-    creature_prefabs.insert(CreatureType::Carnivore, carnivore_prefab);
-    creature_prefabs.insert(CreatureType::Herbivore, herbivore_prefab);
-    creature_prefabs.insert(CreatureType::Plant, plant_prefab);
+    creature_prefabs.insert("Carnivore".to_string(), carnivore_prefab);
+    creature_prefabs.insert("Herbivore".to_string(), herbivore_prefab);
+    creature_prefabs.insert("Plant".to_string(), plant_prefab);
     world.add_resource(creature_prefabs);
 }
