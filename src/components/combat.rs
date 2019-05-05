@@ -228,6 +228,9 @@ pub struct FactionPrefabData {
 #[derive(Default)]
 pub struct Factions(HashMap<String, Entity>);
 
+// The factions are stored inside the Ron file in a sorted way. They can only define
+// factions as enemies that are on top of their definition. For example, 'Plants' cannot define 'Herbivores' as their enemies
+// because 'Herbivores' is defined after 'Plants'.
 pub fn load_factions(world: &mut World) {
     let prefab_handle = world.exec(|loader: PrefabLoader<'_, FactionPrefabData>| {
         loader.load("prefabs/factions.ron", RonFormat, (), ())
