@@ -77,18 +77,26 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
     }
 }
 
+//
+//
 // For debugging purposes this system sends spawn events regularly
 #[derive(Default)]
 pub struct DebugSpawnTriggerSystem {
     timer_to_next_spawn: f32,
+    bee_timer: f32,
 }
 
 impl<'s> System<'s> for DebugSpawnTriggerSystem {
-    type SystemData = (Write<'s, EventChannel<CreatureSpawnEvent>>, Read<'s, Time>);
+    type SystemData = (
+        Write<'s, EventChannel<CreatureSpawnEvent>>,
+        Read<'s, Time>,
+        Read<'s, CreaturePrefabs>,
+    );
 
-    fn run(&mut self, (mut spawn_events, time): Self::SystemData) {
+    fn run(&mut self, (mut spawn_events, time, _creature_prefabs): Self::SystemData) {
         let delta_seconds = time.delta_seconds();
         self.timer_to_next_spawn -= delta_seconds;
+        self.bee_timer -= delta_seconds;
         if self.timer_to_next_spawn <= 0.0 {
             self.timer_to_next_spawn = 1.5;
             let mut rng = thread_rng();
@@ -99,22 +107,32 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution =
                 rand::random();
 
-            match creature_type {
-                _ if creature_type == "Carnivore" || creature_type == "Herbivore" => {
+                if creature_type == "Carnivore" || creature_type == "Herbivore" {
                     transform.set_scale(0.5, 0.5, 1.0);
                 }
-                _ if creature_type == "Plant" => {
+                if creature_type == "Plant" {
                     let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
                     let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
                     transform.set_z(0.0);
                     transform.set_scale(scale, scale, 1.0);
                     transform.set_rotation_euler(0.0, 0.0, rotation);
                 }
-                _ => {}
-            }
-
             spawn_events.single_write(CreatureSpawnEvent {
                 creature_type,
+                transform,
+            });
+        }
+
+        if self.bee_timer <= 0.0 {
+            let mut rng = thread_rng();
+            self.bee_timer = 1.0f32;
+            let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let mut transform = Transform::default();
+            transform.set_xyz(x, y, 0.0);
+            transform.set_scale(0.3, 0.3, 1.0);
+            spawn_events.single_write(CreatureSpawnEvent {
+                creature_type: "Bee".to_string(),
                 transform,
             });
         }
