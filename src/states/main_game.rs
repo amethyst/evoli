@@ -97,14 +97,9 @@ impl Default for MainGameState {
                     &[],
                 )
                 .with(
-                    spawner::DebugBeeSpawnSystem::default(),
-                    "debug_bee_spawn",
-                    &[],
-                )
-                .with(
                     spawner::CreatureSpawnerSystem::default(),
                     "creature_spawner",
-                    &["debug_spawn_trigger", "debug_bee_spawn"],
+                    &["debug_spawn_trigger"],
                 )
                 .build(),
             ui_dispatcher: DispatcherBuilder::new()
