@@ -107,16 +107,16 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution =
                 rand::random();
 
-                if creature_type == "Carnivore" || creature_type == "Herbivore" {
-                    transform.set_scale(0.5, 0.5, 1.0);
-                }
-                if creature_type == "Plant" {
-                    let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
-                    let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
-                    transform.set_z(0.0);
-                    transform.set_scale(scale, scale, 1.0);
-                    transform.set_rotation_euler(0.0, 0.0, rotation);
-                }
+            if creature_type == "Carnivore" || creature_type == "Herbivore" {
+                transform.set_scale(0.5, 0.5, 1.0);
+            }
+            if creature_type == "Plant" {
+                let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
+                let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
+                transform.set_z(0.0);
+                transform.set_scale(scale, scale, 1.0);
+                transform.set_rotation_euler(0.0, 0.0, rotation);
+            }
             spawn_events.single_write(CreatureSpawnEvent {
                 creature_type,
                 transform,
