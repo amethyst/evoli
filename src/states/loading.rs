@@ -48,7 +48,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for LoadingState {
             if counter.is_complete() {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);
-                return Trans::Push(Box::new(MainGameState::default()));
+                return Trans::Switch(Box::new(MainGameState::default()));
             }
         }
 
