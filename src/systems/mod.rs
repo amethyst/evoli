@@ -1,3 +1,4 @@
+pub mod bee_behavior;
 pub mod behaviors;
 pub mod collision;
 pub mod combat;

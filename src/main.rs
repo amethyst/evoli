@@ -56,7 +56,7 @@ fn main() -> amethyst::Result<()> {
 
     let pipe = Pipeline::build().with_stage(
         Stage::with_backbuffer()
-            .clear_target([0.002, 0.01, 0.01, 1.0], 1.0)
+            .clear_target([0.02, 0.15, 0.02, 1.0], 1.0)
             .with_pass(DrawFlat::<PosNormTex>::new().with_transparency(
                 ColorMask::all(),
                 ALPHA,
