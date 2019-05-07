@@ -5,6 +5,7 @@ use amethyst;
 use amethyst::assets::PrefabLoaderSystem;
 use amethyst::{
     audio::AudioBundle,
+    core::frame_limiter::FrameRateLimitStrategy,
     core::transform::{Transform, TransformBundle},
     core::Named,
     ecs::*,
@@ -101,11 +102,10 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?;
 
-    let mut game = CoreApplication::<GameData, CustomStateEvent, CustomStateEventReader>::new(
-        resources,
-        LoadingState::default(),
-        game_data,
-    )?;
+    let mut game: CoreApplication<GameData, CustomStateEvent, CustomStateEventReader> =
+        CoreApplication::build(resources, LoadingState::default())?
+            .with_frame_limit(FrameRateLimitStrategy::Sleep, 60)
+            .build(game_data)?;
     game.run();
     Ok(())
 }

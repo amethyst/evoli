@@ -113,12 +113,12 @@ impl<'s> System<'s> for FindAttackSystem {
         Read<'s, EventChannel<CollisionEvent>>,
         Write<'s, EventChannel<AttackEvent>>,
         ReadStorage<'s, combat::HasFaction<Entity>>,
-        ReadStorage<'s, combat::FactionEnemies<Entity>>,
+        ReadStorage<'s, combat::FactionPrey<Entity>>,
     );
 
     fn run(
         &mut self,
-        (collision_events, mut attack_events, has_faction, faction_enemies): Self::SystemData,
+        (collision_events, mut attack_events, has_faction, faction_preys): Self::SystemData,
     ) {
         let event_reader = self
             .event_reader
@@ -131,9 +131,9 @@ impl<'s> System<'s> for FindAttackSystem {
                 .and_then(|a| has_faction.get(event.entity_b).map(|b| (a, b)));
 
             if let Some((faction_a, faction_b)) = opt_factions {
-                let enemies_a = faction_enemies.get(faction_a.faction);
-                if let Some(enemies) = enemies_a {
-                    if enemies.is_enemy(&faction_b.faction) {
+                let preys_a = faction_preys.get(faction_a.faction);
+                if let Some(preys) = preys_a {
+                    if preys.is_prey(&faction_b.faction) {
                         attack_events.single_write(AttackEvent {
                             attacker: event.entity_a,
                             defender: event.entity_b,
@@ -141,9 +141,9 @@ impl<'s> System<'s> for FindAttackSystem {
                     }
                 }
 
-                let enemies_b = faction_enemies.get(faction_b.faction);
-                if let Some(enemies) = enemies_b {
-                    if enemies.is_enemy(&faction_a.faction) {
+                let preys_b = faction_preys.get(faction_b.faction);
+                if let Some(preys) = preys_b {
+                    if preys.is_prey(&faction_a.faction) {
                         attack_events.single_write(AttackEvent {
                             attacker: event.entity_b,
                             defender: event.entity_a,

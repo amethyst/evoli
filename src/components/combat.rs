@@ -129,31 +129,28 @@ impl<'a> PrefabData<'a> for HasFaction<String> {
     }
 }
 
-// Store the faction entities this component's owner is hostile towards
-/// The type is generic because we use `FactionEnemies<Entity>` as a component and `FactionEnemies<String>` for the prefab.
+// Store the faction entities this component's owner considers to be prey
+/// The type is generic because we use `FactionPrey<Entity>` as a component and `FactionPrey<String>` for the prefab.
 #[derive(Default, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
-pub struct FactionEnemies<T> {
-    pub enemies: Vec<T>,
+pub struct FactionPrey<T> {
+    pub preys: Vec<T>,
 }
 
-impl Component for FactionEnemies<Entity> {
+impl Component for FactionPrey<Entity> {
     type Storage = HashMapStorage<Self>;
 }
 
-impl<T> FactionEnemies<T> {
-    pub fn is_enemy(&self, other: &T) -> bool
+impl<T> FactionPrey<T> {
+    pub fn is_prey(&self, other: &T) -> bool
     where
         T: PartialEq,
     {
-        self.enemies.contains(other)
+        self.preys.contains(other)
     }
 }
 
-impl<'a> PrefabData<'a> for FactionEnemies<String> {
-    type SystemData = (
-        Write<'a, Factions>,
-        WriteStorage<'a, FactionEnemies<Entity>>,
-    );
+impl<'a> PrefabData<'a> for FactionPrey<String> {
+    type SystemData = (Write<'a, Factions>, WriteStorage<'a, FactionPrey<Entity>>);
     type Result = ();
 
     fn add_to_entity(
@@ -163,13 +160,13 @@ impl<'a> PrefabData<'a> for FactionEnemies<String> {
         _entities: &[Entity],
     ) -> Result<Self::Result, Error> {
         let ref factions = (system_data.0).0;
-        let enemies: Vec<Entity> = self
-            .enemies
+        let preys: Vec<Entity> = self
+            .preys
             .iter()
-            .map(|enemy| {
-                let faction = factions.get(enemy);
+            .map(|prey| {
+                let faction = factions.get(prey);
                 if faction.is_none() {
-                    error!("Failed to load faction {:?}", enemy);
+                    error!("Failed to load faction {:?}", prey);
                 }
                 faction
             })
@@ -178,7 +175,7 @@ impl<'a> PrefabData<'a> for FactionEnemies<String> {
             .collect();
         system_data
             .1
-            .insert(entity, FactionEnemies { enemies })
+            .insert(entity, FactionPrey { preys })
             .expect("unreachable: we are inserting");
         Ok(())
     }
@@ -188,9 +185,9 @@ impl<'a> PrefabData<'a> for FactionEnemies<String> {
 impl<'a> PrefabData<'a> for FactionPrefabData {
     type SystemData = (
         <Named as PrefabData<'a>>::SystemData,
-        <FactionEnemies<String> as PrefabData<'a>>::SystemData,
-        // We can't access Factions here, because Factions is already in use by `FactionEnemies<String>::SystemData`.
-        // As a workaround we use `Write` in `FactionEnemies<String>::SystemData.0` instead of `Read`
+        <FactionPrey<String> as PrefabData<'a>>::SystemData,
+        // We can't access Factions here, because Factions is already in use by `FactionPrey<String>::SystemData`.
+        // As a workaround we use `Write` in `FactionPrey<String>::SystemData.0` instead of `Read`
         // Write<'a, Factions>,
     );
     type Result = ();
@@ -201,17 +198,17 @@ impl<'a> PrefabData<'a> for FactionPrefabData {
         system_data: &mut Self::SystemData,
         entities: &[Entity],
     ) -> Result<Self::Result, Error> {
-        let (ref mut named, ref mut factions_enemies) = system_data;
+        let (ref mut named, ref mut faction_preys) = system_data;
 
         // Update our faction lookup table
         if let Some(ref name) = self.name {
-            (factions_enemies.0).0.insert(name.name.to_string(), entity);
+            (faction_preys.0).0.insert(name.name.to_string(), entity);
         }
         self.name
             .add_to_entity(entity, named, entities)
             .expect("unreachable");
-        self.faction_enemies
-            .add_to_entity(entity, factions_enemies, entities)
+        self.faction_preys
+            .add_to_entity(entity, faction_preys, entities)
             .expect("unreachable");
         Ok(())
     }
@@ -222,14 +219,14 @@ impl<'a> PrefabData<'a> for FactionPrefabData {
 #[serde(deny_unknown_fields)]
 pub struct FactionPrefabData {
     name: Option<Named>,
-    faction_enemies: Option<FactionEnemies<String>>,
+    faction_preys: Option<FactionPrey<String>>,
 }
 
 #[derive(Default)]
 pub struct Factions(HashMap<String, Entity>);
 
 // The factions are stored inside the Ron file in a sorted way. They can only define
-// factions as enemies that are on top of their definition. For example, 'Plants' cannot define 'Herbivores' as their enemies
+// factions as prey that are on top of their definition. For example, 'Plants' cannot define 'Herbivores' as their prey
 // because 'Herbivores' is defined after 'Plants'.
 pub fn load_factions(world: &mut World) {
     let prefab_handle = world.exec(|loader: PrefabLoader<'_, FactionPrefabData>| {

@@ -9,13 +9,16 @@ use amethyst::{
     shrev::EventChannel,
     State,
 };
-use rand::{thread_rng, Rng};
 
+use crate::systems::behaviors::decision::{
+    ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
+};
 use crate::{
     resources::world_bounds::WorldBounds,
     states::{paused::PausedState, CustomStateEvent},
     systems::*,
 };
+use rand::{thread_rng, Rng};
 use std::f32::consts::PI;
 
 pub struct MainGameState {
@@ -27,8 +30,36 @@ impl Default for MainGameState {
     fn default() -> Self {
         MainGameState {
             dispatcher: DispatcherBuilder::new()
-                .with(decision::DecisionSystem, "decision_system", &[])
-                .with(wander::WanderSystem, "wander_system", &["decision_system"])
+                .with(
+                    QueryPredatorsAndPreySystem,
+                    "query_predators_and_prey_system",
+                    &[],
+                )
+                .with(
+                    ClosestSystem::<Prey>::default(),
+                    "closest_prey_system",
+                    &["query_predators_and_prey_system"],
+                )
+                .with(
+                    ClosestSystem::<Predator>::default(),
+                    "closest_predator_system",
+                    &["query_predators_and_prey_system"],
+                )
+                .with(
+                    SeekSystem::<Prey>::new(1.0),
+                    "seek_prey_system",
+                    &["closest_prey_system"],
+                )
+                .with(
+                    SeekSystem::<Predator>::new(-1.0),
+                    "avoid_predator_system",
+                    &["closest_predator_system"],
+                )
+                .with(
+                    behaviors::wander::WanderSystem,
+                    "wander_system",
+                    &["seek_prey_system", "avoid_predator_system"],
+                )
                 .with(
                     movement::MovementSystem,
                     "movement_system",
