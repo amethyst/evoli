@@ -4,6 +4,7 @@ use amethyst::ecs::*;
 use amethyst::renderer::*;
 
 use crate::components::creatures;
+use rand::{thread_rng, Rng};
 
 pub struct WanderSystem;
 impl<'s> System<'s> for WanderSystem {
@@ -20,6 +21,7 @@ impl<'s> System<'s> for WanderSystem {
         (mut wanders, mut movements, locals, mut debug_lines, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
+        let mut rng = thread_rng();
 
         for (wander, movement, local) in (&mut wanders, &mut movements, &locals).join() {
             let position = local.translation();
@@ -29,12 +31,11 @@ impl<'s> System<'s> for WanderSystem {
             let target = future_position + direction;
 
             let desired_velocity = target - position;
-            let turn_rate = 10.0;
 
-            movement.velocity += desired_velocity * turn_rate * delta_time;
+            movement.velocity += desired_velocity * delta_time;
 
             let change = 10.0;
-            if rand::random() {
+            if rng.gen::<bool>() {
                 wander.angle += change * delta_time; // Radians per second
             } else {
                 wander.angle -= change * delta_time;

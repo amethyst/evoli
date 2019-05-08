@@ -6,8 +6,8 @@ Prefab (
                 name: (
                     name: "Plants"
                 ),
-                faction_enemies: (
-                    enemies: [],
+                faction_preys: (
+                    preys: [],
                 ),
             ),
         ),
@@ -16,8 +16,8 @@ Prefab (
                 name: (
                     name: "Herbivores"
                 ),
-                faction_enemies: (
-                    enemies: ["Plants"],
+                faction_preys: (
+                    preys: ["Plants"],
                 ),
             ),
         ),
@@ -26,8 +26,8 @@ Prefab (
                 name: (
                     name: "Carnivores"
                 ),
-                faction_enemies: (
-                    enemies: ["Herbivores"],
+                faction_preys: (
+                    preys: ["Herbivores"],
                 ),
             ),
         ),
