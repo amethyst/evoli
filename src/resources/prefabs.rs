@@ -34,10 +34,6 @@ impl CreaturePrefabs {
     pub fn set_prefabs(&mut self, prefabs: HashMap<String, Handle<Prefab<CreaturePrefabData>>>) {
         self.prefabs = prefabs;
     }
-
-    pub fn get_random_key(&self) -> String {
-        self.prefabs.keys().collect::<Vec<String>>()
-    }
 }
 
 // Here we load all prefabs for the different creatures in the game.

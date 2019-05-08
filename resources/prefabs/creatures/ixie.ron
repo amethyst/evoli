@@ -16,10 +16,6 @@ Prefab (
                     velocity: [0.0, 0.0, 0.0],
                     max_movement_speed: 2.0,
                 ),
-                wander: (
-                    angle: 0.0,
-                    radius: 1.0,
-                ),
                 digestion: (
                     digestion: (
                         nutrition_burn_rate: 4.0,

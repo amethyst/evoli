@@ -119,11 +119,20 @@ impl Default for MainGameState {
                     "debug_spawn_trigger",
                     &[],
                 )
-                .with(bee_behavior::BeeSpawnSystem::default(), "bee_spawn", &[])
+                .with(
+                    bee_behavior::SwarmSpawnSystem::default(),
+                    "swarm_spawn",
+                    &[],
+                )
+                .with(
+                    bee_behavior::SwarmBehaviorSystem::default(),
+                    "swarm_behavior",
+                    &[],
+                )
                 .with(
                     spawner::CreatureSpawnerSystem::default(),
                     "creature_spawner",
-                    &["debug_spawn_trigger", "bee_spawn"],
+                    &["debug_spawn_trigger", "swarm_spawn"],
                 )
                 .build(),
             // The ui dispatcher will also run when this game state is paused. This is necessary so that
