@@ -41,17 +41,17 @@ impl<'s> System<'s> for WanderSystem {
                 wander.angle -= change * delta_time;
             }
 
-            //debug_lines.draw_line(
-            //[position.x, position.y, position.z].into(),
-            //[future_position.x, future_position.y, future_position.z].into(),
-            //[1.0, 0.05, 0.65, 1.0].into(),
-            //);
+            debug_lines.draw_line(
+                [position.x, position.y, position.z].into(),
+                [future_position.x, future_position.y, future_position.z].into(),
+                [1.0, 0.05, 0.65, 1.0].into(),
+            );
 
-            //debug_lines.draw_direction(
-            //[future_position.x, future_position.y, future_position.z].into(),
-            //[direction.x, direction.y, direction.z].into(),
-            //[1.0, 0.05, 0.65, 1.0].into(),
-            //);
+            debug_lines.draw_direction(
+                [future_position.x, future_position.y, future_position.z].into(),
+                [direction.x, direction.y, direction.z].into(),
+                [1.0, 0.05, 0.65, 1.0].into(),
+            );
         }
     }
 }

@@ -12,10 +12,6 @@ Prefab (
                         albedo: File("assets/tiny-ixie.png", Png, (channel: Srgb),),
                     ),
                 ),
-                movement: (
-                    velocity: [0.0, 0.0, 0.0],
-                    max_movement_speed: 5.0,
-                ),
                 digestion: (
                     digestion: (
                         nutrition_burn_rate: 0.1,

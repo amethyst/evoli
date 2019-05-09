@@ -8,7 +8,7 @@ use amethyst::{
     shrev::EventChannel,
 };
 
-use rand::{thread_rng, RngCore};
+use rand::{thread_rng, Rng};
 use std::f32;
 
 use crate::{
@@ -39,8 +39,8 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             let mut swarm_entity_builder = lazy_update.create_entity(&entities);
             let mut rng = thread_rng();
             self.swarm_timer = 5.0f32;
-            let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
-            let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let x = rng.gen_range(-10.0, 10.0);
+            let y = rng.gen_range(-10.0, 10.0);
             let mut transform = Transform::default();
             transform.set_xyz(x, y, 0.0);
             swarm_entity_builder = swarm_entity_builder.with(transform);
@@ -57,7 +57,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             let swarm_entity = swarm_entity_builder.build();
 
             let mut swarm_center = SwarmCenter::default();
-            let nb_swarm_individuals = 2 + (rng.next_u32() % 5);
+            let nb_swarm_individuals = rng.gen_range(4, 8);
 
             for _ in 0..nb_swarm_individuals {
                 let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
@@ -68,14 +68,21 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 };
                 swarmling_entity_builder = swarmling_entity_builder.with(swarm_behavior);
                 let mut transform = Transform::default();
-                let x = (rng.next_u32() % 100) as f32 / 100.0 - 0.5;
-                let y = (rng.next_u32() % 100) as f32 / 100.0 - 0.5;
+                let x = rng.gen_range(-1.0, 1.0);
+                let y = rng.gen_range(-1.0, 1.0);
                 transform.set_xyz(x, y, 0.0);
                 transform.set_scale(0.3, 0.3, 1.0);
                 let parent = Parent {
                     entity: swarm_entity,
                 };
-                swarmling_entity_builder = swarmling_entity_builder.with(transform).with(parent);
+                let movement = Movement {
+                    velocity: Vector3::new(rng.gen_range(-1.0, 1.0), rng.gen_range(-1.0, 1.0), 0.0),
+                    max_movement_speed: 5.0,
+                };
+                swarmling_entity_builder = swarmling_entity_builder
+                    .with(transform)
+                    .with(parent)
+                    .with(movement);
                 let swarmling_entity = swarmling_entity_builder.build();
                 swarm_center.entities.push(swarmling_entity);
                 spawn_events.single_write(CreatureSpawnEvent {
@@ -99,9 +106,7 @@ impl<'s> System<'s> for SwarmCenterSystem {
         ReadStorage<'s, SwarmBehavior>,
     );
 
-    fn run(&mut self, (entities, time, mut swarm_centers, swarm_behaviors): Self::SystemData) {
-        let delta_seconds = time.delta_seconds();
-
+    fn run(&mut self, (entities, _time, mut swarm_centers, swarm_behaviors): Self::SystemData) {
         for (entity, mut swarm_center) in (&entities, &mut swarm_centers).join() {
             swarm_center.entities = swarm_center
                 .entities
@@ -127,36 +132,48 @@ impl<'s> System<'s> for SwarmBehaviorSystem {
         Read<'s, Time>,
         ReadStorage<'s, Transform>,
         ReadStorage<'s, SwarmCenter>,
-        WriteStorage<'s, SwarmBehavior>,
+        ReadStorage<'s, SwarmBehavior>,
         WriteStorage<'s, Movement>,
     );
 
     fn run(
         &mut self,
-        (entities, time, transforms, swarm_centers, mut swarm_behaviors, mut movements): Self::SystemData,
+        (_entities, time, transforms, _swarm_centers, swarm_behaviors, mut movements): Self::SystemData,
     ) {
         let delta_seconds = time.delta_seconds();
-        let mut rng = thread_rng();
+        let time_step = 0.01;
+        let iterations = (delta_seconds / time_step) as u32 + 1;
 
-        for (transform, mut swarm_behavior, mut movement) in
-            (&transforms, &mut swarm_behaviors, &mut movements).join()
+        for (transform, swarm_behavior, mut movement) in
+            (&transforms, &swarm_behaviors, &mut movements).join()
         {
-            let position = transform.translation();
-
-            let center_x = (rng.next_u32() % 100) as f32 / 500.0 - 0.1;
-            let center_y = (rng.next_u32() % 100) as f32 / 500.0 - 0.1;
-            let attraction_center = Vector3::new(center_x, center_y, 0.0);
-            let center_pull = swarm_behavior.attraction * 15.0 * (attraction_center - position);
-
-            let current_velocity = movement.velocity;
-            let mut side_direction = Vector3::new(current_velocity[1], -current_velocity[0], 0.0);
-            if !(side_direction.norm_squared() < f32::EPSILON) {
-                side_direction = side_direction.normalize();
+            let original_position = transform.translation();
+            let mut current_position = original_position.clone();
+            let mut current_velocity = movement.velocity.clone();
+            let pull_factor = 10.0;
+            let side_factor = 5.0;
+            for t in 0..iterations {
+                let iter_step = time_step.min(delta_seconds - time_step * t as f32);
+                let center_pull = if current_position.norm_squared() > 0.16 {
+                    swarm_behavior.attraction * pull_factor * (-current_position)
+                } else {
+                    Vector3::new(0.0, 0.0, 0.0)
+                };
+                let mut side_direction =
+                    Vector3::new(current_velocity[1], -current_velocity[0], 0.0);
+                if !(side_direction.norm_squared() < f32::EPSILON) {
+                    side_direction = side_direction.normalize();
+                }
+                let side_deviation_force = swarm_behavior.deviation * side_factor * side_direction;
+                let delta_velocity = iter_step * (center_pull + side_deviation_force);
+                current_velocity = current_velocity + delta_velocity;
+                let speed = current_velocity.norm();
+                if speed > movement.max_movement_speed {
+                    current_velocity *= movement.max_movement_speed / speed;
+                }
+                current_position = current_position + iter_step * current_velocity;
             }
-            let side_deviation_force = swarm_behavior.deviation * 8.0 * side_direction;
-
-            let delta_velocity = delta_seconds * (center_pull + side_deviation_force);
-            movement.velocity = movement.velocity + delta_velocity;
+            movement.velocity = (current_position - original_position) / delta_seconds;
         }
     }
 }
