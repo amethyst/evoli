@@ -4,12 +4,12 @@ Prefab (
         (
             data: (
                 name: (
-                    name: "Bee"
+                    name: "Ixie"
                 ),
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
-                        albedo: File("assets/tiny-bee.png", Png, (channel: Srgb),),
+                        albedo: File("assets/tiny-ixie.png", Png, (channel: Srgb),),
                     ),
                 ),
                 movement: (
