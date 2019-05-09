@@ -86,7 +86,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 let swarmling_entity = swarmling_entity_builder.build();
                 swarm_center.entities.push(swarmling_entity);
                 spawn_events.single_write(CreatureSpawnEvent {
-                    creature_type: "Bee".to_string(),
+                    creature_type: "Ixie".to_string(),
                     entity: swarmling_entity,
                 });
             }
