@@ -125,6 +125,8 @@ impl Default for MainGameState {
                     &["debug_spawn_trigger"],
                 )
                 .build(),
+            // The ui dispatcher will also run when this game state is paused. This is necessary so that
+            // the user can interact with the UI even if the game is in the `Paused` game state.
             ui_dispatcher: DispatcherBuilder::new()
                 .with(
                     time_control::TimeControlSystem::default(),
