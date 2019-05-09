@@ -18,11 +18,17 @@ Prefab (
                 ),
                 digestion: (
                     digestion: (
-                        nutrition_burn_rate: 4.0,
+                        nutrition_burn_rate: 0.1,
                     ),
                     fullness: (
-                        max: 80.0,
-                        value: 80.0,
+                        max: 10.0,
+                        value: 10.0,
+                    ),
+                ),
+                combat: (
+                    health: (
+                        max_health: 10.0,
+                        value: 10.0,
                     ),
                 ),
             ),

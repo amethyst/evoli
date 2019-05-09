@@ -113,7 +113,11 @@ impl Default for MainGameState {
                     "death_by_health_system",
                     &["perform_default_attack_system"],
                 )
-                .with(health::DebugHealthSystem, "debug_health_system", &[])
+                .with(
+                    health::DebugHealthSystem::default(),
+                    "debug_health_system",
+                    &[],
+                )
                 .with(
                     spawner::DebugSpawnTriggerSystem::default(),
                     "debug_spawn_trigger",

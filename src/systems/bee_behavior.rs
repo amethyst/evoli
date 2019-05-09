@@ -58,7 +58,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             let mut swarm_center = SwarmCenter::default();
             let nb_swarm_individuals = 2 + (rng.next_u32() % 5);
 
-            for i in 0..nb_swarm_individuals {
+            for _ in 0..nb_swarm_individuals {
                 let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
                 let swarm_behavior = SwarmBehavior {
                     swarm_center: Some(swarm_entity),
@@ -96,7 +96,7 @@ impl<'s> System<'s> for SwarmBehaviorSystem {
         ReadStorage<'s, SwarmBehavior>,
     );
 
-    fn run(&mut self, (entities, time, swarm_centers, swarm_behaviors): Self::SystemData) {
-        let delta_seconds = time.delta_seconds();
+    fn run(&mut self, (_entities, time, _swarm_centers, _swarm_behaviors): Self::SystemData) {
+        let _delta_seconds = time.delta_seconds();
     }
 }

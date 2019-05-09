@@ -60,7 +60,7 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
         );
     }
 
-    fn run(&mut self, (entities, spawn_events, prefabs, lazy_update): Self::SystemData) {
+    fn run(&mut self, (_entities, spawn_events, prefabs, lazy_update): Self::SystemData) {
         for event in spawn_events.read(self.spawn_reader_id.as_mut().unwrap()) {
             let creature_prefab = prefabs.get_prefab(&event.creature_type);
             match creature_prefab {

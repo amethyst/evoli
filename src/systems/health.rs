@@ -1,4 +1,4 @@
-use amethyst::renderer::*;
+use amethyst::renderer::DebugLines;
 use amethyst::{core::transform::ParentHierarchy, core::Transform, ecs::*};
 use std::f32;
 
@@ -19,7 +19,8 @@ impl<'s> System<'s> for DeathByHealthSystem {
     }
 }
 
-pub struct DebugHealthSystem;
+#[derive(Default)]
+pub struct DebugHealthSystem {}
 
 impl<'s> System<'s> for DebugHealthSystem {
     type SystemData = (
@@ -34,7 +35,6 @@ impl<'s> System<'s> for DebugHealthSystem {
         for (entity, health, local) in (&entities, &healths, &locals).join() {
             let pos = match hierarchy.parent(entity) {
                 Some(parent_entity) => {
-                    println!("{:?}", parent_entity);
                     let parent_transform = locals.get(parent_entity).unwrap();
                     parent_transform.clone().concat(local).translation().clone()
                 }

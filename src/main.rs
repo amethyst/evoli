@@ -48,7 +48,7 @@ amethyst_inspector::inspector![
 ];
 
 fn main() -> amethyst::Result<()> {
-    amethyst::start_logger(Default::default());
+    //    amethyst::start_logger(Default::default());
 
     let resources = application_root_dir().clone() + "/resources";
     let display_config_path = resources.clone() + "/display_config.ron";
