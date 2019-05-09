@@ -120,9 +120,14 @@ impl Default for MainGameState {
                     &[],
                 )
                 .with(
+                    spawner::DebugIxieSpawnSystem::default(),
+                    "debug_ixie_spawn",
+                    &[],
+                )
+                .with(
                     spawner::CreatureSpawnerSystem::default(),
                     "creature_spawner",
-                    &["debug_spawn_trigger"],
+                    &["debug_spawn_trigger", "debug_ixie_spawn"],
                 )
                 .build(),
             // The ui dispatcher will also run when this game state is paused. This is necessary so that

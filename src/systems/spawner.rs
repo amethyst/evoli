@@ -118,3 +118,30 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
         }
     }
 }
+
+#[derive(Default)]
+pub struct DebugIxieSpawnSystem {
+    ixie_timer: f32,
+}
+
+impl<'s> System<'s> for DebugIxieSpawnSystem {
+    type SystemData = (Write<'s, EventChannel<CreatureSpawnEvent>>, Read<'s, Time>);
+
+    fn run(&mut self, (mut spawn_events, time): Self::SystemData) {
+        let delta_seconds = time.delta_seconds();
+        self.ixie_timer -= delta_seconds;
+        if self.ixie_timer <= 0.0 {
+            let mut rng = thread_rng();
+            self.ixie_timer = 1.0f32;
+            let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let mut transform = Transform::default();
+            transform.set_xyz(x, y, 0.0);
+            transform.set_scale(0.3, 0.3, 1.0);
+            spawn_events.single_write(CreatureSpawnEvent {
+                creature_type: "Ixie".to_string(),
+                transform,
+            });
+        }
+    }
+}
