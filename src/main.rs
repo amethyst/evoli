@@ -69,6 +69,9 @@ fn main() -> amethyst::Result<()> {
 
     let display_config = DisplayConfig::load(display_config_path);
 
+    // The global game data. Here we register all systems and bundles that will run for every game state. The game states
+    // will define additional dispatchers for state specific systems. Note that the dispatchers will run in sequence,
+    // so this setup sacrifices performance for modularity (for now).
     let game_data = GameDataBuilder::default()
         .with_bundle(
             InputBundle::<String, String>::new().with_bindings_from_file(&key_bindings_path)?,
@@ -102,6 +105,8 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?;
 
+    // Set up the core application with a custom state event that allows us to access input events
+    // in the game states. The `CustomStateEventReader` is automatically derived based on `CustomStateEvent`.
     let mut game: CoreApplication<GameData, CustomStateEvent, CustomStateEventReader> =
         CoreApplication::build(resources, LoadingState::default())?
             .with_frame_limit(FrameRateLimitStrategy::Sleep, 60)

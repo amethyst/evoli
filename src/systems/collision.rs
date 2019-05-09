@@ -42,8 +42,10 @@ impl CollisionEvent {
     }
 }
 
+/// The collision system uses a simple way to calculate collision, at the cost of performance. This is
+/// intended! If there are a lot of entities, collisions should be handled by a real physics engine. As soon
+/// as a physics integration for Amethyst exists, we are going to switch to that for collision detection.
 pub struct CollisionSystem;
-
 impl<'s> System<'s> for CollisionSystem {
     type SystemData = (
         ReadStorage<'s, collider::Circle>,
