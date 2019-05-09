@@ -9,6 +9,7 @@ use amethyst::{
 };
 
 use rand::{thread_rng, RngCore};
+use std::f32;
 
 use crate::{
     components::{
@@ -62,13 +63,15 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
                 let swarm_behavior = SwarmBehavior {
                     swarm_center: Some(swarm_entity),
+                    attraction: 0.5f32,
+                    deviation: 0.5f32,
                 };
                 swarmling_entity_builder = swarmling_entity_builder.with(swarm_behavior);
                 let mut transform = Transform::default();
                 let x = (rng.next_u32() % 100) as f32 / 100.0 - 0.5;
                 let y = (rng.next_u32() % 100) as f32 / 100.0 - 0.5;
-                transform.set_xyz(x, y, 0.02);
-                transform.set_scale(0.2, 0.2, 1.0);
+                transform.set_xyz(x, y, 0.0);
+                transform.set_scale(0.3, 0.3, 1.0);
                 let parent = Parent {
                     entity: swarm_entity,
                 };
@@ -86,17 +89,74 @@ impl<'s> System<'s> for SwarmSpawnSystem {
 }
 
 #[derive(Default)]
+pub struct SwarmCenterSystem {}
+
+impl<'s> System<'s> for SwarmCenterSystem {
+    type SystemData = (
+        Entities<'s>,
+        Read<'s, Time>,
+        WriteStorage<'s, SwarmCenter>,
+        ReadStorage<'s, SwarmBehavior>,
+    );
+
+    fn run(&mut self, (entities, time, mut swarm_centers, swarm_behaviors): Self::SystemData) {
+        let delta_seconds = time.delta_seconds();
+
+        for (entity, mut swarm_center) in (&entities, &mut swarm_centers).join() {
+            swarm_center.entities = swarm_center
+                .entities
+                .iter()
+                .filter(|swarmling_entity| !(swarm_behaviors.get(**swarmling_entity).is_none()))
+                .cloned()
+                .collect();
+            if swarm_center.entities.len() == 0 {
+                entities
+                    .delete(entity)
+                    .expect("unreachable, the entity has been used just before");
+            }
+        }
+    }
+}
+
+#[derive(Default)]
 pub struct SwarmBehaviorSystem {}
 
 impl<'s> System<'s> for SwarmBehaviorSystem {
     type SystemData = (
         Entities<'s>,
         Read<'s, Time>,
+        ReadStorage<'s, Transform>,
         ReadStorage<'s, SwarmCenter>,
-        ReadStorage<'s, SwarmBehavior>,
+        WriteStorage<'s, SwarmBehavior>,
+        WriteStorage<'s, Movement>,
     );
 
-    fn run(&mut self, (_entities, time, _swarm_centers, _swarm_behaviors): Self::SystemData) {
-        let _delta_seconds = time.delta_seconds();
+    fn run(
+        &mut self,
+        (entities, time, transforms, swarm_centers, mut swarm_behaviors, mut movements): Self::SystemData,
+    ) {
+        let delta_seconds = time.delta_seconds();
+        let mut rng = thread_rng();
+
+        for (transform, mut swarm_behavior, mut movement) in
+            (&transforms, &mut swarm_behaviors, &mut movements).join()
+        {
+            let position = transform.translation();
+
+            let center_x = (rng.next_u32() % 100) as f32 / 500.0 - 0.1;
+            let center_y = (rng.next_u32() % 100) as f32 / 500.0 - 0.1;
+            let attraction_center = Vector3::new(center_x, center_y, 0.0);
+            let center_pull = swarm_behavior.attraction * 15.0 * (attraction_center - position);
+
+            let current_velocity = movement.velocity;
+            let mut side_direction = Vector3::new(current_velocity[1], -current_velocity[0], 0.0);
+            if !(side_direction.norm_squared() < f32::EPSILON) {
+                side_direction = side_direction.normalize();
+            }
+            let side_deviation_force = swarm_behavior.deviation * 8.0 * side_direction;
+
+            let delta_velocity = delta_seconds * (center_pull + side_deviation_force);
+            movement.velocity = movement.velocity + delta_velocity;
+        }
     }
 }

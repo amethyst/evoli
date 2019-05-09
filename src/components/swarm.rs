@@ -12,6 +12,9 @@ impl Component for SwarmCenter {
 #[derive(Clone, Debug, Default)]
 pub struct SwarmBehavior {
     pub swarm_center: Option<Entity>,
+
+    pub attraction: f32,
+    pub deviation: f32,
 }
 
 impl Component for SwarmBehavior {

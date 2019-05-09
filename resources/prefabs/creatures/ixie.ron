@@ -14,7 +14,7 @@ Prefab (
                 ),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
-                    max_movement_speed: 2.0,
+                    max_movement_speed: 5.0,
                 ),
                 digestion: (
                     digestion: (

@@ -92,11 +92,11 @@ impl Default for MainGameState {
                     "starvation_system",
                     &["digestion_system"],
                 )
-                .with(
-                    digestion::DebugFullnessSystem,
-                    "debug_fullness_system",
-                    &["digestion_system"],
-                )
+                //.with(
+                //digestion::DebugFullnessSystem,
+                //"debug_fullness_system",
+                //&["digestion_system"],
+                //)
                 .with(combat::CooldownSystem, "cooldown_system", &[])
                 .with(
                     combat::FindAttackSystem::default(),
@@ -113,11 +113,11 @@ impl Default for MainGameState {
                     "death_by_health_system",
                     &["perform_default_attack_system"],
                 )
-                .with(
-                    health::DebugHealthSystem::default(),
-                    "debug_health_system",
-                    &[],
-                )
+                //.with(
+                //health::DebugHealthSystem::default(),
+                //"debug_health_system",
+                //&[],
+                //)
                 .with(
                     spawner::DebugSpawnTriggerSystem::default(),
                     "debug_spawn_trigger",
@@ -131,6 +131,11 @@ impl Default for MainGameState {
                 .with(
                     bee_behavior::SwarmBehaviorSystem::default(),
                     "swarm_behavior",
+                    &[],
+                )
+                .with(
+                    bee_behavior::SwarmCenterSystem::default(),
+                    "swarm_center",
                     &[],
                 )
                 .with(
