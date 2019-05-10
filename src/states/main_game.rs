@@ -23,6 +23,7 @@ use std::f32::consts::PI;
 
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
+    debug_dispatcher: Dispatcher<'static, 'static>,
     ui_dispatcher: Dispatcher<'static, 'static>,
 }
 
@@ -75,26 +76,10 @@ impl Default for MainGameState {
                     "enforce_bounds_system",
                     &["movement_system"],
                 )
-                .with(
-                    collision::DebugCollisionEventSystem::default(),
-                    "debug_collision_event_system",
-                    &["collision_system"],
-                )
-                .with(collision::DebugColliderSystem, "debug_collider_system", &[])
-                .with(
-                    debug::DebugSystem,
-                    "debug_system",
-                    &["collision_system", "enforce_bounds_system"],
-                )
                 .with(digestion::DigestionSystem, "digestion_system", &[])
                 .with(
                     digestion::StarvationSystem,
                     "starvation_system",
-                    &["digestion_system"],
-                )
-                .with(
-                    digestion::DebugFullnessSystem,
-                    "debug_fullness_system",
                     &["digestion_system"],
                 )
                 .with(combat::CooldownSystem, "cooldown_system", &[])
@@ -129,6 +114,16 @@ impl Default for MainGameState {
                     "creature_spawner",
                     &["debug_spawn_trigger", "debug_ixie_spawn"],
                 )
+                .build(),
+            debug_dispatcher: DispatcherBuilder::new()
+                .with(
+                    collision::DebugCollisionEventSystem::default(),
+                    "debug_collision_event_system",
+                    &[],
+                )
+                .with(collision::DebugColliderSystem, "debug_collider_system", &[])
+                .with(debug::DebugSystem, "debug_system", &[])
+                .with(digestion::DebugFullnessSystem, "debug_fullness_system", &[])
                 .build(),
             // The ui dispatcher will also run when this game state is paused. This is necessary so that
             // the user can interact with the UI even if the game is in the `Paused` game state.
