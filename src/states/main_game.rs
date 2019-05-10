@@ -24,6 +24,7 @@ use std::f32::consts::PI;
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
     debug_dispatcher: Dispatcher<'static, 'static>,
+    show_debug: bool,
     ui_dispatcher: Dispatcher<'static, 'static>,
 }
 
@@ -125,6 +126,7 @@ impl Default for MainGameState {
                 .with(debug::DebugSystem, "debug_system", &[])
                 .with(digestion::DebugFullnessSystem, "debug_fullness_system", &[])
                 .build(),
+            show_debug: false,
             // The ui dispatcher will also run when this game state is paused. This is necessary so that
             // the user can interact with the UI even if the game is in the `Paused` game state.
             ui_dispatcher: DispatcherBuilder::new()
@@ -149,6 +151,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             CustomStateEvent::Ui(_) => (),     // Ui event. Button presses, mouse hover, etc...
             CustomStateEvent::Input(input_event) => match input_event {
                 InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
+                    "ToggleDebug" => self.show_debug = !self.show_debug,
                     "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
                     "SpeedUp" => {
                         let mut time_resource = data.world.write_resource::<Time>();
@@ -170,6 +173,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
     fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
         self.dispatcher.setup(&mut data.world.res);
+        self.debug_dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
 
         time_control::create_time_control_ui(&mut data.world);
@@ -226,6 +230,9 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         data: StateData<'_, GameData<'a, 'a>>,
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         self.dispatcher.dispatch(&mut data.world.res);
+        if self.show_debug {
+            self.debug_dispatcher.dispatch(&mut data.world.res);
+        }
         data.data.update(&data.world);
         Trans::None
     }
