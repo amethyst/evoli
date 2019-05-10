@@ -36,9 +36,9 @@ impl<'s> System<'s> for SwarmSpawnSystem {
         let delta_seconds = time.delta_seconds();
         self.swarm_timer -= delta_seconds;
         if self.swarm_timer <= 0.0 {
-            let mut swarm_entity_builder = lazy_update.create_entity(&entities);
             let mut rng = thread_rng();
-            self.swarm_timer = 5.0f32;
+            self.swarm_timer = 10.0f32;
+            let mut swarm_entity_builder = lazy_update.create_entity(&entities);
             let x = rng.gen_range(-10.0, 10.0);
             let y = rng.gen_range(-10.0, 10.0);
             let mut transform = Transform::default();
@@ -55,10 +55,8 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             };
             swarm_entity_builder = swarm_entity_builder.with(wander);
             let swarm_entity = swarm_entity_builder.build();
-
             let mut swarm_center = SwarmCenter::default();
-            let nb_swarm_individuals = rng.gen_range(4, 8);
-
+            let nb_swarm_individuals = rng.gen_range(3, 10);
             for _ in 0..nb_swarm_individuals {
                 let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
                 let swarm_behavior = SwarmBehavior {
@@ -143,7 +141,6 @@ impl<'s> System<'s> for SwarmBehaviorSystem {
         let delta_seconds = time.delta_seconds();
         let time_step = 0.01;
         let iterations = (delta_seconds / time_step) as u32 + 1;
-
         for (transform, swarm_behavior, mut movement) in
             (&transforms, &swarm_behaviors, &mut movements).join()
         {
