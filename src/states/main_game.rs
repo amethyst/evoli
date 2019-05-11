@@ -113,21 +113,35 @@ impl Default for MainGameState {
                     "death_by_health_system",
                     &["perform_default_attack_system"],
                 )
-                .with(health::DebugHealthSystem, "debug_health_system", &[])
+                .with(
+                    health::DebugHealthSystem::default(),
+                    "debug_health_system",
+                    &[],
+                )
                 .with(
                     spawner::DebugSpawnTriggerSystem::default(),
                     "debug_spawn_trigger",
                     &[],
                 )
                 .with(
-                    spawner::DebugIxieSpawnSystem::default(),
-                    "debug_ixie_spawn",
+                    swarm_behavior::SwarmSpawnSystem::default(),
+                    "swarm_spawn",
+                    &[],
+                )
+                .with(
+                    swarm_behavior::SwarmBehaviorSystem::default(),
+                    "swarm_behavior",
+                    &[],
+                )
+                .with(
+                    swarm_behavior::SwarmCenterSystem::default(),
+                    "swarm_center",
                     &[],
                 )
                 .with(
                     spawner::CreatureSpawnerSystem::default(),
                     "creature_spawner",
-                    &["debug_spawn_trigger", "debug_ixie_spawn"],
+                    &["debug_spawn_trigger", "swarm_spawn"],
                 )
                 .build(),
             // The ui dispatcher will also run when this game state is paused. This is necessary so that
@@ -186,9 +200,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         };
 
         {
-            let mut spawn_events = data
-                .world
-                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
             let mut rng = thread_rng();
             for _ in 0..25 {
                 let x = rng.gen_range(left, right);
@@ -199,9 +210,13 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 transform.set_xyz(x, y, 0.0);
                 transform.set_scale(scale, scale, 1.0);
                 transform.set_rotation_euler(0.0, 0.0, rotation);
+                let plant_entity = data.world.create_entity().with(transform).build();
+                let mut spawn_events = data
+                    .world
+                    .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
                 spawn_events.single_write(spawner::CreatureSpawnEvent {
                     creature_type: "Plant".to_string(),
-                    transform,
+                    entity: plant_entity,
                 });
             }
         }

@@ -1,5 +1,5 @@
-use amethyst::renderer::*;
-use amethyst::{core::Transform, ecs::*};
+use amethyst::renderer::DebugLines;
+use amethyst::{core::transform::ParentHierarchy, core::Transform, ecs::*};
 use std::f32;
 
 use crate::components::combat::Health;
@@ -19,18 +19,27 @@ impl<'s> System<'s> for DeathByHealthSystem {
     }
 }
 
-pub struct DebugHealthSystem;
+#[derive(Default)]
+pub struct DebugHealthSystem {}
 
 impl<'s> System<'s> for DebugHealthSystem {
     type SystemData = (
+        Entities<'s>,
+        ReadExpect<'s, ParentHierarchy>,
         ReadStorage<'s, Health>,
         ReadStorage<'s, Transform>,
         Write<'s, DebugLines>,
     );
 
-    fn run(&mut self, (healths, locals, mut debug_lines): Self::SystemData) {
-        for (health, local) in (&healths, &locals).join() {
-            let pos = local.translation();
+    fn run(&mut self, (entities, hierarchy, healths, locals, mut debug_lines): Self::SystemData) {
+        for (entity, health, local) in (&entities, &healths, &locals).join() {
+            let pos = match hierarchy.parent(entity) {
+                Some(parent_entity) => {
+                    let parent_transform = locals.get(parent_entity).unwrap();
+                    parent_transform.clone().concat(local).translation().clone()
+                }
+                None => local.translation().clone(),
+            };
             debug_lines.draw_line(
                 [pos.x, pos.y + 0.5, 0.0].into(),
                 [pos.x + health.value / 100.0, pos.y + 0.5, 0.0].into(),
