@@ -3,8 +3,11 @@
 
   },
   actions: {
+    "ToggleDebug": [
+        [Key(D)]
+    ],
     "TogglePause": [
-            [Key(P)]
+        [Key(P)]
     ],
     "SpeedUp": [
         [Key(Add)]
