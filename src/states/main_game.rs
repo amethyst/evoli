@@ -1,7 +1,7 @@
 use amethyst;
 
 use amethyst::{
-    core::{transform::Transform, Time},
+    core::{transform::Transform, ArcThreadPool, Time},
     ecs::*,
     input::InputEvent,
     prelude::*,
@@ -27,10 +27,14 @@ pub struct MainGameState {
     ui_dispatcher: Dispatcher<'static, 'static>,
 }
 
-impl Default for MainGameState {
-    fn default() -> Self {
+impl MainGameState {
+    pub fn new(world: &mut World) -> Self {
+        // For profiling, the dispatcher needs to specify the pool that is created for us by `ApplicationBuilder::new`.
+        // This thread pool will include the necessary setup for `profile_scope`.
+        let pool = world.read_resource::<ArcThreadPool>().clone();
         MainGameState {
             dispatcher: DispatcherBuilder::new()
+                .with_pool(pool)
                 .with(
                     QueryPredatorsAndPreySystem,
                     "query_predators_and_prey_system",

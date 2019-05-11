@@ -3,6 +3,8 @@ use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::{core::Transform, ecs::*};
 use log::info;
 use std::f32;
+#[cfg(feature = "profiler")]
+use thread_profiler::profile_scope;
 
 use crate::components::collider;
 use crate::components::creatures;
@@ -59,6 +61,8 @@ impl<'s> System<'s> for CollisionSystem {
         &mut self,
         (circles, mut movements, locals, entities, mut collision_events): Self::SystemData,
     ) {
+        #[cfg(feature = "profiler")]
+        profile_scope!("collision_system");
         for (circle_a, movement, local_a, entity_a) in
             (&circles, &mut movements, &locals, &entities).join()
         {
