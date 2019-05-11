@@ -1,6 +1,7 @@
 use amethyst;
 
 use amethyst::{
+    core::nalgebra::{Rotation3, Vector3},
     core::{transform::Transform, Time},
     ecs::*,
     input::InputEvent,
@@ -10,6 +11,7 @@ use amethyst::{
     State,
 };
 
+use crate::systems::behaviors::avoid::{Avoid, ClosestWallSystem, QueryAvoidSystem};
 use crate::systems::behaviors::decision::{
     ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
 };
@@ -37,6 +39,11 @@ impl Default for MainGameState {
                     &[],
                 )
                 .with(
+                    QueryAvoidSystem,
+                    "query_avoid_system",
+                    &["query_predators_and_prey_system"],
+                )
+                .with(
                     ClosestSystem::<Prey>::default(),
                     "closest_prey_system",
                     &["query_predators_and_prey_system"],
@@ -47,14 +54,37 @@ impl Default for MainGameState {
                     &["query_predators_and_prey_system"],
                 )
                 .with(
-                    SeekSystem::<Prey>::new(1.0),
+                    ClosestSystem::<Avoid>::default(),
+                    "closest_avoid_system",
+                    &["query_avoid_system"],
+                )
+                .with(
+                    ClosestWallSystem,
+                    "closest_wall_system",
+                    &["closest_avoid_system"],
+                )
+                .with(
+                    SeekSystem::<Prey>::new(Rotation3::new(Vector3::new(0.0, 0.0, 0.0))),
                     "seek_prey_system",
                     &["closest_prey_system"],
                 )
                 .with(
-                    SeekSystem::<Predator>::new(-1.0),
+                    SeekSystem::<Predator>::new(Rotation3::new(Vector3::new(
+                        0.0,
+                        0.0,
+                        std::f32::consts::PI,
+                    ))),
                     "avoid_predator_system",
                     &["closest_predator_system"],
+                )
+                .with(
+                    SeekSystem::<Avoid>::new(Rotation3::new(Vector3::new(
+                        0.0,
+                        0.0,
+                        -std::f32::consts::FRAC_PI_2,
+                    ))),
+                    "avoid_system",
+                    &["closest_wall_system", "closest_avoid_system"],
                 )
                 .with(
                     behaviors::wander::WanderSystem,

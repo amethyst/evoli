@@ -9,7 +9,7 @@ use crate::components::creatures::*;
 use std::marker::PhantomData;
 
 /// A query is a component that contains the queried bit set that can be used to join with other components
-pub struct Query<T>(BitSet, PhantomData<T>);
+pub struct Query<T>(pub BitSet, PhantomData<T>);
 impl<T: Resource> Component for Query<T> {
     type Storage = HashMapStorage<Self>;
 }
@@ -25,6 +25,8 @@ impl<T> Query<T> {
 pub struct Prey;
 #[derive(Default)]
 pub struct Predator;
+#[derive(Default)]
+pub struct Friend;
 
 /// Write prey/predator queries to the faction entities. For each faction
 /// we calculate the set of entities that they consider prey and the set of entities they
@@ -37,25 +39,32 @@ impl<'s> System<'s> for QueryPredatorsAndPreySystem {
         ReadStorage<'s, FactionPrey<Entity>>,
         WriteStorage<'s, Query<Prey>>,
         WriteStorage<'s, Query<Predator>>,
+        WriteStorage<'s, Query<Friend>>,
     );
 
     fn run(
         &mut self,
-        (entities, has_faction, faction_preys_set, mut preys_query, mut predators_query): Self::SystemData,
+        (
+            entities,
+            has_faction,
+            faction_preys_set,
+            mut preys_query,
+            mut predators_query,
+            mut friends_query,
+        ): Self::SystemData,
     ) {
         for (faction, _) in (&entities, &faction_preys_set).join() {
-            if !preys_query.contains(faction) {
-                preys_query
-                    .insert(faction, Query::<Prey>::new())
-                    .expect("unreachable: we just queried");
-            }
-            if !predators_query.contains(faction) {
-                predators_query
-                    .insert(faction, Query::<Predator>::new())
-                    .expect("unreachable: we just queried");
+            if let Ok(entry) = preys_query.entry(faction) {
+                entry.or_insert(Query::<Prey>::new()).0.clear();
             }
 
-            predators_query.get_mut(faction).unwrap().0.clear();
+            if let Ok(entry) = predators_query.entry(faction) {
+                entry.or_insert(Query::<Predator>::new()).0.clear();
+            }
+
+            if let Ok(entry) = friends_query.entry(faction) {
+                entry.or_insert(Query::<Friend>::new()).0.clear();
+            }
         }
 
         for (faction, faction_preys) in (&entities, &faction_preys_set).join() {
@@ -64,6 +73,13 @@ impl<'s> System<'s> for QueryPredatorsAndPreySystem {
             for (prey, prey_faction) in (&entities, &has_faction).join() {
                 if faction_preys.is_prey(&prey_faction.faction) {
                     preys.0.add(prey.id());
+                }
+            }
+
+            let friends = friends_query.get_mut(faction).unwrap();
+            for (friend, friend_faction) in (&entities, &has_faction).join() {
+                if friend_faction.faction == faction {
+                    friends.0.add(friend.id());
                 }
             }
         }
@@ -82,7 +98,7 @@ impl<'s> System<'s> for QueryPredatorsAndPreySystem {
 
 /// A component that stores the distance to the closest entity. The type T is used to tag the entity.
 pub struct Closest<T> {
-    distance: Vector3<f32>,
+    pub distance: Vector3<f32>,
     _phantom: PhantomData<T>,
 }
 
@@ -139,12 +155,14 @@ where
             let mut closest_opt = None;
             let mut min_sq_distance = 5.0f32.powi(2);
 
+            let compare_set = query_entities.unwrap().0.clone().remove(entity.id());
+
             for (_, query_transform) in (&query_entities.unwrap().0, &transforms).join() {
                 let position = transform.translation();
                 let query_position = query_transform.translation();
                 let difference = query_position - position;
                 let sq_distance = difference.magnitude_squared();
-                if sq_distance < min_sq_distance {
+                if sq_distance < min_sq_distance && sq_distance > 0.0 {
                     min_sq_distance = sq_distance;
                     closest_opt = Some(Closest::<T>::new(difference));
                 }
@@ -161,16 +179,16 @@ where
 
 /// Seek out the entity referenced by `Closest<T>` and apply a steering force
 /// towards that entity. The steering force can be modified using the `attraction_modifier` factor.
-/// By setting `attraction_modifier` to `-1` this system will behave like `Evade`.
+/// By setting `attraction_rotation` to `-1` this system will behave like `Evade`.
 pub struct SeekSystem<T> {
-    attraction_modifier: f32,
+    attraction_rotation: Rotation3<f32>,
     _phantom: PhantomData<T>,
 }
 
 impl<T> SeekSystem<T> {
-    pub fn new(attraction_modifier: f32) -> SeekSystem<T> {
+    pub fn new(attraction_rotation: Rotation3<f32>) -> SeekSystem<T> {
         SeekSystem {
-            attraction_modifier,
+            attraction_rotation,
             _phantom: PhantomData {},
         }
     }
@@ -190,9 +208,9 @@ where
     fn run(&mut self, (_entities, closest_preys, time, mut movements): Self::SystemData) {
         let delta_time = time.delta_seconds();
         for (movement, closest_prey) in (&mut movements, &closest_preys).join() {
-            let target_velocity = closest_prey.distance.normalize() * 10.0;
+            let target_velocity = closest_prey.distance.normalize() * 1.0;
             let steering_force = target_velocity - movement.velocity;
-            movement.velocity += self.attraction_modifier * steering_force * delta_time;
+            movement.velocity += self.attraction_rotation * steering_force * delta_time;
         }
     }
 }
