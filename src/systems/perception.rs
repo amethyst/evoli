@@ -1,18 +1,22 @@
 use amethyst::{
     core::transform::Transform,
-    ecs::{Entities, ReadStorage, System, WriteStorage},
+    ecs::{Entities, Join, ReadStorage, System, WriteStorage},
 };
 
-use crate::components::perception::{DetectedEntities, Perception};
+use crate::components::perception::Perception;
 
 pub struct EntityDetectionSystem;
 
 impl<'s> System<'s> for EntityDetectionSystem {
     type SystemData = (
         Entities<'s>,
-        ReadStorage<'s, Perception>,
-        WriteStorage<'s, DetectedEntities>,
+        WriteStorage<'s, Perception>,
+        ReadStorage<'s, Transform>,
     );
 
-    fn run(&mut self, (entities, perceptions, mut detected_entities): Self::SystemData) {}
+    fn run(&mut self, (entities, mut perceptions, transforms): Self::SystemData) {
+        for (entity, mut perception) in (&entities, &mut perceptions).join() {
+            println!("{:?}", entity);
+        }
+    }
 }

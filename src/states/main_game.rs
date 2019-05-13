@@ -35,6 +35,7 @@ impl MainGameState {
         MainGameState {
             dispatcher: DispatcherBuilder::new()
                 .with_pool(pool)
+                .with(perception::EntityDetectionSystem, "entity_detection", &[])
                 .with(
                     QueryPredatorsAndPreySystem,
                     "query_predators_and_prey_system",

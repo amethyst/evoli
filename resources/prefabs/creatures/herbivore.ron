@@ -51,6 +51,9 @@ Prefab (
                     ),
                 ),
                 intelligence_tag: (),
+                perception: (
+                    range: 5.0,
+                ),
             ),
         ),
     ],

@@ -1,24 +1,18 @@
 use amethyst::{
-    assets::{PrefabData, PrefabError},
+    assets::{PrefabData, PrefabError, ProgressCounter},
     ecs::{Component, DenseVecStorage, Entity, WriteStorage},
 };
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize, PrefabData)]
 #[prefab(Component)]
+#[serde(default)]
 pub struct Perception {
     pub range: f32,
-}
-
-impl Component for Perception {
-    type Storage = DenseVecStorage<Self>;
-}
-
-#[derive(Default, Clone, Debug)]
-pub struct DetectedEntities {
+    #[serde(skip)]
     pub entities: Vec<Entity>,
 }
 
-impl Component for DetectedEntities {
+impl Component for Perception {
     type Storage = DenseVecStorage<Self>;
 }
