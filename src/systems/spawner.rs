@@ -30,10 +30,10 @@ impl Distribution<CreatureTypeDistribution> for Standard {
                 creature_type: "Herbivore".to_string(),
             },
             1 => CreatureTypeDistribution {
-                creature_type: "Herbivore".to_string(),
+                creature_type: "Carnivore".to_string(),
             },
             _ => CreatureTypeDistribution {
-                creature_type: "Herbivore".to_string(),
+                creature_type: "Plant".to_string(),
             },
         }
     }
