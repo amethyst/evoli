@@ -1,5 +1,5 @@
 use amethyst::renderer::DebugLines;
-use amethyst::{core::transform::GlobalTransform, core::transform::ParentHierarchy, ecs::*};
+use amethyst::{core::transform::GlobalTransform, ecs::*};
 use std::f32;
 
 use crate::components::combat::Health;
@@ -24,15 +24,13 @@ pub struct DebugHealthSystem {}
 
 impl<'s> System<'s> for DebugHealthSystem {
     type SystemData = (
-        Entities<'s>,
-        ReadExpect<'s, ParentHierarchy>,
         ReadStorage<'s, Health>,
         ReadStorage<'s, GlobalTransform>,
         Write<'s, DebugLines>,
     );
 
-    fn run(&mut self, (entities, hierarchy, healths, globals, mut debug_lines): Self::SystemData) {
-        for (entity, health, global) in (&entities, &healths, &globals).join() {
+    fn run(&mut self, (healths, globals, mut debug_lines): Self::SystemData) {
+        for (health, global) in (&healths, &globals).join() {
             let global_matrix: [[f32; 4]; 4] = global.clone().into();
             let pos = global_matrix[3];
 
