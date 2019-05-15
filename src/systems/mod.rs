@@ -3,7 +3,6 @@ pub mod collision;
 pub mod combat;
 pub mod debug;
 pub mod digestion;
-pub mod global_transform;
 pub mod health;
 pub mod movement;
 pub mod perception;

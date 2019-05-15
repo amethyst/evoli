@@ -35,7 +35,6 @@ impl MainGameState {
         MainGameState {
             dispatcher: DispatcherBuilder::new()
                 .with_pool(pool)
-                .with(global_transform::GlobalTransformSystem::default(), "global_transform", &[])
                 .with(perception::EntityDetectionSystem, "entity_detection", &[])
                 .with(
                     QueryPredatorsAndPreySystem,
