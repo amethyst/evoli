@@ -1,15 +1,11 @@
-A *very* early draft still. I'm gonna be filling it in more, just had to publish it otherwise it would stay in private draft mode forever.
-
----
-
-## Evoli
+# Evoli
 A micro-ecosystem simulation game, progressively designed and developed as an official showcase project for the Amethyst engine. The current iteration of the game (v0.1.0 and onwards) simulates 3+ different species occupying the same, limited space.
 
 For more information about the current game design and our goals and history so far, read [our introduction](https://community.amethyst.rs/t/evoli-introduction/770).
 
 ## Media
 
-![evoli-ixies|666x500](upload://pPDZntNcsd5LlgJEZDTSy6kr1xi.gif) 
+![may-10](https://github.com/amethyst/evoli/raw/master/evoli-ixies.gif) 
 
 ## Install / Play
 
@@ -21,7 +17,7 @@ Ensure you have Cargo installed ([use rustup if you don't](https://rustup.rs/)),
 cargo run
 ```
 
-If you run into issues please report them here or on http://discord.gg/amethyst.
+If you run into issues please report them here or on http://discord.gg/amethyst in the #showcase-game channel.
 
 ## Get involved
 
