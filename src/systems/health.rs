@@ -31,9 +31,7 @@ impl<'s> System<'s> for DebugHealthSystem {
 
     fn run(&mut self, (healths, globals, mut debug_lines): Self::SystemData) {
         for (health, global) in (&healths, &globals).join() {
-            let global_matrix: [[f32; 4]; 4] = global.clone().into();
-            let pos = global_matrix[3];
-
+            let pos: [f32; 4] = global.as_ref()[3];
             debug_lines.draw_line(
                 [pos[0], pos[1] + 0.5, 0.0].into(),
                 [pos[0] + health.value / 100.0, pos[1] + 0.5, 0.0].into(),

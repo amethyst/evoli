@@ -20,17 +20,13 @@ impl<'s> System<'s> for EntityDetectionSystem {
     fn run(&mut self, (entities, mut perceptions, globals, mut debug_lines): Self::SystemData) {
         for (entity, mut perception, global) in (&entities, &mut perceptions, &globals).join() {
             perception.entities = Vec::new();
-            let global_matrix: [[f32; 4]; 4] = global.clone().into();
-            let pos = Vector4::from(global_matrix[3]).xyz();
-
+            let pos = Vector4::from(global.as_ref()[3]).xyz();
             let sq_range = perception.range * perception.range;
             for (other_entity, other_global) in (&entities, &globals).join() {
                 if entity == other_entity {
                     continue;
                 }
-                let other_global_matrix: [[f32; 4]; 4] = other_global.clone().into();
-                let other_pos = Vector4::from(other_global_matrix[3]).xyz();
-
+                let other_pos = Vector4::from(other_global.as_ref()[3]).xyz();
                 if (pos - other_pos).norm_squared() < sq_range {
                     perception.entities.push(other_entity);
                     debug_lines.draw_line(
