@@ -28,7 +28,6 @@ impl<'s> System<'s> for EntityDetectionSystem {
         for (entity, mut perception, global) in (&entities, &mut perceptions, &globals).join() {
             perception.entities = Vec::new();
             let nearby_entities = grid.query(global, perception.range);
-            println!("{}", perception.entities.len());
             let pos = Vector4::from(global.as_ref()[3]).xyz();
             let sq_range = perception.range * perception.range;
 

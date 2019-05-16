@@ -38,7 +38,6 @@ impl SpatialGrid {
         let y_cell = (pos[1] / self.cell_size).floor() as i32;
 
         let integer_range = (range / self.cell_size).ceil() as i32;
-        println!("integer range: {}", integer_range);
 
         let mut entities = Vec::new();
         for x in -integer_range..integer_range {
