@@ -1,7 +1,7 @@
 use amethyst::{
     core::nalgebra::Vector4,
     core::transform::GlobalTransform,
-    ecs::{Entities, Join, ReadStorage, System, Write, WriteStorage},
+    ecs::{Entities, Join, Read, ReadStorage, System, Write, WriteStorage},
     renderer::DebugLines,
 };
 
@@ -14,14 +14,16 @@ impl<'s> System<'s> for EntityDetectionSystem {
     type SystemData = (
         Entities<'s>,
         WriteStorage<'s, Perception>,
+        Read<'s, SpatialGrid>,
         ReadStorage<'s, GlobalTransform>,
         Write<'s, DebugLines>,
     );
 
-    fn run(&mut self, (entities, mut perceptions, globals, mut debug_lines): Self::SystemData) {
-        let mut grid = SpatialGrid::new(1.0f32);
+    fn run(
+        &mut self,
+        (entities, mut perceptions, grid, globals, mut debug_lines): Self::SystemData,
+    ) {
         for (entity, mut perception, global) in (&entities, &mut perceptions, &globals).join() {
-            grid.insert(entity, global);
             perception.entities = Vec::new();
             let pos = Vector4::from(global.as_ref()[3]).xyz();
             let sq_range = perception.range * perception.range;
@@ -39,6 +41,23 @@ impl<'s> System<'s> for EntityDetectionSystem {
                     )
                 }
             }
+        }
+    }
+}
+
+pub struct SpatialGridSystem;
+
+impl<'s> System<'s> for SpatialGridSystem {
+    type SystemData = (
+        Entities<'s>,
+        ReadStorage<'s, GlobalTransform>,
+        Write<'s, SpatialGrid>,
+    );
+
+    fn run(&mut self, (entities, globals, mut spatial_grid): Self::SystemData) {
+        spatial_grid.reset();
+        for (entity, global) in (&entities, &globals).join() {
+            spatial_grid.insert(entity, global);
         }
     }
 }
