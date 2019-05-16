@@ -6,6 +6,7 @@ use amethyst::{
 };
 
 use crate::components::perception::Perception;
+use crate::resources::spatial_grid::SpatialGrid;
 
 pub struct EntityDetectionSystem;
 
@@ -18,7 +19,9 @@ impl<'s> System<'s> for EntityDetectionSystem {
     );
 
     fn run(&mut self, (entities, mut perceptions, globals, mut debug_lines): Self::SystemData) {
+        let mut grid = SpatialGrid::new(1.0f32);
         for (entity, mut perception, global) in (&entities, &mut perceptions, &globals).join() {
+            grid.insert(entity, global);
             perception.entities = Vec::new();
             let pos = Vector4::from(global.as_ref()[3]).xyz();
             let sq_range = perception.range * perception.range;
