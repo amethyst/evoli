@@ -14,7 +14,7 @@ use crate::systems::behaviors::decision::{
     ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
 };
 use crate::{
-    resources::{debug::DebugConfig, world_bounds::WorldBounds},
+    resources::{debug::DebugConfig, spatial_grid::SpatialGrid, world_bounds::WorldBounds},
     states::{paused::PausedState, CustomStateEvent},
     systems::*,
 };
@@ -204,6 +204,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
         // Setup debug config resource
         data.world.add_resource(DebugConfig::default());
+
+        data.world.add_resource(SpatialGrid::new(1.0f32));
 
         time_control::create_time_control_ui(&mut data.world);
 
