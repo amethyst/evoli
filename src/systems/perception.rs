@@ -1,6 +1,8 @@
 use amethyst::{
     core::{nalgebra::Vector4, transform::GlobalTransform},
-    ecs::{Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage},
+    ecs::{
+        BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
+    },
     renderer::DebugLines,
 };
 
@@ -40,12 +42,16 @@ impl<'s> System<'s> for EntityDetectionSystem {
             let nearby_entities = grid.query(global, perception.range);
             let pos = Vector4::from(global.as_ref()[3]).xyz();
             let sq_range = perception.range * perception.range;
-
-            for other_entity in nearby_entities {
-                if entity == other_entity {
+            let mut nearby_entities_bitset = BitSet::new();
+            for other_entity in &nearby_entities {
+                if entity == *other_entity {
                     continue;
                 }
-                let other_global = globals.get(other_entity).unwrap();
+                nearby_entities_bitset.add(other_entity.id());
+            }
+            for (other_entity, other_global, _) in
+                (&entities, &globals, &nearby_entities_bitset).join()
+            {
                 let other_pos = Vector4::from(other_global.as_ref()[3]).xyz();
                 if (pos - other_pos).norm_squared() < sq_range {
                     detected.entities.push(other_entity);
