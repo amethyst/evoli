@@ -6,11 +6,6 @@ use amethyst::{
 use std::collections::HashMap;
 use std::f32;
 
-#[cfg(test)]
-use amethyst::Error;
-#[cfg(test)]
-use amethyst_test::AmethystApplication;
-
 pub struct SpatialGrid {
     cell_size: f32,
     cells: HashMap<i32, HashMap<i32, Vec<Entity>>>,
