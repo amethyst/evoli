@@ -10,12 +10,17 @@ use serde::{Deserialize, Serialize};
 #[serde(default)]
 pub struct Perception {
     pub range: f32,
-
-    #[serde(skip)]
-    #[inspect(skip)]
-    pub entities: Vec<Entity>,
 }
 
 impl Component for Perception {
+    type Storage = DenseVecStorage<Self>;
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct DetectedEntities {
+    pub entities: Vec<Entity>,
+}
+
+impl Component for DetectedEntities {
     type Storage = DenseVecStorage<Self>;
 }
