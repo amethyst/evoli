@@ -1,8 +1,6 @@
 use amethyst::{
     core::{nalgebra::Vector4, transform::GlobalTransform},
-    ecs::{
-        Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
-    },
+    ecs::{Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage},
     renderer::DebugLines,
 };
 
