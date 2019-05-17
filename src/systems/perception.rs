@@ -1,7 +1,7 @@
 use amethyst::{
     core::{nalgebra::Vector4, transform::GlobalTransform},
     ecs::{
-        Entities, Join, Read, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
+        Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
     },
     renderer::DebugLines,
 };
