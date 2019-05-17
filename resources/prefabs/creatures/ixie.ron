@@ -27,6 +27,9 @@ Prefab (
                         value: 10.0,
                     ),
                 ),
+                perception: (
+                    range: 0.8,
+                ),
             ),
         ),
     ],
