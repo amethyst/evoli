@@ -36,16 +36,10 @@ impl SpatialGrid {
         let pos = Vector4::from(transform.as_ref()[3]);
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
         let y_cell = (pos[1] / self.cell_size).floor() as i32;
-
         let integer_range = 1 + (range / self.cell_size).ceil() as i32;
-        //        let sq_range = range * range;
-
         let mut entities = Vec::new();
         for x in -integer_range..integer_range {
             for y in -integer_range..integer_range {
-                //                if (x * x + y * y) as f32 > sq_range {
-                //                    continue;
-                //                }
                 match self.cells.get(&(x_cell + x)) {
                     Some(col) => match col.get(&(y_cell + y)) {
                         Some(cell) => entities.extend_from_slice(cell.as_slice()),
@@ -57,4 +51,27 @@ impl SpatialGrid {
         }
         entities
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use amethyst::{
+        core::transform::Transform,
+        ecs::{Builder, World},
+    };
+
+    #[test]
+    fn grid_creation_and_insertion() {
+        let mut world = World::new();
+        let mut spatial_grid = SpatialGrid::new(1.0f32);
+
+        let transform = Transform::default();
+        let transform_matrix = transform.matrix();
+        let global_transform = GlobalTransform::from(*transform_matrix.as_ref());
+        spatial_grid.insert(world.create_entity().build(), &global_transform);
+
+        assert!(spatial_grid.query(&global_transform, 1.0f32).len() == 1);
+    }
+
 }
