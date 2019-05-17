@@ -35,7 +35,6 @@ impl MainGameState {
         MainGameState {
             dispatcher: DispatcherBuilder::new()
                 .with_pool(pool)
-                .with(perception::EntityDetectionSystem, "entity_detection", &[])
                 .with(perception::SpatialGridSystem, "spatial_grid", &[])
                 .with(
                     perception::EntityDetectionSystem,
