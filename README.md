@@ -19,6 +19,17 @@ cargo run
 
 If you run into issues please report them here or on http://discord.gg/amethyst in the #showcase-game channel.
 
+## Profiling
+We use the same profiling library Amethyst uses. Run the game with
+```
+cargo run --release --features profiler
+```
+then exit the game without a crash to generate a file `thread_profile.json`.
+See the Amethyst instructions [Profiling the engine](https://github.com/amethyst/amethyst/blob/master/docs/CONTRIBUTING.md#profiling-the-engine) on
+how to use that file.
+
+Search the code for `profile_scope` for an example on how to add profiling markers to the code.
+
 ## Get involved
 
 - [Sitemap doc](https://community.amethyst.rs/t/evoli-sitemap/771) - All essential reading and communication tools.

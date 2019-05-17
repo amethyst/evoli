@@ -14,3 +14,10 @@ amethyst-imgui = { git = "https://github.com/awpteamoose/amethyst-imgui.git", br
 amethyst-inspector = { git = "https://github.com/awpteamoose/amethyst-inspector.git", branch = "amethyst-v0.10" }
 smart-default = "0.5.2"
 serde = "1.0.90"
+thread_profiler = "0.3.0"
+
+[features]
+profiler = [
+    "thread_profiler/thread_profiler",
+    "amethyst/profiler"
+]
