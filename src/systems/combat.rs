@@ -6,11 +6,13 @@ use amethyst::{
 
 use crate::components::combat;
 use crate::components::combat::{Cooldown, Damage, Health, Speed};
+use crate::components::digestion::{Fullness, Nutrition};
 use crate::systems::collision::CollisionEvent;
 #[cfg(test)]
 use amethyst::Error;
 #[cfg(test)]
 use amethyst_test::AmethystApplication;
+use std::f32;
 use std::time::Duration;
 
 pub struct CooldownSystem;
@@ -58,11 +60,13 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
         WriteStorage<'s, Cooldown>,
         ReadStorage<'s, Speed>,
         WriteStorage<'s, Health>,
+        WriteStorage<'s, Fullness>,
+        ReadStorage<'s, Nutrition>,
     );
 
     fn run(
         &mut self,
-        (attack_events, damages, mut cooldowns, speeds, mut healths): Self::SystemData,
+        (attack_events, damages, mut cooldowns, speeds, mut healths, mut fullnesses, nutritions): Self::SystemData,
     ) {
         let event_reader = self
             .event_reader
@@ -76,12 +80,19 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
             defender_set.add(event.defender.id());
 
             let mut cooldown = None;
-            for (damage, _, speed, _) in (&damages, !&cooldowns, &speeds, &attack_set).join() {
-                for (mut health, _) in (&mut healths, &defender_set).join() {
+            for (damage, _, speed, mut fullness, _) in
+                (&damages, !&cooldowns, &speeds, &mut fullnesses, &attack_set).join()
+            {
+                for (mut health, nutrition, _) in (&mut healths, &nutritions, &defender_set).join()
+                {
                     health.value = health.value - damage.damage;
                     cooldown = Some(Cooldown::new(Duration::from_millis(
                         (1000.0 / speed.attacks_per_second) as u64,
                     )));
+
+                    if health.value < f32::EPSILON {
+                        fullness.value = fullness.value + nutrition.value;
+                    }
                 }
             }
 

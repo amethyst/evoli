@@ -45,10 +45,28 @@ impl Fullness {
     }
 }
 
+#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
+pub struct Nutrition {
+    // nutritional value of the entity
+    pub value: f32,
+}
+
+impl Component for Nutrition {
+    type Storage = DenseVecStorage<Self>;
+}
+
+impl Nutrition {
+    pub fn new(value: f32) -> Nutrition {
+        Nutrition { value }
+    }
+}
+
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 pub struct DigestionPrefabData {
     fullness: Fullness,
     digestion: Digestion,
+    nutrition: Nutrition,
 }
