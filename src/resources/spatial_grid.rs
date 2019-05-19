@@ -6,6 +6,7 @@ use amethyst::{
 use std::collections::HashMap;
 use std::f32;
 
+// The SpatialGrid is a spatial hashing structure used to accelerate neighbor searches for entities.
 pub struct SpatialGrid {
     cell_size: f32,
     cells: HashMap<i32, HashMap<i32, Vec<Entity>>>,
@@ -23,6 +24,8 @@ impl SpatialGrid {
         self.cells = HashMap::new();
     }
 
+    // Insert an entity in the grid based on its GlobalTransform component.
+    // This might have to change when upgrading Amethyst to 0.11 as the GlobalTransform component was removed.
     pub fn insert(&mut self, entity: Entity, transform: &GlobalTransform) {
         let pos = Vector4::from(transform.as_ref()[3]);
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
@@ -32,6 +35,8 @@ impl SpatialGrid {
         col_entry.push(entity);
     }
 
+    // Query the entities close to a certain position.
+    // The range of the query is defined by the range input.
     pub fn query(&self, transform: &GlobalTransform, range: f32) -> Vec<Entity> {
         let pos = Vector4::from(transform.as_ref()[3]);
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
@@ -62,7 +67,7 @@ mod tests {
     };
 
     #[test]
-    fn grid_creation_and_insertion() {
+    fn grid_creation_insertion_and_query() {
         let mut world = World::new();
         let mut spatial_grid = SpatialGrid::new(1.0f32);
 
