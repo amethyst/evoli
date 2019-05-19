@@ -80,16 +80,18 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
             defender_set.add(event.defender.id());
 
             let mut cooldown = None;
-            for (damage, _, speed, mut fullness, _) in
-                (&damages, !&cooldowns, &speeds, &mut fullnesses, &attack_set).join()
-            {
-                for (mut health, nutrition, _) in (&mut healths, &nutritions, &defender_set).join()
-                {
+
+            for (damage, _, speed, _) in (&damages, !&cooldowns, &speeds, &attack_set).join() {
+                for (mut health, _) in (&mut healths, &defender_set).join() {
                     health.value = health.value - damage.damage;
                     cooldown = Some(Cooldown::new(Duration::from_millis(
                         (1000.0 / speed.attacks_per_second) as u64,
                     )));
+                }
+            }
 
+            for (mut fullness, _) in (&mut fullnesses, &attack_set).join() {
+                for (health, nutrition, _) in (&healths, &nutritions, &defender_set).join() {
                     if health.value < f32::EPSILON {
                         fullness.value = fullness.value + nutrition.value;
                     }
