@@ -25,7 +25,7 @@ use crate::components::combat;
 use crate::components::combat::Health;
 use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::creatures::{self, IntelligenceTag, Movement, Wander};
-use crate::components::digestion::{Digestion, Fullness};
+use crate::components::digestion::{Digestion, Fullness, Nutrition};
 use crate::resources::audio::Music;
 use crate::states::{loading::LoadingState, CustomStateEvent, CustomStateEventReader};
 
@@ -38,6 +38,7 @@ amethyst_inspector::inspector![
     Wander,
     Digestion,
     Fullness,
+    Nutrition,
     Damage,
     Speed,
     Cooldown,
