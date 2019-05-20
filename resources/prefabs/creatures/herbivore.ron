@@ -32,7 +32,7 @@ Prefab (
                         value: 100.0,
                     ),
                     nutrition: (
-                        value: 15.0,
+                        value: 50.0,
                     ),
                 ),
                 combat: (

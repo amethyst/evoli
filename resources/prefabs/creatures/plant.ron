@@ -12,6 +12,18 @@ Prefab (
                         albedo: File("assets/simply_plant.png", Png, (channel: Srgb),),
                     ),
                 ),
+                digestion: (
+                    digestion: (
+                        nutrition_burn_rate: 1.0,
+                    ),
+                    fullness: (
+                        max: 100.0,
+                        value: 100.0,
+                    ),
+                    nutrition: (
+                        value: 20.0,
+                    ),
+                ),
                 collider: (
                     radius: 0.8,
                 ),
