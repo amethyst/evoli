@@ -14,7 +14,7 @@ use crate::systems::behaviors::decision::{
     ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
 };
 use crate::{
-    resources::{debug::DebugConfig, world_bounds::WorldBounds},
+    resources::{debug::DebugConfig, spatial_grid::SpatialGrid, world_bounds::WorldBounds},
     states::{paused::PausedState, CustomStateEvent},
     systems::*,
 };
@@ -35,6 +35,12 @@ impl MainGameState {
         MainGameState {
             dispatcher: DispatcherBuilder::new()
                 .with_pool(pool)
+                .with(perception::SpatialGridSystem, "spatial_grid", &[])
+                .with(
+                    perception::EntityDetectionSystem,
+                    "entity_detection",
+                    &["spatial_grid"],
+                )
                 .with(
                     QueryPredatorsAndPreySystem,
                     "query_predators_and_prey_system",
@@ -142,6 +148,11 @@ impl MainGameState {
                 .with(collision::DebugColliderSystem, "debug_collider_system", &[])
                 .with(debug::DebugSystem, "debug_system", &[])
                 .with(digestion::DebugFullnessSystem, "debug_fullness_system", &[])
+                .with(
+                    perception::DebugEntityDetectionSystem,
+                    "debug_entity_detection",
+                    &[],
+                )
                 .build(),
             // The ui dispatcher will also run when this game state is paused. This is necessary so that
             // the user can interact with the UI even if the game is in the `Paused` game state.
@@ -197,6 +208,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
         // Setup debug config resource
         data.world.add_resource(DebugConfig::default());
+
+        data.world.add_resource(SpatialGrid::new(1.0f32));
 
         time_control::create_time_control_ui(&mut data.world);
 
