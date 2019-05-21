@@ -82,7 +82,7 @@ impl<'s> System<'s> for QueryPredatorsAndPreySystem {
 
 /// A component that stores the distance to the closest entity. The type T is used to tag the entity.
 pub struct Closest<T> {
-    distance: Vector3<f32>,
+    pub distance: Vector3<f32>,
     _phantom: PhantomData<T>,
 }
 

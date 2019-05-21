@@ -13,6 +13,7 @@ use amethyst::{
 use crate::systems::behaviors::decision::{
     ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
 };
+use crate::systems::behaviors::obstacle::{ClosestObstacleSystem, Obstacle};
 use crate::{
     resources::{debug::DebugConfig, world_bounds::WorldBounds},
     states::{paused::PausedState, CustomStateEvent},
@@ -40,6 +41,7 @@ impl MainGameState {
                     "query_predators_and_prey_system",
                     &[],
                 )
+                .with(ClosestObstacleSystem, "closest_obstacle_system", &[])
                 .with(
                     ClosestSystem::<Prey>::default(),
                     "closest_prey_system",
@@ -61,9 +63,18 @@ impl MainGameState {
                     &["closest_predator_system"],
                 )
                 .with(
+                    SeekSystem::<Obstacle>::new(-1.0),
+                    "avoid_obstacle_system",
+                    &["closest_obstacle_system"],
+                )
+                .with(
                     behaviors::wander::WanderSystem,
                     "wander_system",
-                    &["seek_prey_system", "avoid_predator_system"],
+                    &[
+                        "seek_prey_system",
+                        "avoid_predator_system",
+                        "avoid_obstacle_system",
+                    ],
                 )
                 .with(
                     movement::MovementSystem,
