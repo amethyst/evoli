@@ -30,10 +30,10 @@ impl Distribution<CreatureTypeDistribution> for Standard {
                 creature_type: "Herbivore".to_string(),
             },
             1 => CreatureTypeDistribution {
-                creature_type: "Carnivore".to_string(),
+                creature_type: "Herbivore".to_string(),
             },
             _ => CreatureTypeDistribution {
-                creature_type: "Plant".to_string(),
+                creature_type: "Herbivore".to_string(),
             },
         }
     }
@@ -94,7 +94,7 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
         self.timer_to_next_spawn -= delta_seconds;
         if self.timer_to_next_spawn <= 0.0 {
             let mut creature_entity_builder = lazy_update.create_entity(&entities);
-            self.timer_to_next_spawn = 1.5;
+            self.timer_to_next_spawn = 0.5;
             let mut rng = thread_rng();
             let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
             let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;

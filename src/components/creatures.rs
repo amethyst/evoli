@@ -10,8 +10,8 @@ use amethyst_inspector::Inspect;
 use serde::{Deserialize, Serialize};
 
 use crate::components::{
-    collider::Circle, combat::CombatPrefabData, digestion::DigestionPrefabData,
-    perception::Perception,
+    boids::BoidsPrefabData, collider::Circle, combat::CombatPrefabData,
+    digestion::DigestionPrefabData, perception::Perception,
 };
 
 pub type CreatureType = String;
@@ -84,4 +84,5 @@ pub struct CreaturePrefabData {
     combat: Option<CombatPrefabData>,
     intelligence_tag: Option<IntelligenceTag>,
     perception: Option<Perception>,
+    boids: Option<BoidsPrefabData>,
 }

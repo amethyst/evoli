@@ -43,6 +43,12 @@ impl MainGameState {
                     "entity_detection",
                     &["spatial_grid"],
                 )
+                .with(flocking::FlockingSystem, "flocking", &["entity_detection"])
+                .with(
+                    flocking::MinimumDistanceSystem,
+                    "minimum_distance",
+                    &["entity_detection"],
+                )
                 .with(
                     QueryPredatorsAndPreySystem,
                     "query_predators_and_prey_system",
@@ -89,20 +95,12 @@ impl MainGameState {
                     "avoid_obstacle_system",
                     &["closest_obstacle_system"],
                 )
-                .with(
-                    behaviors::wander::WanderSystem,
-                    "wander_system",
-                    &[
-                        "seek_prey_system",
-                        "avoid_predator_system",
-                        "avoid_obstacle_system",
-                    ],
-                )
-                .with(
-                    movement::MovementSystem,
-                    "movement_system",
-                    &["wander_system"],
-                )
+                //.with(
+                //behaviors::wander::WanderSystem,
+                //"wander_system",
+                //&["seek_prey_system", "avoid_predator_system"],
+                //)
+                .with(movement::MovementSystem, "movement_system", &[])
                 .with(
                     collision::CollisionSystem,
                     "collision_system",

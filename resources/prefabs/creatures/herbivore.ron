@@ -54,6 +54,15 @@ Prefab (
                 perception: (
                     range: 5.0,
                 ),
+                boids: (
+                    flocking: (
+                        strength: 1.0,
+                    ),
+                    minimum_distance: (
+                        minimum: 1.5,
+                        strength: 10.0,
+                    ),
+                ),
             ),
         ),
     ],
