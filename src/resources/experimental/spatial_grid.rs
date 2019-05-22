@@ -1,6 +1,6 @@
 use amethyst::{
     core::{nalgebra::Vector4, transform::GlobalTransform},
-    ecs::Entity,
+    ecs::{BitSet, Entity},
 };
 
 use std::collections::HashMap;
@@ -9,7 +9,7 @@ use std::f32;
 // The SpatialGrid is a spatial hashing structure used to accelerate neighbor searches for entities.
 pub struct SpatialGrid {
     cell_size: f32,
-    cells: HashMap<i32, HashMap<i32, Vec<Entity>>>,
+    cells: HashMap<i32, HashMap<i32, BitSet>>,
 }
 
 impl SpatialGrid {
@@ -31,23 +31,23 @@ impl SpatialGrid {
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
         let y_cell = (pos[1] / self.cell_size).floor() as i32;
         let row_entry = self.cells.entry(x_cell).or_insert(HashMap::new());
-        let col_entry = row_entry.entry(y_cell).or_insert(Vec::new());
-        col_entry.push(entity);
+        let col_entry = row_entry.entry(y_cell).or_insert(BitSet::new());
+        col_entry.add(entity.id());
     }
 
     // Query the entities close to a certain position.
     // The range of the query is defined by the range input.
-    pub fn query(&self, transform: &GlobalTransform, range: f32) -> Vec<Entity> {
+    pub fn query(&self, transform: &GlobalTransform, range: f32) -> BitSet {
         let pos = Vector4::from(transform.as_ref()[3]);
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
         let y_cell = (pos[1] / self.cell_size).floor() as i32;
         let integer_range = 1 + (range / self.cell_size).ceil() as i32;
-        let mut entities = Vec::new();
+        let mut entities = BitSet::new();
         for x in -integer_range..integer_range {
             for y in -integer_range..integer_range {
                 match self.cells.get(&(x_cell + x)) {
                     Some(col) => match col.get(&(y_cell + y)) {
-                        Some(cell) => entities.extend_from_slice(cell.as_slice()),
+                        Some(cell) => entities |= cell,
                         None => (),
                     },
                     None => (),
