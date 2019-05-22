@@ -43,9 +43,9 @@ impl MainGameState {
                     "entity_detection",
                     &["spatial_grid"],
                 )
-                .with(flocking::FlockingSystem, "flocking", &["entity_detection"])
+                .with(boids::FlockingSystem, "flocking", &["entity_detection"])
                 .with(
-                    flocking::MinimumDistanceSystem,
+                    boids::MinimumDistanceSystem,
                     "minimum_distance",
                     &["entity_detection"],
                 )
