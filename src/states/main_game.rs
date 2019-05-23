@@ -44,9 +44,15 @@ impl MainGameState {
                     &["spatial_grid"],
                 )
                 .with(boids::FlockingSystem, "flocking", &["entity_detection"])
+                .with(boids::AvoidSystem, "avoid", &["entity_detection"])
                 .with(
                     boids::MinimumDistanceSystem,
                     "minimum_distance",
+                    &["entity_detection"],
+                )
+                .with(
+                    boids::WorldBoundsSystem,
+                    "world_bounds",
                     &["entity_detection"],
                 )
                 .with(
@@ -106,11 +112,11 @@ impl MainGameState {
                     "collision_system",
                     &["movement_system"],
                 )
-                .with(
-                    collision::EnforceBoundsSystem,
-                    "enforce_bounds_system",
-                    &["movement_system"],
-                )
+                //.with(
+                //collision::EnforceBoundsSystem,
+                //"enforce_bounds_system",
+                //&["movement_system"],
+                //)
                 .with(digestion::DigestionSystem, "digestion_system", &[])
                 .with(
                     digestion::StarvationSystem,
@@ -273,7 +279,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         };
 
         let mut transform = Transform::default();
-        transform.set_position([0.0, 0.0, 12.0].into());
+        transform.set_position([0.0, 0.0, 20.0].into());
 
         data.world
             .create_entity()

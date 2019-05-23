@@ -25,12 +25,12 @@ struct CreatureTypeDistribution {
 }
 impl Distribution<CreatureTypeDistribution> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> CreatureTypeDistribution {
-        match rng.gen_range(0, 3) {
+        match rng.gen_range(0, 6) {
             0 => CreatureTypeDistribution {
-                creature_type: "Herbivore".to_string(),
+                creature_type: "Carnivore".to_string(),
             },
             1 => CreatureTypeDistribution {
-                creature_type: "Herbivore".to_string(),
+                creature_type: "Plant".to_string(),
             },
             _ => CreatureTypeDistribution {
                 creature_type: "Herbivore".to_string(),
