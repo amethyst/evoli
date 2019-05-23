@@ -13,19 +13,18 @@ impl<'s> System<'s> for RicochetSystem {
         ReadStorage<'s, Transform>,
         ReadStorage<'s, creatures::RicochetTag>,
         WriteStorage<'s, creatures::Movement>,
-        Read<'s, WorldBounds>
-        );
+        Read<'s, WorldBounds>,
+    );
 
-    fn run(&mut self, (transforms, ricochets,  mut movements, bounds): Self::SystemData) {
-        for (local, ricochet, movement) in (&transforms, &ricochets, &mut movements).join() {
-            if local.translation().x >= bounds.right  || local.translation().x <= bounds.left {
+    fn run(&mut self, (transforms, ricochets, mut movements, bounds): Self::SystemData) {
+        for (local, _ricochet, movement) in (&transforms, &ricochets, &mut movements).join() {
+            if local.translation().x >= bounds.right || local.translation().x <= bounds.left {
                 movement.velocity.x = -movement.velocity.x;
             }
-            
+
             if local.translation().y >= bounds.top || local.translation().y <= bounds.bottom {
                 movement.velocity.y = -movement.velocity.y;
             }
         }
     }
 }
-

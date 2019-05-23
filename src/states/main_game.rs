@@ -71,11 +71,7 @@ impl MainGameState {
                     "wander_system",
                     &["seek_prey_system", "avoid_predator_system"],
                 )
-                .with(
-                    behaviors::ricochet::RicochetSystem,
-                    "ricochet_system",
-                    &[]
-                    )
+                .with(behaviors::ricochet::RicochetSystem, "ricochet_system", &[])
                 .with(
                     movement::MovementSystem,
                     "movement_system",
