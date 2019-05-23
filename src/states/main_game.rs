@@ -108,11 +108,7 @@ impl MainGameState {
                         "avoid_obstacle_system",
                     ],
                 )
-                .with(
-                    behaviors::ricochet::RicochetSystem,
-                    "ricochet_system",
-                    &[]
-                    )
+                .with(behaviors::ricochet::RicochetSystem, "ricochet_system", &[])
                 .with(
                     movement::MovementSystem,
                     "movement_system",

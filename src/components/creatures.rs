@@ -92,5 +92,5 @@ pub struct CreaturePrefabData {
     combat: Option<CombatPrefabData>,
     intelligence_tag: Option<IntelligenceTag>,
     perception: Option<Perception>,
-    ricochet_tag: Option<RicochetTag>
+    ricochet_tag: Option<RicochetTag>,
 }
