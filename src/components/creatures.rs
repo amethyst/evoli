@@ -18,6 +18,14 @@ pub type CreatureType = String;
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
 #[prefab(Component)]
+pub struct RicochetTag;
+
+impl Component for RicochetTag {
+    type Storage = NullStorage<Self>;
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
+#[prefab(Component)]
 pub struct IntelligenceTag;
 impl Component for IntelligenceTag {
     type Storage = NullStorage<Self>;
@@ -84,4 +92,5 @@ pub struct CreaturePrefabData {
     combat: Option<CombatPrefabData>,
     intelligence_tag: Option<IntelligenceTag>,
     perception: Option<Perception>,
+    ricochet_tag: Option<RicochetTag>
 }
