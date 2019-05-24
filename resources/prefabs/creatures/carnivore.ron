@@ -54,6 +54,7 @@ Prefab (
                 perception: (
                     range: 5.0,
                 ),
+                boids: (),
             ),
         ),
     ],

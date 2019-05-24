@@ -10,6 +10,8 @@ use amethyst::{
     },
 };
 
+use std::collections::HashMap;
+
 use crate::{
     components::{boids::*, creatures::Movement, perception::DetectedEntities},
     resources::world_bounds::WorldBounds,
@@ -64,6 +66,7 @@ pub struct MatchVelocitySystem;
 
 impl<'s> System<'s> for MatchVelocitySystem {
     type SystemData = (
+        Entities<'s>,
         ReadStorage<'s, Named>,
         ReadStorage<'s, MatchVelocityRule>,
         ReadStorage<'s, DetectedEntities>,
@@ -74,10 +77,13 @@ impl<'s> System<'s> for MatchVelocitySystem {
 
     fn run(
         &mut self,
-        (names, velocity_rules, detected_entities, globals, mut movements, time): Self::SystemData,
+        (entities, names, velocity_rules, detected_entities, globals, mut movements, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
-        for (name, rule, detected, global, movement) in (
+
+        let mut perceived_velocities = HashMap::new();
+        for (entity, name, rule, detected, global, movement) in (
+            &entities,
             &names,
             &velocity_rules,
             &detected_entities,
@@ -96,6 +102,24 @@ impl<'s> System<'s> for MatchVelocitySystem {
                     average_velocity += other_movement.velocity;
                     count += 1;
                 }
+            }
+            if count >= 1 {
+                perceived_velocities.insert(entity, average_velocity / count as f32);
+            }
+        }
+        for (entity, _, rule, _, _, mut movement) in (
+            &entities,
+            &names,
+            &velocity_rules,
+            &detected_entities,
+            &globals,
+            &mut movements,
+        )
+            .join()
+        {
+            match perceived_velocities.get(&entity) {
+                Some(v) => movement.velocity += delta_time * rule.strength * v,
+                None => (),
             }
         }
     }

@@ -55,15 +55,18 @@ Prefab (
                 ),
                 boids: (
                     flocking: (
-                        strength: 0.5,
+                        strength: 0.4,
+                    ),
+                    match_velocity: (
+                        strength: 2.0,
                     ),
                     avoid: (
                         names: ["Carnivore"],
-                        strength: 20.0,
+                        strength: 30.0,
                     ),
                     minimum_distance: (
-                        minimum: 1.1,
-                        strength: 5.0,
+                        minimum: 1.3,
+                        strength: 15.0,
                     ),
                 ),
             ),
