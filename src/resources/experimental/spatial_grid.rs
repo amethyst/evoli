@@ -76,7 +76,13 @@ mod tests {
         let global_transform = GlobalTransform::from(*transform_matrix.as_ref());
         spatial_grid.insert(world.create_entity().build(), &global_transform);
 
-        assert!(spatial_grid.query(&global_transform, 1.0f32).len() == 1);
+        assert!(
+            spatial_grid
+                .query(&global_transform, 1.0f32)
+                .into_iter()
+                .count()
+                == 1
+        );
     }
 
 }
