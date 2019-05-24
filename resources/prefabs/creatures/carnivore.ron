@@ -54,7 +54,12 @@ Prefab (
                 perception: (
                     range: 5.0,
                 ),
-                boids: (),
+                boids: (
+                    avoid: (
+                        names: ["Carnivore"],
+                        strength: 2.0,
+                    ),
+                ),
             ),
         ),
     ],
