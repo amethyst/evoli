@@ -61,7 +61,7 @@ impl<'s> System<'s> for ClosestObstacleSystem {
         for (entity, transform, _) in (&entities, &transforms, &movements).join() {
             // Find the closest wall to this entity
             let wall_dir = closest_wall(&transform.translation(), &world_bounds);
-            if wall_dir.magnitude_squared() < 5.0f32.powi(2) {
+            if wall_dir.magnitude_squared() < 3.0f32.powi(2) {
                 closest_obstacle
                     .insert(entity, Closest::<Obstacle>::new(wall_dir))
                     .expect("Unable to add obstacle to entity");

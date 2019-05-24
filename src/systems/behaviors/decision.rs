@@ -163,14 +163,16 @@ where
 /// towards that entity. The steering force can be modified using the `attraction_modifier` factor.
 /// By setting `attraction_modifier` to `-1` this system will behave like `Evade`.
 pub struct SeekSystem<T> {
-    attraction_modifier: f32,
+    attraction_modifier: Rotation3<f32>,
+    attraction_magnitude: f32,
     _phantom: PhantomData<T>,
 }
 
 impl<T> SeekSystem<T> {
-    pub fn new(attraction_modifier: f32) -> SeekSystem<T> {
+    pub fn new(attraction_modifier: Rotation3<f32>, attraction_magnitude: f32) -> SeekSystem<T> {
         SeekSystem {
             attraction_modifier,
+            attraction_magnitude,
             _phantom: PhantomData {},
         }
     }
@@ -187,10 +189,10 @@ where
         WriteStorage<'s, Movement>,
     );
 
-    fn run(&mut self, (_entities, closest_preys, time, mut movements): Self::SystemData) {
+    fn run(&mut self, (_entities, closest_things, time, mut movements): Self::SystemData) {
         let delta_time = time.delta_seconds();
-        for (movement, closest_prey) in (&mut movements, &closest_preys).join() {
-            let target_velocity = closest_prey.distance.normalize() * 10.0;
+        for (movement, closest) in (&mut movements, &closest_things).join() {
+            let target_velocity = closest.distance.normalize() * self.attraction_magnitude;
             let steering_force = target_velocity - movement.velocity;
             movement.velocity += self.attraction_modifier * steering_force * delta_time;
         }
