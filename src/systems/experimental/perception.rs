@@ -84,7 +84,7 @@ impl<'s> System<'s> for DebugEntityDetectionSystem {
     fn run(&mut self, (detected_entities, globals, mut debug_lines): Self::SystemData) {
         for (detected, global) in (&detected_entities, &globals).join() {
             let pos = Vector4::from(global.as_ref()[3]).xyz();
-            for (other_global, other_entity) in (&globals, &detected.entities).join() {
+            for (other_global, _) in (&globals, &detected.entities).join() {
                 let other_pos = Vector4::from(other_global.as_ref()[3]).xyz();
                 debug_lines.draw_line(
                     [pos[0], pos[1], 0.0].into(),

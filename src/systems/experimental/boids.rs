@@ -4,10 +4,7 @@ use amethyst::{
         transform::GlobalTransform,
         Named, Time,
     },
-    ecs::{
-        BitSet, Entities, Join, Read, ReadExpect, ReadStorage, System, Write, WriteExpect,
-        WriteStorage,
-    },
+    ecs::{Entities, Join, Read, ReadStorage, System, WriteStorage},
 };
 
 use std::collections::HashMap;
@@ -34,7 +31,7 @@ impl<'s> System<'s> for FlockingSystem {
         (names, flocking_rules, detected_entities, globals, mut movements, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
-        for (name, rule, detected, global, mut movement) in (
+        for (name, rule, detected, global, movement) in (
             &names,
             &flocking_rules,
             &detected_entities,
@@ -55,7 +52,7 @@ impl<'s> System<'s> for FlockingSystem {
             }
             if count >= 2 {
                 average_position /= count as f32;
-                let diff_vector = (average_position - pos);
+                let diff_vector = average_position - pos;
                 movement.velocity += delta_time * rule.strength * diff_vector;
             }
         }
@@ -70,34 +67,23 @@ impl<'s> System<'s> for MatchVelocitySystem {
         ReadStorage<'s, Named>,
         ReadStorage<'s, MatchVelocityRule>,
         ReadStorage<'s, DetectedEntities>,
-        ReadStorage<'s, GlobalTransform>,
         WriteStorage<'s, Movement>,
         Read<'s, Time>,
     );
 
     fn run(
         &mut self,
-        (entities, names, velocity_rules, detected_entities, globals, mut movements, time): Self::SystemData,
+        (entities, names, velocity_rules, detected_entities, mut movements, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
 
         let mut perceived_velocities = HashMap::new();
-        for (entity, name, rule, detected, global, movement) in (
-            &entities,
-            &names,
-            &velocity_rules,
-            &detected_entities,
-            &globals,
-            &movements,
-        )
-            .join()
+        for (entity, name, _, detected) in
+            (&entities, &names, &velocity_rules, &detected_entities).join()
         {
-            let pos = Vector4::from(global.as_ref()[3]).xyz();
             let mut average_velocity = Vector3::new(0.0, 0.0, 0.0);
             let mut count = 0;
-            for (other_name, other_global, other_movement, _) in
-                (&names, &globals, &movements, &detected.entities).join()
-            {
+            for (other_name, other_movement, _) in (&names, &movements, &detected.entities).join() {
                 if other_name.name == name.name {
                     average_velocity += other_movement.velocity;
                     count += 1;
@@ -107,12 +93,11 @@ impl<'s> System<'s> for MatchVelocitySystem {
                 perceived_velocities.insert(entity, average_velocity / count as f32);
             }
         }
-        for (entity, _, rule, _, _, mut movement) in (
+        for (entity, _, rule, _, movement) in (
             &entities,
             &names,
             &velocity_rules,
             &detected_entities,
-            &globals,
             &mut movements,
         )
             .join()
@@ -129,7 +114,6 @@ pub struct MinimumDistanceSystem;
 
 impl<'s> System<'s> for MinimumDistanceSystem {
     type SystemData = (
-        ReadStorage<'s, Named>,
         ReadStorage<'s, MinimumDistanceRule>,
         ReadStorage<'s, DetectedEntities>,
         ReadStorage<'s, GlobalTransform>,
@@ -139,22 +123,16 @@ impl<'s> System<'s> for MinimumDistanceSystem {
 
     fn run(
         &mut self,
-        (names, min_distances, detected_entities, globals, mut movements, time): Self::SystemData,
+        (min_distances, detected_entities, globals, mut movements, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
-        for (name, min_distance, detected, global, mut movement) in (
-            &names,
-            &min_distances,
-            &detected_entities,
-            &globals,
-            &mut movements,
-        )
-            .join()
+        for (min_distance, detected, global, movement) in
+            (&min_distances, &detected_entities, &globals, &mut movements).join()
         {
             let sq_min_dist = min_distance.minimum * min_distance.minimum;
             let pos = Vector4::from(global.as_ref()[3]).xyz();
             let mut total_diff = Vector3::new(0.0, 0.0, 0.0);
-            for (other_name, other_global, _) in (&names, &globals, &detected.entities).join() {
+            for (other_global, _) in (&globals, &detected.entities).join() {
                 let other_pos = Vector4::from(other_global.as_ref()[3]).xyz();
                 let diff = pos - other_pos;
                 let dist = diff.norm_squared();
@@ -184,14 +162,8 @@ impl<'s> System<'s> for AvoidSystem {
         (names, avoid_rules, detected_entities, globals, mut movements, time): Self::SystemData,
     ) {
         let delta_time = time.delta_seconds();
-        for (name, rule, detected, global, mut movement) in (
-            &names,
-            &avoid_rules,
-            &detected_entities,
-            &globals,
-            &mut movements,
-        )
-            .join()
+        for (rule, detected, global, movement) in
+            (&avoid_rules, &detected_entities, &globals, &mut movements).join()
         {
             let pos = Vector4::from(global.as_ref()[3]).xyz();
             let mut average_position = Vector3::new(0.0, 0.0, 0.0);
@@ -205,7 +177,7 @@ impl<'s> System<'s> for AvoidSystem {
             }
             if count >= 1 {
                 average_position /= count as f32;
-                let diff_vector = (average_position - pos);
+                let diff_vector = average_position - pos;
                 movement.velocity -= delta_time * rule.strength * diff_vector;
             }
         }
@@ -225,7 +197,7 @@ impl<'s> System<'s> for WorldBoundsSystem {
 
     fn run(&mut self, (bounds, bounds_rules, globals, mut movements, time): Self::SystemData) {
         let delta_time = time.delta_seconds();
-        for (rule, global, mut movement) in (&bounds_rules, &globals, &mut movements).join() {
+        for (rule, global, movement) in (&bounds_rules, &globals, &mut movements).join() {
             let pos = Vector4::from(global.as_ref()[3]).xyz();
 
             if pos[0] < bounds.left {
