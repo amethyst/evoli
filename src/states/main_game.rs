@@ -50,6 +50,7 @@ impl MainGameState {
                     &["entity_detection"],
                 )
                 .with(boids::AvoidSystem, "avoid", &["entity_detection"])
+                .with(boids::SeekSystem, "seek", &["entity_detection"])
                 .with(
                     boids::MinimumDistanceSystem,
                     "minimum_distance",
@@ -60,52 +61,52 @@ impl MainGameState {
                     "world_bounds",
                     &["entity_detection"],
                 )
-                .with(
-                    QueryPredatorsAndPreySystem,
-                    "query_predators_and_prey_system",
-                    &[],
-                )
-                .with(ClosestObstacleSystem, "closest_obstacle_system", &[])
-                .with(
-                    ClosestSystem::<Prey>::default(),
-                    "closest_prey_system",
-                    &["query_predators_and_prey_system"],
-                )
-                .with(
-                    ClosestSystem::<Predator>::default(),
-                    "closest_predator_system",
-                    &["query_predators_and_prey_system"],
-                )
-                .with(
-                    SeekSystem::<Prey>::new(
-                        Rotation3::from_axis_angle(&Vector3::z_axis(), 0.0),
-                        1.0,
-                    ),
-                    "seek_prey_system",
-                    &["closest_prey_system"],
-                )
-                .with(
-                    SeekSystem::<Predator>::new(
-                        // 180 degrees, run away!
-                        Rotation3::from_axis_angle(&Vector3::z_axis(), std::f32::consts::PI),
-                        1.0,
-                    ),
-                    "avoid_predator_system",
-                    &["closest_predator_system"],
-                )
-                .with(
-                    SeekSystem::<Obstacle>::new(
-                        // 120 degrees. A little more than perpendicular so the creature
-                        // tries to steer away from the wall rather than just follow it.
-                        Rotation3::from_axis_angle(
-                            &Vector3::z_axis(),
-                            2f32 * std::f32::consts::FRAC_PI_3,
-                        ),
-                        5.0,
-                    ),
-                    "avoid_obstacle_system",
-                    &["closest_obstacle_system"],
-                )
+                //.with(
+                //QueryPredatorsAndPreySystem,
+                //"query_predators_and_prey_system",
+                //&[],
+                //)
+                //.with(ClosestObstacleSystem, "closest_obstacle_system", &[])
+                //.with(
+                //ClosestSystem::<Prey>::default(),
+                //"closest_prey_system",
+                //&["query_predators_and_prey_system"],
+                //)
+                //.with(
+                //ClosestSystem::<Predator>::default(),
+                //"closest_predator_system",
+                //&["query_predators_and_prey_system"],
+                //)
+                //.with(
+                //SeekSystem::<Prey>::new(
+                //Rotation3::from_axis_angle(&Vector3::z_axis(), 0.0),
+                //1.0,
+                //),
+                //"seek_prey_system",
+                //&["closest_prey_system"],
+                //)
+                //.with(
+                //SeekSystem::<Predator>::new(
+                //// 180 degrees, run away!
+                //Rotation3::from_axis_angle(&Vector3::z_axis(), std::f32::consts::PI),
+                //1.0,
+                //),
+                //"avoid_predator_system",
+                //&["closest_predator_system"],
+                //)
+                //.with(
+                //SeekSystem::<Obstacle>::new(
+                //// 120 degrees. A little more than perpendicular so the creature
+                //// tries to steer away from the wall rather than just follow it.
+                //Rotation3::from_axis_angle(
+                //&Vector3::z_axis(),
+                //2f32 * std::f32::consts::FRAC_PI_3,
+                //),
+                //5.0,
+                //),
+                //"avoid_obstacle_system",
+                //&["closest_obstacle_system"],
+                //)
                 //.with(
                 //behaviors::wander::WanderSystem,
                 //"wander_system",

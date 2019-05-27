@@ -50,14 +50,13 @@ Prefab (
                         faction: "Carnivores",
                     ),
                 ),
-                intelligence_tag: (),
                 perception: (
-                    range: 5.0,
+                    range: 6.0,
                 ),
                 boids: (
-                    avoid: (
-                        names: ["Carnivore"],
-                        strength: 2.0,
+                    seek: (
+                        names: ["Herbivore"],
+                        strength: 10.0,
                     ),
                 ),
             ),

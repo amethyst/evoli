@@ -53,6 +53,18 @@ impl Component for AvoidRule {
     type Storage = DenseVecStorage<Self>;
 }
 
+#[derive(Default, Clone, Serialize, Deserialize, PrefabData)]
+#[prefab(Component)]
+#[serde(default)]
+pub struct SeekRule {
+    pub names: Vec<String>,
+    pub strength: f32,
+}
+
+impl Component for SeekRule {
+    type Storage = DenseVecStorage<Self>;
+}
+
 #[derive(Clone, Serialize, Deserialize, PrefabData)]
 #[prefab(Component)]
 pub struct WorldBoundsRule {
@@ -61,7 +73,7 @@ pub struct WorldBoundsRule {
 
 impl Default for WorldBoundsRule {
     fn default() -> Self {
-        WorldBoundsRule { strength: 10.0 }
+        WorldBoundsRule { strength: 20.0 }
     }
 }
 
@@ -76,6 +88,7 @@ pub struct BoidsPrefabData {
     flocking: Option<FlockingRule>,
     match_velocity: Option<MatchVelocityRule>,
     avoid: Option<AvoidRule>,
+    seek: Option<SeekRule>,
     minimum_distance: Option<MinimumDistanceRule>,
 
     #[serde(skip)]

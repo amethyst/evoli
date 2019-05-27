@@ -29,7 +29,7 @@ impl Distribution<CreatureTypeDistribution> for Standard {
             0 => CreatureTypeDistribution {
                 creature_type: "Carnivore".to_string(),
             },
-            1 => CreatureTypeDistribution {
+            1 | 2 | 3 => CreatureTypeDistribution {
                 creature_type: "Plant".to_string(),
             },
             _ => CreatureTypeDistribution {

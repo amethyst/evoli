@@ -51,22 +51,26 @@ Prefab (
                     ),
                 ),
                 perception: (
-                    range: 5.0,
+                    range: 4.0,
                 ),
                 boids: (
                     flocking: (
                         strength: 0.4,
                     ),
                     match_velocity: (
-                        strength: 2.0,
+                        strength: 3.0,
                     ),
                     avoid: (
                         names: ["Carnivore"],
-                        strength: 30.0,
+                        strength: 20.0,
+                    ),
+                    seek: (
+                        names: ["Plant"],
+                        strength: 10.0,
                     ),
                     minimum_distance: (
-                        minimum: 1.3,
-                        strength: 15.0,
+                        minimum: 1.5,
+                        strength: 5.0,
                     ),
                 ),
             ),
