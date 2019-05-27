@@ -1,13 +1,12 @@
 use amethyst::{
-    core::{Named, Transform, Time},
+    core::{Named, Time, Transform},
     ecs::*,
     input::InputHandler,
-    renderer::Camera, 
+    renderer::Camera,
 };
 
 #[derive(Default)]
-pub struct CameraMovementSystem {
-}
+pub struct CameraMovementSystem {}
 
 impl<'s> System<'s> for CameraMovementSystem {
     type SystemData = (
@@ -20,7 +19,7 @@ impl<'s> System<'s> for CameraMovementSystem {
 
     fn run(&mut self, (cameras, names, mut transforms, input_handler, time): Self::SystemData) {
         let delta_time = time.delta_real_seconds();
-        let move_factor = 8.0 * delta_time;
+        let move_factor = 12.0 * delta_time;
         for (_, name, transform) in (&cameras, &names, &mut transforms).join() {
             if name.name == "Main camera" {
                 if input_handler.action_is_down("CameraMoveUp").unwrap() {
@@ -34,6 +33,12 @@ impl<'s> System<'s> for CameraMovementSystem {
                 }
                 if input_handler.action_is_down("CameraMoveRight").unwrap() {
                     transform.move_right(move_factor);
+                }
+                if input_handler.action_is_down("CameraMoveForward").unwrap() {
+                    transform.move_forward(move_factor);
+                }
+                if input_handler.action_is_down("CameraMoveBackward").unwrap() {
+                    transform.move_backward(move_factor);
                 }
             }
         }

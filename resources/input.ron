@@ -27,5 +27,11 @@
     "CameraMoveRight": [
         [Key(Right)]
     ],
+    "CameraMoveForward": [
+        [Key(LShift), Key(Up)]
+    ],
+    "CameraMoveBackward": [
+        [Key(LShift), Key(Down)]
+    ],
   },
 )
