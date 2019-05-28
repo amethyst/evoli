@@ -13,20 +13,24 @@ use crate::resources::world_bounds::*;
 pub struct EnforceBoundsSystem;
 
 impl<'s> System<'s> for EnforceBoundsSystem {
-    type SystemData = (WriteStorage<'s, Transform>, Read<'s, WorldBounds>);
+    type SystemData = (
+        ReadStorage<'s, Transform>,
+        WriteStorage<'s, creatures::Movement>,
+        Read<'s, WorldBounds>,
+    );
 
-    fn run(&mut self, (mut locals, bounds): Self::SystemData) {
-        for local in (&mut locals).join() {
+    fn run(&mut self, (locals, mut movements, bounds): Self::SystemData) {
+        for (local, movement) in (&locals, &mut movements).join() {
             if local.translation().x > bounds.right {
-                local.translation_mut().x = bounds.right;
+                movement.velocity[0] -= 10.0 * (local.translation().x - bounds.right);
             } else if local.translation().x < bounds.left {
-                local.translation_mut().x = bounds.left;
+                movement.velocity[0] += 10.0 * (bounds.left - local.translation().x);
             }
 
             if local.translation().y > bounds.top {
-                local.translation_mut().y = bounds.top;
+                movement.velocity[1] -= 10.0 * (local.translation().y - bounds.top);
             } else if local.translation().y < bounds.bottom {
-                local.translation_mut().y = bounds.bottom;
+                movement.velocity[1] += 10.0 * (bounds.bottom - local.translation().y);
             }
         }
     }

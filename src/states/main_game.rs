@@ -108,11 +108,7 @@ impl MainGameState {
                     "collision_system",
                     &["movement_system"],
                 )
-                .with(
-                    collision::EnforceBoundsSystem,
-                    "enforce_bounds_system",
-                    &["movement_system"],
-                )
+                .with(collision::EnforceBoundsSystem, "enforce_bounds_system", &[])
                 .with(digestion::DigestionSystem, "digestion_system", &[])
                 .with(
                     digestion::StarvationSystem,
