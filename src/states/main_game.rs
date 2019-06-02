@@ -37,6 +37,11 @@ impl MainGameState {
         MainGameState {
             dispatcher: DispatcherBuilder::new()
                 .with_pool(pool)
+                .with(
+                    camera_movement::CameraMovementSystem::default(),
+                    "camera_movement",
+                    &[],
+                )
                 .with(perception::SpatialGridSystem, "spatial_grid", &[])
                 .with(
                     perception::EntityDetectionSystem,

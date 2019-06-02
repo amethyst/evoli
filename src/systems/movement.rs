@@ -16,7 +16,6 @@ impl<'s> System<'s> for MovementSystem {
             if movement.velocity.magnitude() > movement.max_movement_speed {
                 movement.velocity = movement.velocity.normalize() * movement.max_movement_speed;
             }
-
             transform.translate_x(movement.velocity.x * delta_time);
             transform.translate_y(movement.velocity.y * delta_time);
         }

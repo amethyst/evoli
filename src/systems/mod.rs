@@ -1,4 +1,5 @@
 pub mod behaviors;
+pub mod camera_movement;
 pub mod collision;
 pub mod combat;
 pub mod debug;
