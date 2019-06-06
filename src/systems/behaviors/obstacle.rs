@@ -1,4 +1,4 @@
-use amethyst::core::nalgebra::Vector3;
+use amethyst::core::math::Vector3;
 use amethyst::{
     core::Transform,
     ecs::{join::Join, Entities, Read, ReadStorage, System, WriteStorage},

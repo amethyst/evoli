@@ -1,7 +1,7 @@
 use crate::resources::world_bounds::WorldBounds;
 use amethyst::{
     ecs::{System, Write},
-    renderer::DebugLines,
+    renderer::debug_drawing::DebugLines,
 };
 
 pub struct DebugSystem;

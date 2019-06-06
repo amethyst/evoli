@@ -4,7 +4,7 @@ use crate::{
         prefabs::{initialize_prefabs, update_prefabs},
         world_bounds::WorldBounds,
     },
-    states::{main_game::MainGameState, menu::MenuState, CustomStateEvent},
+    states::{main_game::MainGameState, menu::MenuState},
 };
 use std::env;
 
@@ -12,7 +12,7 @@ use crate::components::combat::load_factions;
 use amethyst::{
     assets::ProgressCounter,
     prelude::*,
-    renderer::{DebugLines, DebugLinesParams},
+    renderer::debug_drawing::{DebugLines, DebugLinesParams},
 };
 
 const SKIP_MENU_ARG: &str = "no_menu";
@@ -29,8 +29,8 @@ impl Default for LoadingState {
     }
 }
 
-impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for LoadingState {
-    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
+impl SimpleState for LoadingState {
+    fn on_start(&mut self, mut data: StateData<GameData>) {
         load_factions(data.world);
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
@@ -44,23 +44,20 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for LoadingState {
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
     }
 
-    fn update(
-        &mut self,
-        mut data: StateData<'_, GameData<'a, 'a>>,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
         if let Some(ref counter) = self.prefab_loading_progress.as_ref() {
             if counter.is_complete() {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);
                 if env::args().any(|arg| arg == SKIP_MENU_ARG) {
-                    return Trans::Switch(Box::new(MainGameState::new(data.world)));
+                    return SimpleTrans::Switch(Box::new(MainGameState::new(data.world)));
                 } else {
-                    return Trans::Switch(Box::new(MenuState::default()));
+                    return SimpleTrans::Switch(Box::new(MenuState::default()));
                 }
             }
         }
 
-        Trans::None
+        SimpleTrans::None
     }
 }

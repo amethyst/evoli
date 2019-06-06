@@ -1,8 +1,8 @@
 use amethyst::{
     core::{Named, Time, Transform},
     ecs::*,
-    input::InputHandler,
-    renderer::Camera,
+    input::{InputHandler, StringBindings},
+    renderer::camera::Camera,
 };
 
 #[derive(Default)]
@@ -13,7 +13,7 @@ impl<'s> System<'s> for CameraMovementSystem {
         ReadStorage<'s, Camera>,
         ReadStorage<'s, Named>,
         WriteStorage<'s, Transform>,
-        Read<'s, InputHandler<String, String>>,
+        Read<'s, InputHandler<StringBindings>>,
         Read<'s, Time>,
     );
 

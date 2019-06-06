@@ -1,5 +1,5 @@
-use amethyst::renderer::DebugLines;
-use amethyst::{core::transform::GlobalTransform, ecs::*};
+use amethyst::ecs::*;
+use amethyst::renderer::debug_drawing::DebugLines;
 use std::f32;
 
 use crate::components::combat::Health;
@@ -25,7 +25,7 @@ pub struct DebugHealthSystem {}
 impl<'s> System<'s> for DebugHealthSystem {
     type SystemData = (
         ReadStorage<'s, Health>,
-        ReadStorage<'s, GlobalTransform>,
+        ReadStorage<'s, Transform>,
         Write<'s, DebugLines>,
     );
 

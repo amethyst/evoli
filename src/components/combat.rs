@@ -1,18 +1,18 @@
-use amethyst::ecs::error::Error;
 use amethyst::{
-    assets::{PrefabData, PrefabError, PrefabLoader, ProgressCounter, RonFormat},
+    assets::{PrefabData, PrefabLoader, ProgressCounter, RonFormat},
     core::Named,
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, HashMapStorage, Read, Write, WriteStorage},
     prelude::*,
+    Error,
 };
-use amethyst_inspector::Inspect;
+//use amethyst_inspector::Inspect;
 use log::error;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Duration;
 
-#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Health {
     pub max_health: f32,
@@ -32,7 +32,7 @@ impl Health {
     }
 }
 
-#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Damage {
     // Points subtracted from target's health per hit
@@ -52,7 +52,7 @@ impl Damage {
 ///
 ///
 ///
-#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Speed {
     pub attacks_per_second: f32,
@@ -72,7 +72,7 @@ impl Speed {
 ///
 ///
 // As long as the cooldown component is attached to an entity, that entity won't be able to attack.
-#[derive(Default, Debug, PartialEq, Eq, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, PartialEq, Eq, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Cooldown {
     pub time_left: Duration,
@@ -114,6 +114,7 @@ impl<'a> PrefabData<'a> for HasFaction<String> {
         entity: Entity,
         system_data: &mut Self::SystemData,
         _entities: &[Entity],
+        _: &[Entity],
     ) -> Result<Self::Result, Error> {
         let faction = (system_data.1).0.get(&self.faction);
         if let Some(f) = faction {
@@ -158,6 +159,7 @@ impl<'a> PrefabData<'a> for FactionPrey<String> {
         entity: Entity,
         system_data: &mut Self::SystemData,
         _entities: &[Entity],
+        _: &[Entity],
     ) -> Result<Self::Result, Error> {
         let ref factions = (system_data.0).0;
         let preys: Vec<Entity> = self
@@ -197,6 +199,7 @@ impl<'a> PrefabData<'a> for FactionPrefabData {
         entity: Entity,
         system_data: &mut Self::SystemData,
         entities: &[Entity],
+        _: &[Entity],
     ) -> Result<Self::Result, Error> {
         let (ref mut named, ref mut faction_preys) = system_data;
 

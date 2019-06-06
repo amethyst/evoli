@@ -1,10 +1,3 @@
-#[macro_use]
-extern crate amethyst_derive;
-
-#[macro_use]
-extern crate log;
-
-use amethyst;
 use amethyst::assets::PrefabLoaderSystem;
 use amethyst::{
     audio::AudioBundle,
@@ -30,27 +23,26 @@ use crate::components::combat::{Cooldown, Damage, Speed};
 use crate::components::creatures::{self, IntelligenceTag, Movement, RicochetTag, Wander};
 use crate::components::digestion::{Digestion, Fullness, Nutrition};
 use crate::resources::audio::Music;
-use crate::states::{loading::LoadingState, CustomStateEvent, CustomStateEventReader};
+use crate::states::loading::LoadingState;
 
-amethyst_inspector::inspector![
-    Named,
-    Transform,
-    UiTransform,
-    Rgba,
-    Movement,
-    Wander,
-    Digestion,
-    Fullness,
-    Nutrition,
-    Damage,
-    Speed,
-    Cooldown,
-    Health,
-    IntelligenceTag,
-    Hidden,
-    HiddenPropagate,
-    RicochetTag,
-];
+//amethyst_inspector::inspector![
+//Named,
+//Transform,
+//UiTransform,
+//Rgba,
+//Movement,
+//Wander,
+//Digestion,
+//Fullness,
+//Nutrition,
+//Damage,
+//Speed,
+//Cooldown,
+//Health,
+//IntelligenceTag,
+//Hidden,
+//HiddenPropagate,
+//];
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -69,7 +61,7 @@ fn main() -> amethyst::Result<()> {
             ))
             .with_pass(DrawDebugLines::<PosColorNorm>::new())
             .with_pass(DrawUi::new())
-            .with_pass(amethyst_imgui::DrawUi::default()),
+            //.with_pass(amethyst_imgui::DrawUi::default()),
     );
 
     let display_config = DisplayConfig::load(display_config_path);
@@ -81,7 +73,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(
             InputBundle::<String, String>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
-        .with(amethyst_imgui::BeginFrame::default(), "imgui_begin", &[])
+        //.with(amethyst_imgui::BeginFrame::default(), "imgui_begin", &[])
         .with_barrier()
         .with(
             PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
@@ -95,27 +87,26 @@ fn main() -> amethyst::Result<()> {
         )
         .with_bundle(TransformBundle::new())?
         .with_bundle(AudioBundle::new(|music: &mut Music| music.music.next()))?
-        .with(
-            amethyst_inspector::InspectorHierarchy::default(),
-            "inspector_hierarchy",
-            &[],
-        )
-        .with(Inspector, "inspector", &["inspector_hierarchy"])
+        //.with(
+        //amethyst_inspector::InspectorHierarchy::default(),
+        //"inspector_hierarchy",
+        //&[],
+        //)
+        //.with(Inspector, "inspector", &["inspector_hierarchy"])
         .with_barrier()
-        .with(
-            amethyst_imgui::EndFrame::default(),
-            "imgui_end",
-            &["imgui_begin"],
-        )
+        //.with(
+        //amethyst_imgui::EndFrame::default(),
+        //"imgui_end",
+        //&["imgui_begin"],
+        //)
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
         .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?;
 
     // Set up the core application with a custom state event that allows us to access input events
     // in the game states. The `CustomStateEventReader` is automatically derived based on `CustomStateEvent`.
-    let mut game: CoreApplication<GameData, CustomStateEvent, CustomStateEventReader> =
-        CoreApplication::build(resources, LoadingState::default())?
-            .with_frame_limit(FrameRateLimitStrategy::Sleep, 60)
-            .build(game_data)?;
+    let mut game: Application = CoreApplication::build(resources, LoadingState::default())?
+        .with_frame_limit(FrameRateLimitStrategy::Sleep, 60)
+        .build(game_data)?;
     game.run();
     Ok(())
 }

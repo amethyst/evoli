@@ -2,12 +2,12 @@ use amethyst;
 
 use amethyst::{
     assets::PrefabLoader,
-    core::nalgebra::{Rotation3, Vector3},
+    core::math::{Rotation3, Vector2, Vector3},
     core::{transform::Transform, ArcThreadPool, Time},
     ecs::*,
     input::InputEvent,
     prelude::*,
-    renderer::*,
+    renderer::camera::{Camera, Projection},
     shrev::EventChannel,
     State,
 };
@@ -208,55 +208,47 @@ impl MainGameState {
         }
     }
 
-    fn handle_action<'a>(
-        &self,
-        action: &str,
-        world: &mut World,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn handle_action<'a>(&self, action: &str, world: &mut World) -> SimpleTrans {
         if action == "ToggleDebug" {
             let mut debug_config = world.write_resource::<DebugConfig>();
             debug_config.visible = !debug_config.visible;
-            Trans::None
+            SimpleTrans::None
         } else if action == main_game_ui::PAUSE_BUTTON.action {
-            Trans::Push(Box::new(PausedState::default()))
+            SimpleTrans::Push(Box::new(PausedState::default()))
         } else if action == main_game_ui::SPEED_UP_BUTTON.action {
             let mut time_resource = world.write_resource::<Time>();
             let current_time_scale = time_resource.time_scale();
             time_resource.set_time_scale(2.0 * current_time_scale);
-            Trans::None
+            SimpleTrans::None
         } else if action == main_game_ui::SLOW_DOWN_BUTTON.action {
             let mut time_resource = world.write_resource::<Time>();
             let current_time_scale = time_resource.time_scale();
             time_resource.set_time_scale(0.5 * current_time_scale);
-            Trans::None
+            SimpleTrans::None
         } else if action == main_game_ui::MENU_BUTTON.action {
-            Trans::Switch(Box::new(MenuState::default()))
+            SimpleTrans::Switch(Box::new(MenuState::default()))
         } else {
-            Trans::None
+            SimpleTrans::None
         }
     }
 }
 
-impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
-    fn handle_event(
-        &mut self,
-        data: StateData<GameData<'a, 'a>>,
-        event: CustomStateEvent,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+impl SimpleState for MainGameState {
+    fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans {
         match event {
-            CustomStateEvent::Window(_) => Trans::None, // Events related to the window and inputs.
-            CustomStateEvent::Ui(_) => Trans::None, // Ui event. Button presses, mouse hover, etc...
-            CustomStateEvent::Input(input_event) => {
+            StateEvent::Window(_) => SimpleTrans::None, // Events related to the window and inputs.
+            StateEvent::Ui(_) => SimpleTrans::None, // Ui event. Button presses, mouse hover, etc...
+            StateEvent::Input(input_event) => {
                 if let InputEvent::ActionPressed(action) = input_event {
                     self.handle_action(&action, data.world)
                 } else {
-                    Trans::None
+                    SimpleTrans::None
                 }
             }
         }
     }
 
-    fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_start(&mut self, data: StateData<GameData>) {
         self.dispatcher.setup(&mut data.world.res);
         self.debug_dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
@@ -376,10 +368,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         }
     }
 
-    fn update(
-        &mut self,
-        data: StateData<'_, GameData<'a, 'a>>,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         self.dispatcher.dispatch(&data.world.res);
 
         let show_debug = {
@@ -395,7 +384,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         Trans::None
     }
 
-    fn shadow_update(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        self.ui_dispatcher.dispatch(&data.world.res);
+    fn shadow_update(&mut self, data: StateData<GameData>) {
+        self.ui_dispatcher.dispatch(&mut data.world.res);
     }
 }

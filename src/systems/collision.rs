@@ -1,4 +1,4 @@
-use amethyst::renderer::DebugLines;
+use amethyst::renderer::debug_drawing::DebugLines;
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::{core::Transform, ecs::*};
 use log::info;

@@ -1,9 +1,9 @@
 use amethyst::{
-    core::{nalgebra::Vector4, transform::GlobalTransform},
+    core::{math::Vector4, transform::Transform},
     ecs::{
         BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
     },
-    renderer::DebugLines,
+    renderer::debug_drawing::DebugLines,
 };
 
 use crate::components::perception::{DetectedEntities, Perception};
@@ -17,7 +17,7 @@ impl<'s> System<'s> for EntityDetectionSystem {
         ReadStorage<'s, Perception>,
         WriteStorage<'s, DetectedEntities>,
         ReadExpect<'s, SpatialGrid>,
-        ReadStorage<'s, GlobalTransform>,
+        ReadStorage<'s, Transform>,
     );
 
     fn run(

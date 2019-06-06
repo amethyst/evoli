@@ -1,6 +1,6 @@
 use amethyst::{
     core::{
-        nalgebra::Vector3,
+        math::Vector3,
         timing::Time,
         transform::components::{Parent, Transform},
     },

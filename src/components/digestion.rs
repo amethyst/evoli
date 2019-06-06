@@ -1,12 +1,13 @@
 use amethyst::{
-    assets::{PrefabData, PrefabError, ProgressCounter},
+    assets::{PrefabData, ProgressCounter},
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, WriteStorage},
+    Error,
 };
-use amethyst_inspector::Inspect;
+//use amethyst_inspector::Inspect;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Digestion {
     // Points of fullness lost every second
@@ -25,7 +26,7 @@ impl Digestion {
     }
 }
 
-#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Fullness {
     pub max: f32,
@@ -45,7 +46,7 @@ impl Fullness {
     }
 }
 
-#[derive(Default, Debug, Inspect, Clone, Deserialize, Serialize, PrefabData)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Nutrition {
     // nutritional value of the entity

@@ -1,4 +1,4 @@
-use amethyst::core::nalgebra::*;
+use amethyst::core::math::*;
 use amethyst::core::transform::Transform;
 use amethyst::core::Time;
 use amethyst::ecs::*;

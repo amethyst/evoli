@@ -1,11 +1,12 @@
 use amethyst::{
-    assets::{PrefabData, PrefabError},
+    assets::PrefabData,
+    derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, WriteStorage},
 };
-use amethyst_inspector::Inspect;
+//use amethyst_inspector::Inspect;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Clone, Debug, Inspect, Serialize, Deserialize, PrefabData)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize, PrefabData)]
 #[prefab(Component)]
 #[serde(default)]
 pub struct Perception {
