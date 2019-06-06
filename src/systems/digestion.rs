@@ -1,4 +1,4 @@
-use amethyst::renderer::*;
+use amethyst::renderer::debug_drawing::DebugLines;
 use amethyst::{core::transform::ParentHierarchy, core::Time, core::Transform, ecs::*};
 use std::f32;
 

@@ -1,4 +1,7 @@
-use amethyst::{core::math::Vector4, ecs::Entity};
+use amethyst::{
+    core::{math::Vector4, transform::Transform},
+    ecs::Entity,
+};
 
 use std::collections::HashMap;
 use std::f32;
@@ -23,8 +26,9 @@ impl SpatialGrid {
 
     // Insert an entity in the grid based on its GlobalTransform component.
     // This might have to change when upgrading Amethyst to 0.11 as the GlobalTransform component was removed.
-    pub fn insert(&mut self, entity: Entity, transform: &GlobalTransform) {
-        let pos = Vector4::from(transform.as_ref()[3]);
+    pub fn insert(&mut self, entity: Entity, transform: &Transform) {
+        let global_matrix = transform.global_matrix();
+        let pos = Vector4::from(global_matrix[3]);
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
         let y_cell = (pos[1] / self.cell_size).floor() as i32;
         let row_entry = self.cells.entry(x_cell).or_insert(HashMap::new());
@@ -34,8 +38,9 @@ impl SpatialGrid {
 
     // Query the entities close to a certain position.
     // The range of the query is defined by the range input.
-    pub fn query(&self, transform: &GlobalTransform, range: f32) -> Vec<Entity> {
-        let pos = Vector4::from(transform.as_ref()[3]);
+    pub fn query(&self, transform: &Transform, range: f32) -> Vec<Entity> {
+        let global_matrix = transform.global_matrix();
+        let pos = Vector4::from(global_matrix[3]);
         let x_cell = (pos[0] / self.cell_size).floor() as i32;
         let y_cell = (pos[1] / self.cell_size).floor() as i32;
         let integer_range = 1 + (range / self.cell_size).ceil() as i32;
@@ -67,13 +72,9 @@ mod tests {
     fn grid_creation_insertion_and_query() {
         let mut world = World::new();
         let mut spatial_grid = SpatialGrid::new(1.0f32);
-
         let transform = Transform::default();
-        let transform_matrix = transform.matrix();
-        let global_transform = GlobalTransform::from(*transform_matrix.as_ref());
-        spatial_grid.insert(world.create_entity().build(), &global_transform);
-
-        assert!(spatial_grid.query(&global_transform, 1.0f32).len() == 1);
+        spatial_grid.insert(world.create_entity().build(), &transform);
+        assert!(spatial_grid.query(&transform, 1.0f32).len() == 1);
     }
 
 }

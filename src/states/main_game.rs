@@ -9,6 +9,7 @@ use amethyst::{
     prelude::*,
     renderer::camera::{Camera, Projection},
     shrev::EventChannel,
+    window::ScreenDimensions,
     State,
 };
 

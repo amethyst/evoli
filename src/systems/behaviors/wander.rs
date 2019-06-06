@@ -1,7 +1,7 @@
 use amethyst::core::transform::Transform;
 use amethyst::core::Time;
 use amethyst::ecs::*;
-use amethyst::renderer::*;
+use amethyst::renderer::{debug_drawing::DebugLines, *};
 
 use crate::components::creatures;
 use rand::{thread_rng, Rng};
