@@ -94,6 +94,7 @@ impl MainGameState {
                     "avoid_obstacle_system",
                     &["closest_obstacle_system"],
                 )
+                .with(behaviors::ricochet::RicochetSystem, "ricochet_system", &[])
                 .with(
                     behaviors::wander::WanderSystem,
                     "wander_system",
@@ -101,13 +102,13 @@ impl MainGameState {
                         "seek_prey_system",
                         "avoid_predator_system",
                         "avoid_obstacle_system",
+                        "ricochet_system",
                     ],
                 )
-                .with(behaviors::ricochet::RicochetSystem, "ricochet_system", &[])
                 .with(
                     movement::MovementSystem,
                     "movement_system",
-                    &["wander_system", "ricochet_system"],
+                    &["wander_system"],
                 )
                 .with(
                     collision::CollisionSystem,
@@ -279,11 +280,11 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             let x = rng.gen_range(left, right);
             let y = rng.gen_range(bottom, top);
             let scale = rng.gen_range(0.8f32, 1.2f32);
-            //let rotation = rng.gen_range(0.0f32, PI);
+
             let mut transform = Transform::default();
             transform.set_xyz(x, y, 0.0);
             transform.set_scale(scale, scale, 1.0);
-            //transform.set_rotation_euler(0.0, 0.0, rotation);
+
             let nushi_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
                 .world
