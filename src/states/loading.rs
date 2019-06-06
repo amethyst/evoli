@@ -38,8 +38,7 @@ impl SimpleState for LoadingState {
             line_width: 1.0 / 20.0,
         });
 
-        data.world
-            .add_resource(DebugLines::new().with_capacity(100));
+        data.world.add_resource(DebugLines::new());
         data.world
             .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
     }

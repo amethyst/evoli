@@ -1,4 +1,7 @@
-use amethyst::{core::transform::Transform, ecs::*, renderer::debug_drawing::DebugLines};
+use amethyst::{core::transform::Transform, ecs::*, renderer::{
+    palette::Srgba,
+    debug_drawing::DebugLines
+}};
 use std::f32;
 
 use crate::components::combat::Health;
@@ -30,11 +33,11 @@ impl<'s> System<'s> for DebugHealthSystem {
 
     fn run(&mut self, (healths, transforms, mut debug_lines): Self::SystemData) {
         for (health, transform) in (&healths, &transforms).join() {
-            let pos: [f32; 4] = transform.global_matrix()[3];
+            let pos = transform.global_matrix();
             debug_lines.draw_line(
-                [pos[0], pos[1] + 0.5, 0.0].into(),
-                [pos[0] + health.value / 100.0, pos[1] + 0.5, 0.0].into(),
-                [0.0, 1.0, 0.0, 1.0].into(),
+                [pos[(3, 0)].as_f32(), pos[(3, 1)].as_f32() + 0.5, 0.0].into(),
+                [pos[(3, 0)].as_f32() + health.value / 100.0, pos[(3, 1)].as_f32() + 0.5, 0.0].into(),
+                Srgba::new(0.0, 1.0, 0.0, 1.0),
             )
         }
     }

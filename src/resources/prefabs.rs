@@ -75,7 +75,6 @@ fn make_name(subdirectory: &str, entry: &std::fs::DirEntry) -> String {
 // When their loading is finished, we read the name of the entity inside to change the keys. This is done in the update_prefabs function.
 pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     let mut progress_counter = ProgressCounter::new();
-
     // load ui prefabs
     {
         let mut ui_prefab_registry = UiPrefabRegistry::default();

@@ -15,17 +15,17 @@ impl SimpleState for PausedState {
             StateEvent::Ui(_) => (),     // Ui event. Button presses, mouse hover, etc...
             StateEvent::Input(input_event) => match input_event {
                 InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
-                    "TogglePause" => return SimpleTrans::Pop,
+                    "TogglePause" => return Trans::Pop,
                     _ => (),
                 },
                 _ => (),
             },
         };
-        SimpleTrans::None
+        Trans::None
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
-        SimpleTrans::None
+        Trans::None
     }
 }

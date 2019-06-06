@@ -199,7 +199,7 @@ impl<'a> PrefabData<'a> for FactionPrefabData {
         entity: Entity,
         system_data: &mut Self::SystemData,
         entities: &[Entity],
-        _: &[Entity],
+        children: &[Entity],
     ) -> Result<Self::Result, Error> {
         let (ref mut named, ref mut faction_preys) = system_data;
 
@@ -208,10 +208,10 @@ impl<'a> PrefabData<'a> for FactionPrefabData {
             (faction_preys.0).0.insert(name.name.to_string(), entity);
         }
         self.name
-            .add_to_entity(entity, named, entities)
+            .add_to_entity(entity, named, entities, children)
             .expect("unreachable");
         self.faction_preys
-            .add_to_entity(entity, faction_preys, entities)
+            .add_to_entity(entity, faction_preys, entities, children)
             .expect("unreachable");
         Ok(())
     }
@@ -233,7 +233,7 @@ pub struct Factions(HashMap<String, Entity>);
 // because 'Herbivores' is defined after 'Plants'.
 pub fn load_factions(world: &mut World) {
     let prefab_handle = world.exec(|loader: PrefabLoader<'_, FactionPrefabData>| {
-        loader.load("prefabs/factions.ron", RonFormat, (), ())
+        loader.load("prefabs/factions.ron", RonFormat, ())
     });
 
     world.create_entity().with(prefab_handle.clone()).build();

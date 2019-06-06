@@ -1,6 +1,9 @@
-use amethyst::core::math::*;
-use amethyst::core::transform::Transform;
-use amethyst::core::Time;
+use amethyst::core::{
+    Float,
+    math::*,
+    transform::Transform,
+    Time
+};
 use amethyst::ecs::*;
 use shred::Resource;
 
@@ -96,8 +99,8 @@ impl<T> Closest<T> {
 }
 
 impl<T> Component for Closest<T>
-where
-    T: Resource + Default,
+    where
+        T: Resource + Default,
 {
     type Storage = DenseVecStorage<Self>;
 }
@@ -111,8 +114,8 @@ where
 pub struct ClosestSystem<T: Default>(PhantomData<T>);
 
 impl<'s, T> System<'s> for ClosestSystem<T>
-where
-    T: Resource + Default,
+    where
+        T: Resource + Default,
 {
     type SystemData = (
         Entities<'s>,
@@ -137,7 +140,7 @@ where
             }
 
             let mut closest_opt = None;
-            let mut min_sq_distance = 5.0f32.powi(2);
+            let mut min_sq_distance = Float::from(5.0f32.powi(2));
 
             for (_, query_transform) in (&query_entities.unwrap().0, &transforms).join() {
                 let position = transform.translation();
@@ -146,13 +149,14 @@ where
                 let sq_distance = difference.magnitude_squared();
                 if sq_distance < min_sq_distance {
                     min_sq_distance = sq_distance;
-                    closest_opt = Some(Closest::<T>::new(difference));
+                    closest_opt = Some(difference);
                 }
             }
 
             if let Some(c) = closest_opt {
+                let closest_component = Closest::new(Vector3::new(c[0].as_f32(), c[1].as_f32(), c[2].as_f32()));
                 closest
-                    .insert(entity, c)
+                    .insert(entity, closest_component)
                     .expect("unreachable: we just queried");
             }
         }
@@ -179,8 +183,8 @@ impl<T> SeekSystem<T> {
 }
 
 impl<'s, T> System<'s> for SeekSystem<T>
-where
-    T: Resource + Default,
+    where
+        T: Resource + Default,
 {
     type SystemData = (
         Entities<'s>,

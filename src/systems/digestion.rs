@@ -1,4 +1,7 @@
-use amethyst::renderer::debug_drawing::DebugLines;
+use amethyst::renderer::{
+    palette::Srgba,
+    debug_drawing::DebugLines
+};
 use amethyst::{core::transform::ParentHierarchy, core::Time, core::Transform, ecs::*};
 use std::f32;
 
@@ -54,17 +57,11 @@ impl<'s> System<'s> for DebugFullnessSystem {
         (entities, fullnesses, locals, hierarchy, mut debug_lines): Self::SystemData,
     ) {
         for (entity, fullness, local) in (&entities, &fullnesses, &locals).join() {
-            let pos = match hierarchy.parent(entity) {
-                Some(parent_entity) => {
-                    let parent_transform = locals.get(parent_entity).unwrap();
-                    parent_transform.clone().concat(local).translation().clone()
-                }
-                None => local.translation().clone(),
-            };
+            let pos = local.global_matrix();
             debug_lines.draw_line(
-                [pos.x, pos.y, 0.0].into(),
-                [pos.x + fullness.value / 100.0, pos.y, 0.0].into(),
-                [0.0, 1.0, 0.0, 1.0].into(),
+                [pos[(3,0)].as_f32(), pos[(3,1)].as_f32(), 0.0].into(),
+                [pos[(3,0)].as_f32() + fullness.value / 100.0, pos[(3,1)].as_f32(), 0.0].into(),
+                Srgba::new(0.0, 1.0, 0.0, 1.0),
             )
         }
     }

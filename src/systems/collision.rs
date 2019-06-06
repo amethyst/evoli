@@ -1,6 +1,12 @@
-use amethyst::renderer::debug_drawing::DebugLines;
+use amethyst::renderer::{
+    palette::Srgba,
+    debug_drawing::DebugLines
+};
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::{core::Transform, ecs::*};
+use amethyst::{core::{
+    Float,
+    Transform
+}, ecs::*};
 use log::info;
 use std::f32;
 #[cfg(feature = "profiler")]
@@ -9,24 +15,26 @@ use thread_profiler::profile_scope;
 use crate::components::collider;
 use crate::components::creatures;
 use crate::resources::world_bounds::*;
+use crate::utils::vector3_to_f32;
 
 pub struct EnforceBoundsSystem;
 
 impl<'s> System<'s> for EnforceBoundsSystem {
-    type SystemData = (WriteStorage<'s, Transform>, Read<'s, WorldBounds>);
+    type SystemData = (WriteStorage<'s, Transform>, ReadExpect<'s, WorldBounds>);
 
     fn run(&mut self, (mut locals, bounds): Self::SystemData) {
         for local in (&mut locals).join() {
-            if local.translation().x > bounds.right {
-                local.translation_mut().x = bounds.right;
-            } else if local.translation().x < bounds.left {
-                local.translation_mut().x = bounds.left;
+            let pos =vector3_to_f32(local.translation());
+            if pos.x > bounds.right {
+                local.translation_mut().x = Float::from(bounds.right);
+            } else if pos.x < bounds.left {
+                local.translation_mut().x = Float::from(bounds.left);
             }
 
-            if local.translation().y > bounds.top {
-                local.translation_mut().y = bounds.top;
-            } else if local.translation().y < bounds.bottom {
-                local.translation_mut().y = bounds.bottom;
+            if pos.y > bounds.top {
+                local.translation_mut().y = Float::from(bounds.top);
+            } else if pos.y < bounds.bottom {
+                local.translation_mut().y = Float::from(bounds.bottom);
             }
         }
     }
@@ -72,7 +80,7 @@ impl<'s> System<'s> for CollisionSystem {
                 }
 
                 let allowed_distance = circle_a.radius + circle_b.radius;
-                let direction = local_a.translation() - local_b.translation();
+                let direction = vector3_to_f32(&(local_a.translation() - local_b.translation()));
                 if direction.magnitude_squared() < allowed_distance * allowed_distance {
                     collision_events.single_write(CollisionEvent::new(entity_a, entity_b));
 
@@ -99,16 +107,16 @@ impl<'s> System<'s> for DebugColliderSystem {
 
     fn run(&mut self, (circles, locals, mut debug_lines): Self::SystemData) {
         for (circle, local) in (&circles, &locals).join() {
-            let position = local.translation();
+            let position = vector3_to_f32(local.translation());
             debug_lines.draw_line(
                 [position.x - circle.radius, position.y, 0.0].into(),
                 [position.x + circle.radius, position.y, 0.0].into(),
-                [1.0, 0.5, 0.5, 1.0].into(),
+                Srgba::new(1.0, 0.5, 0.5, 1.0),
             );
             debug_lines.draw_line(
                 [position.x, position.y - circle.radius, 0.0].into(),
                 [position.x, position.y + circle.radius, 0.0].into(),
-                [1.0, 0.5, 0.5, 1.0].into(),
+                Srgba::new(1.0, 0.5, 0.5, 1.0),
             );
         }
     }

@@ -285,8 +285,8 @@ impl SimpleState for MainGameState {
                 let scale = rng.gen_range(0.8f32, 1.2f32);
                 let rotation = rng.gen_range(0.0f32, PI);
                 let mut transform = Transform::default();
-                transform.set_xyz(x, y, 0.0);
-                transform.set_scale(scale, scale, 1.0);
+                transform.set_translation_xyz(x, y, 0.0);
+                transform.set_scale(Vector3::new(scale, scale, 1.0));
                 transform.set_rotation_euler(0.0, 0.0, rotation);
                 let plant_entity = data.world.create_entity().with(transform).build();
                 let mut spawn_events = data
@@ -307,7 +307,7 @@ impl SimpleState for MainGameState {
             let scale = rng.gen_range(0.8f32, 1.2f32);
 
             let mut transform = Transform::default();
-            transform.set_xyz(x, y, 0.0);
+            transform.set_translation_xyz(x, y, 0.0);
             transform.set_scale(scale, scale, 1.0);
 
             let nushi_entity = data.world.create_entity().with(transform).build();
@@ -327,7 +327,7 @@ impl SimpleState for MainGameState {
         };
 
         let mut transform = Transform::default();
-        transform.set_position([0.0, 0.0, 12.0].into());
+        transform.set_translation_xyz(0.0, 0.0, 12.0);
 
         self.camera = Some(
             data.world

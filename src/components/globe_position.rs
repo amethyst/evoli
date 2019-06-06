@@ -21,7 +21,7 @@ impl GlobePosition {
     }
 
     pub fn from_world_position(pos: &Vector3<f32>) -> Self {
-        let altitude = pos.coords.norm();
+        let altitude = pos.norm();
         if altitude == 0.0 {
             return GlobePosition {
                 angles: Vector2::new(0.0, 0.0),
