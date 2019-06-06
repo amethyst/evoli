@@ -65,7 +65,7 @@ fn main() -> amethyst::Result<()> {
             .with_pass(DrawFlat::<PosNormTex>::new().with_transparency(
                 ColorMask::all(),
                 ALPHA,
-                None,
+                Some(DepthMode::LessEqualWrite),
             ))
             .with_pass(DrawDebugLines::<PosColorNorm>::new())
             .with_pass(DrawUi::new())

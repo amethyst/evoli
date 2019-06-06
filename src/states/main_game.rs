@@ -1,6 +1,7 @@
 use amethyst;
 
 use amethyst::{
+    assets::PrefabLoader,
     core::nalgebra::{Rotation3, Vector3},
     core::{transform::Transform, ArcThreadPool, Time},
     ecs::*,
