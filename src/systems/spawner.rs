@@ -1,6 +1,9 @@
 use amethyst::{
-    core::timing::Time,
-    core::transform::Transform,
+    core::{
+        timing::Time,
+        transform::Transform,
+        math::Vector3,
+    },
     ecs::*,
     shrev::{EventChannel, ReaderId},
 };
@@ -103,17 +106,17 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
             let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
             let mut transform = Transform::default();
-            transform.set_xyz(x, y, 0.02);
+            transform.set_translation_xyz(x, y, 0.02);
             let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution =
                 rand::random();
             if creature_type == "Carnivore" || creature_type == "Herbivore" {
-                transform.set_scale(0.5, 0.5, 1.0);
+                transform.set_scale(Vector3::new(0.5, 0.5, 1.0));
             }
             if creature_type == "Plant" {
                 let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
                 let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
-                transform.set_z(0.0);
-                transform.set_scale(scale, scale, 1.0);
+                transform.set_translation_z(0.0);
+                transform.set_scale(Vector3::new(scale, scale, 1.0));
                 transform.set_rotation_euler(0.0, 0.0, rotation);
             }
             creature_entity_builder = creature_entity_builder.with(transform);

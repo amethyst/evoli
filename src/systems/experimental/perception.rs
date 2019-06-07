@@ -1,12 +1,21 @@
 use amethyst::{
-    core::{math::Vector4, transform::Transform},
+    core::{Float, math::{
+        Point3,
+        Vector4
+    }, transform::Transform},
     ecs::{
         BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
     },
-    renderer::debug_drawing::DebugLines,
+    renderer::{
+        palette::Srgba,
+        debug_drawing::DebugLines
+    },
 };
 
-use crate::components::perception::{DetectedEntities, Perception};
+use crate::{
+    components::perception::{DetectedEntities, Perception},
+    utils::vector3_to_f32,
+};
 use crate::resources::spatial_grid::SpatialGrid;
 
 pub struct EntityDetectionSystem;
@@ -38,10 +47,10 @@ impl<'s> System<'s> for EntityDetectionSystem {
         for (entity, perception, mut detected, transform) in
             (&entities, &perceptions, &mut detected_entities, &transforms).join()
         {
-            detected.entities = Vec::new();
+            detected.entities = BitSet::new();
             let nearby_entities = grid.query(transform, perception.range);
-            let pos = Vector4::from(transform.global_matrix()[3]).xyz();
-            let sq_range = perception.range * perception.range;
+            let pos = transform.global_matrix().column(3).xyz();
+            let sq_range = Float::from(perception.range * perception.range);
             let mut nearby_entities_bitset = BitSet::new();
             for other_entity in &nearby_entities {
                 if entity == *other_entity {
@@ -52,7 +61,7 @@ impl<'s> System<'s> for EntityDetectionSystem {
             for (other_entity, other_transform, _) in
                 (&entities, &transforms, &nearby_entities_bitset).join()
             {
-                let other_pos = Vector4::from(other_transform.global_matrix()[3]).xyz();
+                let other_pos = other_transform.global_matrix().column(3).xyz();
                 if (pos - other_pos).norm_squared() < sq_range {
                     detected.entities.add(other_entity.id());
                 }
@@ -89,13 +98,13 @@ impl<'s> System<'s> for DebugEntityDetectionSystem {
 
     fn run(&mut self, (detected_entities, transforms, mut debug_lines): Self::SystemData) {
         for (detected, transform) in (&detected_entities, &transforms).join() {
-            let pos = Vector4::from(transform.global_matrix()[3]).xyz();
+            let pos = vector3_to_f32(&transform.global_matrix().column(3).xyz());
             for (other_transform, _) in (&transforms, &detected.entities).join() {
-                let other_pos = Vector4::from(other_transform.global_matrix()[3]).xyz();
+                let other_pos = vector3_to_f32(&other_transform.global_matrix().column(3).xyz());
                 debug_lines.draw_line(
-                    [pos[0], pos[1], 0.0].into(),
-                    [other_pos[0], other_pos[1], 0.0].into(),
-                    [1.0, 1.0, 0.0, 1.0].into(),
+                    Point3::from(pos),
+                    Point3::from(other_pos),
+                    Srgba::new(1.0, 1.0, 0.0, 1.0),
                 );
             }
         }

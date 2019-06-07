@@ -20,3 +20,8 @@ profiler = [
     "thread_profiler/thread_profiler",
     "amethyst/profiler"
 ]
+
+[dependencies.shred]
+features = ["nightly"]
+
+

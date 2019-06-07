@@ -17,6 +17,7 @@ use crate::{
         swarm::{SwarmBehavior, SwarmCenter},
     },
     systems::spawner::CreatureSpawnEvent,
+    utils::vector3_to_f32,
 };
 
 #[derive(Default)]
@@ -42,7 +43,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             let x = rng.gen_range(-10.0, 10.0);
             let y = rng.gen_range(-10.0, 10.0);
             let mut transform = Transform::default();
-            transform.set_xyz(x, y, 0.0);
+            transform.set_translation_xyz(x, y, 0.0);
             swarm_entity_builder = swarm_entity_builder.with(transform);
             let movement = Movement {
                 velocity: Vector3::new(0.0, 0.0, 0.0),
@@ -68,8 +69,8 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 let mut transform = Transform::default();
                 let x = rng.gen_range(-1.0, 1.0);
                 let y = rng.gen_range(-1.0, 1.0);
-                transform.set_xyz(x, y, 0.0);
-                transform.set_scale(0.3, 0.3, 1.0);
+                transform.set_translation_xyz(x, y, 0.0);
+                transform.set_scale(Vector3::new(0.3, 0.3, 1.0));
                 let parent = Parent {
                     entity: swarm_entity,
                 };
@@ -144,7 +145,7 @@ impl<'s> System<'s> for SwarmBehaviorSystem {
         for (transform, swarm_behavior, mut movement) in
             (&transforms, &swarm_behaviors, &mut movements).join()
         {
-            let original_position = transform.translation();
+            let original_position = vector3_to_f32(transform.translation());
             let mut current_position = original_position.clone();
             let mut current_velocity = movement.velocity.clone();
             let pull_factor = 10.0;

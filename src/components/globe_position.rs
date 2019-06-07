@@ -7,8 +7,8 @@ use amethyst::{
 };
 
 pub struct GlobePosition {
-    angles: Vector2<f32>,
-    altitude: f32,
+    pub angles: Vector2<f32>,
+    pub altitude: f32,
 }
 
 impl GlobePosition {
