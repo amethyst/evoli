@@ -4,17 +4,17 @@ Prefab (
         (
             data: (
                 name: (
-                    name: "Herbivore"
+                    name: "Carnivore"
                 ),
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
-                        albedo: File("assets/herbivore.png", Png, (channel: Srgb),),
+                        albedo: File("assets/carnivore.png", Png),
                     ),
                 ),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
-                    max_movement_speed: 1.75,
+                    max_movement_speed: 2.0,
                 ),
                 wander: (
                     angle: 0.0,
@@ -25,7 +25,7 @@ Prefab (
                 ),
                 digestion: (
                     digestion: (
-                        nutrition_burn_rate: 1.0,
+                        nutrition_burn_rate: 3.0,
                     ),
                     fullness: (
                         max: 100.0,
@@ -33,7 +33,7 @@ Prefab (
                     ),
                     nutrition: (
                         value: 50.0,
-                    ),
+                    )
                 ),
                 combat: (
                     health: (
@@ -47,7 +47,7 @@ Prefab (
                         damage: 20.0,
                     ),
                     has_faction: (
-                        faction: "Herbivores",
+                        faction: "Carnivores",
                     ),
                 ),
                 intelligence_tag: (),

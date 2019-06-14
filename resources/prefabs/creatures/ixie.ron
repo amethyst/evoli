@@ -9,7 +9,7 @@ Prefab (
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
-                        albedo: File("assets/tiny-ixie.png", Png, (channel: Srgb),),
+                        albedo: File("assets/tiny-ixie.png", ("IMAGE", ()))
                     ),
                 ),
                 digestion: (
