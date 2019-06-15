@@ -3,18 +3,7 @@ extern crate amethyst_derive;
 
 use amethyst;
 use amethyst::assets::PrefabLoaderSystem;
-use amethyst::{
-    audio::AudioBundle,
-    core::frame_limiter::FrameRateLimitStrategy,
-    core::transform::{Transform, TransformBundle},
-    core::Named,
-    ecs::*,
-    input::InputBundle,
-    prelude::*,
-    renderer::*,
-    ui::{DrawUi, NoCustomUi, UiBundle, UiTransform},
-    utils::application_root_dir,
-};
+use amethyst::{audio::AudioBundle, core::frame_limiter::FrameRateLimitStrategy, core::transform::{Transform, TransformBundle}, core::Named, ecs::*, input::InputBundle, prelude::*, renderer::*, ui::{DrawUi, NoCustomUi, UiBundle, UiTransform}, utils::application_root_dir, LoggerConfig};
 
 mod components;
 mod resources;
@@ -28,6 +17,7 @@ use crate::components::creatures::{self, IntelligenceTag, Movement, Wander};
 use crate::components::digestion::{Digestion, Fullness, Nutrition};
 use crate::resources::audio::Music;
 use crate::states::{loading::LoadingState, CustomStateEvent, CustomStateEventReader};
+use crate::systems::day_night_cycle::DayNightCycle;
 
 amethyst_inspector::inspector![
     Named,
@@ -49,7 +39,12 @@ amethyst_inspector::inspector![
 ];
 
 fn main() -> amethyst::Result<()> {
-    amethyst::start_logger(Default::default());
+    amethyst::start_logger(LoggerConfig {
+        stdout: amethyst::StdoutLog::Colored,
+        level_filter: amethyst::LogLevelFilter::Off,
+        log_file: None,
+        allow_env_override: true,
+    });
 
     let resources = application_root_dir().clone() + "/resources";
     let display_config_path = resources.clone() + "/display_config.ron";
@@ -90,7 +85,7 @@ fn main() -> amethyst::Result<()> {
             &[],
         )
         .with_bundle(TransformBundle::new())?
-        .with_bundle(AudioBundle::new(|music: &mut Music| music.music.next()))?
+        .with_bundle(AudioBundle::new(|music: &mut Music| music.get_current()))?
         .with(
             amethyst_inspector::InspectorHierarchy::default(),
             "inspector_hierarchy",
@@ -104,7 +99,12 @@ fn main() -> amethyst::Result<()> {
             &["imgui_begin"],
         )
         .with_bundle(RenderBundle::new(pipe, Some(display_config)))?
-        .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?;
+        .with_bundle(UiBundle::<String, String, NoCustomUi>::new())?
+        .with(
+            DayNightCycle::new(),
+            "day_night_cycle",
+            &[]
+        );
 
     // Set up the core application with a custom state event that allows us to access input events
     // in the game states. The `CustomStateEventReader` is automatically derived based on `CustomStateEvent`.

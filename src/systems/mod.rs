@@ -2,6 +2,7 @@ pub mod behaviors;
 pub mod camera_movement;
 pub mod collision;
 pub mod combat;
+pub mod day_night_cycle;
 pub mod debug;
 pub mod digestion;
 pub mod health;

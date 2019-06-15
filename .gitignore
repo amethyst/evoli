@@ -10,3 +10,5 @@
 
 # IntelliJ folder
 .idea
+
+*.iml
