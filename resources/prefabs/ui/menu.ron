@@ -1,0 +1,56 @@
+#![enable(implicit_some)]
+Container(
+    transform: (
+        id: "menu",
+        anchor: Middle,
+        stretch: XY( x_margin: 0.0, y_margin: 0.0, keep_aspect_ratio: false),
+        width: 1000.0,
+        height: 1000.0,
+    ),
+    children: [
+        Button(
+            transform: (
+                id: "start",
+                x: 0.0,
+                y: 50.0,
+                width: 300.0,
+                height: 75.0,
+                anchor: Middle,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Start",
+                font: File("assets/fonts/OpenSans-Regular.ttf", Ttf, ()),
+                font_size: 100.0,
+                normal_image: Data(Rgba((0.5, 0.5, 0.5, 1.0), (dynamic:false, channel:Srgb))),
+                hover_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                press_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                normal_text_color: (0.4, 0.4, 0.4, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (0.0, 0.0, 0.0, 1.0),
+            )
+        ),
+        Button(
+            transform: (
+                id: "exit",
+                x: 0.0,
+                y: -50.0,
+                width: 300.0,
+                height: 75.0,
+                anchor: Middle,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Exit",
+                font: File("assets/fonts/OpenSans-Regular.ttf", Ttf, ()),
+                font_size: 100.0,
+                normal_image: Data(Rgba((0.5, 0.5, 0.5, 1.0), (dynamic:false, channel:Srgb))),
+                hover_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                press_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                normal_text_color: (0.4, 0.4, 0.4, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (0.0, 0.0, 0.0, 1.0),
+            )
+        ),
+    ]
+)

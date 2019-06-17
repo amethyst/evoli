@@ -1,5 +1,6 @@
 pub mod loading;
 pub mod main_game;
+pub mod menu;
 pub mod paused;
 
 use amethyst::{
