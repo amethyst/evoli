@@ -9,7 +9,6 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-
 #[derive(Default)]
 pub struct UiPrefabRegistry {
     pub prefabs: Vec<Handle<UiPrefab>>,
@@ -36,7 +35,6 @@ impl UiPrefabRegistry {
         })
     }
 }
-
 
 #[derive(Default)]
 pub struct CreaturePrefabs {
