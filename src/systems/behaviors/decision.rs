@@ -192,6 +192,9 @@ where
     fn run(&mut self, (_entities, closest_things, time, mut movements): Self::SystemData) {
         let delta_time = time.delta_seconds();
         for (movement, closest) in (&mut movements, &closest_things).join() {
+            if closest.distance.norm() == 0.0 {
+                continue;
+            }
             let target_velocity = closest.distance.normalize() * self.attraction_magnitude;
             let steering_force = target_velocity - movement.velocity;
             movement.velocity += self.attraction_modifier * steering_force * delta_time;
