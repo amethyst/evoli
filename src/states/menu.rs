@@ -1,9 +1,9 @@
 use crate::resources::prefabs::UiPrefabRegistry;
 use crate::states::{main_game::MainGameState, CustomStateEvent};
 use amethyst::{
-    ecs::{join::Join, Entity},
+    ecs::Entity,
     prelude::*,
-    ui::{UiEvent, UiEventType, UiTransform},
+    ui::{UiEvent, UiEventType, UiFinder},
 };
 
 #[derive(Default)]
@@ -77,22 +77,10 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
         data.data.update(&data.world);
         // once deferred creation of the root ui entity finishes, look up buttons
         if self.start_button.is_none() || self.exit_button.is_none() {
-            for (entity, transform) in (
-                &data.world.entities(),
-                &data.world.read_storage::<UiTransform>(),
-            )
-                .join()
-            {
-                if transform.id == START_BUTTON_ID {
-                    eprintln!("start button found");
-                    self.start_button = Some(entity);
-                } else if transform.id == EXIT_BUTTON_ID {
-                    eprintln!("exit button found");
-                    self.exit_button = Some(entity);
-                }
-            }
+            let ui_finder = data.world.read_resource::<UiFinder>();
+            self.start_button = ui_finder.find(START_BUTTON_ID);
+            self.exit_button = ui_finder.find(EXIT_BUTTON_ID);
         }
-
         Trans::None
     }
 }
