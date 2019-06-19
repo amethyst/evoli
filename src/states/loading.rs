@@ -6,6 +6,7 @@ use crate::{
     },
     states::{main_game::MainGameState, menu::MenuState, CustomStateEvent},
 };
+use std::env;
 
 use crate::components::combat::load_factions;
 use amethyst::{
@@ -52,8 +53,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for LoadingState {
             if counter.is_complete() {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);
-                use std::env;
-
                 if env::args().any(|arg| arg == SKIP_MENU_ARG) {
                     return Trans::Switch(Box::new(MainGameState::new(data.world)));
                 } else {
