@@ -26,6 +26,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
     fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         // assume UiPrefab loading has happened in a previous state
         // look through the UiPrefabRegistry for the "menu" prefab and instantiate it
+        eprintln!("start main menu");
         let menu_prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
@@ -76,10 +77,11 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         data.data.update(&data.world);
         // once deferred creation of the root ui entity finishes, look up buttons
-        if self.start_button.is_none() || self.exit_button.is_none() {
-            let ui_finder = data.world.read_resource::<UiFinder>();
-            self.start_button = ui_finder.find(START_BUTTON_ID);
-            self.exit_button = ui_finder.find(EXIT_BUTTON_ID);
+        if self.start_button.is_none() || self.exit_button.is_none() { 
+            data.world.exec(|ui_finder: UiFinder<'_>| {
+                self.start_button = ui_finder.find(START_BUTTON_ID);
+                self.exit_button = ui_finder.find(EXIT_BUTTON_ID);
+            });
         }
         Trans::None
     }
