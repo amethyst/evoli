@@ -77,7 +77,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         data.data.update(&data.world);
         // once deferred creation of the root ui entity finishes, look up buttons
-        if self.start_button.is_none() || self.exit_button.is_none() { 
+        if self.start_button.is_none() || self.exit_button.is_none() {
             data.world.exec(|ui_finder: UiFinder<'_>| {
                 self.start_button = ui_finder.find(START_BUTTON_ID);
                 self.exit_button = ui_finder.find(EXIT_BUTTON_ID);
