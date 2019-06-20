@@ -4,8 +4,9 @@ use crate::{
         prefabs::{initialize_prefabs, update_prefabs},
         world_bounds::WorldBounds,
     },
-    states::{main_game::MainGameState, CustomStateEvent},
+    states::{main_game::MainGameState, menu::MenuState, CustomStateEvent},
 };
+use std::env;
 
 use crate::components::combat::load_factions;
 use amethyst::{
@@ -13,6 +14,8 @@ use amethyst::{
     prelude::*,
     renderer::{DebugLines, DebugLinesParams},
 };
+
+const SKIP_MENU_ARG: &str = "no_menu";
 
 pub struct LoadingState {
     prefab_loading_progress: Option<ProgressCounter>,
@@ -50,7 +53,11 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for LoadingState {
             if counter.is_complete() {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);
-                return Trans::Switch(Box::new(MainGameState::new(data.world)));
+                if env::args().any(|arg| arg == SKIP_MENU_ARG) {
+                    return Trans::Switch(Box::new(MainGameState::new(data.world)));
+                } else {
+                    return Trans::Switch(Box::new(MenuState::default()));
+                }
             }
         }
 
