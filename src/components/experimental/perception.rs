@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{PrefabData, PrefabError},
-    ecs::{Component, DenseVecStorage, Entity, WriteStorage},
+    ecs::{BitSet, Component, DenseVecStorage, Entity, WriteStorage},
 };
 use amethyst_inspector::Inspect;
 use serde::{Deserialize, Serialize};
@@ -18,7 +18,7 @@ impl Component for Perception {
 
 #[derive(Default, Clone, Debug)]
 pub struct DetectedEntities {
-    pub entities: Vec<Entity>,
+    pub entities: BitSet,
 }
 
 impl Component for DetectedEntities {

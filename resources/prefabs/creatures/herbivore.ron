@@ -50,9 +50,28 @@ Prefab (
                         faction: "Herbivores",
                     ),
                 ),
-                intelligence_tag: (),
                 perception: (
-                    range: 5.0,
+                    range: 4.0,
+                ),
+                boids: (
+                    flocking: (
+                        strength: 0.4,
+                    ),
+                    match_velocity: (
+                        strength: 3.0,
+                    ),
+                    avoid: (
+                        names: ["Carnivore"],
+                        strength: 20.0,
+                    ),
+                    seek: (
+                        names: ["Plant"],
+                        strength: 10.0,
+                    ),
+                    minimum_distance: (
+                        minimum: 1.5,
+                        strength: 5.0,
+                    ),
                 ),
             ),
         ),
