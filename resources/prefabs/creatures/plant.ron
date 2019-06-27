@@ -9,7 +9,7 @@ Prefab (
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
-                        albedo: File("assets/simply_plant.png", Png),
+                        albedo: File("assets/simply_plant.png", ("IMAGE", ())),
                     ),
                 ),
                 digestion: (
