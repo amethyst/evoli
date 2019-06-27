@@ -3,7 +3,7 @@ use std::sync::Arc;
 use amethyst::{
     ecs::{ReadExpect, Resources, SystemData},
     renderer::{
-        pass::{DrawFlat2DDesc, DrawFlat2DTransparentDesc, DrawFlatDesc},
+        pass::{DrawDebugLinesDesc, DrawFlat2DDesc, DrawFlat2DTransparentDesc, DrawFlatDesc},
         rendy::{
             factory::Factory,
             graph::{
@@ -65,7 +65,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
             window_kind,
             1,
             surface_format,
-            Some(ClearValue::Color([0.1, 0.1, 0.1, 1.0].into())),
+            Some(ClearValue::Color([0.02, 0.35, 0.02, 1.0].into())),
         );
 
         let depth = graph_builder.create_image(
@@ -75,33 +75,17 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
             Some(ClearValue::DepthStencil(ClearDepthStencil(1.0, 0))),
         );
 
-        let sprite = graph_builder.add_node(
+        let main_pass = graph_builder.add_node(
             SubpassBuilder::new()
                 .with_group(DrawFlatDesc::new().builder())
+                .with_group(DrawDebugLinesDesc::new().builder())
+                .with_group(DrawUiDesc::new().builder())
                 .with_color(color)
                 .with_depth_stencil(depth)
                 .into_pass(),
         );
-        //        let sprite_trans = graph_builder.add_node(
-        //            SubpassBuilder::new()
-        //                .with_group(DrawFlat2DTransparentDesc::new().builder())
-        //                .with_color(color)
-        //                .with_depth_stencil(depth)
-        //                .into_pass(),
-        //        );
-        //        let ui = graph_builder.add_node(
-        //            SubpassBuilder::new()
-        //                .with_group(DrawUiDesc::new().builder())
-        //                .with_color(color)
-        //                .with_depth_stencil(depth)
-        //                .into_pass(),
-        //        );
-        //
-        let _present = graph_builder.add_node(
-            PresentNode::builder(factory, surface, color)
-                //                .with_dependency(sprite_trans)
-                .with_dependency(sprite),
-        );
+        let _present = graph_builder
+            .add_node(PresentNode::builder(factory, surface, color).with_dependency(main_pass));
 
         graph_builder
     }

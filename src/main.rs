@@ -87,7 +87,7 @@ fn main() -> amethyst::Result<()> {
             InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
         //.with(amethyst_imgui::BeginFrame::default(), "imgui_begin", &[])
-        .with_barrier()
+        //.with_barrier()
         .with(
             PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
             "",
@@ -111,7 +111,7 @@ fn main() -> amethyst::Result<()> {
         //&[],
         //)
         //.with(Inspector, "inspector", &["inspector_hierarchy"])
-        .with_barrier()
+        //.with_barrier()
         //.with(
         //amethyst_imgui::EndFrame::default(),
         //"imgui_end",

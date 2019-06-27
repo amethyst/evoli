@@ -1,9 +1,5 @@
 use amethyst::{
-    core::{
-        timing::Time,
-        transform::Transform,
-        math::Vector3,
-    },
+    core::{math::Vector3, timing::Time, transform::Transform},
     ecs::*,
     shrev::{EventChannel, ReaderId},
 };

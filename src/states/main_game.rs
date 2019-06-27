@@ -256,7 +256,6 @@ impl SimpleState for MainGameState {
 
         // Setup debug config resource
         data.world.add_resource(DebugConfig::default());
-
         data.world.add_resource(SpatialGrid::new(1.0f32));
 
         // main game ui
