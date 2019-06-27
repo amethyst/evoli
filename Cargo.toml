@@ -21,7 +21,7 @@ profiler = [
     "amethyst/profiler"
 ]
 
-[dependencies.shred]
-features = ["nightly"]
+#[dependencies.shred]
+#features = ["nightly"]
 
 

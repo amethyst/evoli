@@ -3,7 +3,11 @@ use amethyst::{
     core::{math::Vector3, Named},
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, NullStorage, WriteStorage},
-    renderer::{ rendy::mesh::PosNormTex, formats::GraphicsPrefab, TexturePrefab},
+    renderer::{
+        formats::GraphicsPrefab,
+        rendy::mesh::{Normal, Position, TexCoord},
+        TexturePrefab,
+    },
     Error,
 };
 //use amethyst_inspector::Inspect;
@@ -85,8 +89,8 @@ impl Wander {
 #[serde(deny_unknown_fields)]
 pub struct CreaturePrefabData {
     pub name: Option<Named>,
-    graphics: Option<GraphicsPrefab<Vec<PosNormTex>>>,
-   movement: Option<Movement>,
+    graphics: Option<GraphicsPrefab<(Vec<Position>, Vec<Normal>, Vec<TexCoord>)>>,
+    movement: Option<Movement>,
     wander: Option<Wander>,
     collider: Option<Circle>,
     digestion: Option<DigestionPrefabData>,
