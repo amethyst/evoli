@@ -107,7 +107,7 @@ pub struct TimeControlSystem {
 
 // implementation-specific, hidden way of producing the name of a button's child text widget, given the button name
 fn make_ui_text_name(button_name: &str) -> String {
-    format!("{}_btn_text", button_name)
+    format!("{}_btn_txt", button_name)
 }
 
 impl<'s> TimeControlSystem {
@@ -127,7 +127,6 @@ impl<'s> TimeControlSystem {
             info: &SLOW_DOWN_BUTTON,
             entity: finder.find(SLOW_DOWN_BUTTON.name),
         });
-        // TODO @chrisp this find is failing
         self.pause_button_text = finder.find(&make_ui_text_name(PAUSE_BUTTON.name));
     }
 
@@ -151,18 +150,13 @@ impl<'s> TimeControlSystem {
         if action != PAUSE_BUTTON.action {
             return;
         }
-        eprintln!("handle_action for PAUSE_BUTTON");
         const PAUSE_TEXT: &str = PAUSE_BUTTON.text;
         const PLAY_TEXT: &str = "Play";
         if let Some(text_entity) = self.pause_button_text {
-            eprintln!("Some(text_entity)");
             if let Some(ui_text) = ui_texts.get_mut(text_entity) {
-                eprintln!("Some(ui_text)");
                 if ui_text.text == PAUSE_TEXT {
-                    eprintln!("PAUSE_TEXT");
                     ui_text.text = PLAY_TEXT.to_string();
                 } else if ui_text.text == PLAY_TEXT {
-                    eprintln!("PLAY_TEXT");
                     ui_text.text = PAUSE_TEXT.to_string();
                 }
             }
