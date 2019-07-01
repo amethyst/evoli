@@ -1,0 +1,100 @@
+#![enable(implicit_some)]
+Container(
+    transform: (
+        id: "main game",
+        anchor: Middle,
+        stretch: XY( x_margin: 0.0, y_margin: 0.0, keep_aspect_ratio: true),
+        width: 1280.0,
+        height: 960.0,
+    ),
+    children: [
+        Button(
+            transform: (
+                id: "menu button",
+                x: -355.0,
+                y: 20.0,
+                width: 80.0,
+                height: 36.0,
+                anchor: BottomRight,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Menu",
+                font: File("assets/fonts/OpenSans-Regular.ttf", Ttf, ()),
+                font_size: 24.0,
+                normal_image: Data(Rgba((0.5, 0.5, 0.5, 1.0), (dynamic:false, channel:Srgb))),
+                hover_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                press_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                normal_text_color: (0.4, 0.4, 0.4, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (1.0, 1.0, 1.0, 1.0),
+            )
+        ),
+        Button(
+            transform: (
+                id: "pause button",
+                x: -265.0,
+                y: 20.0,
+                width: 80.0,
+                height: 36.0,
+                anchor: BottomRight,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Pause",
+                font: File("assets/fonts/OpenSans-Regular.ttf", Ttf, ()),
+                font_size: 24.0,
+                normal_image: Data(Rgba((0.5, 0.5, 0.5, 1.0), (dynamic:false, channel:Srgb))),
+                hover_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                press_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                normal_text_color: (0.4, 0.4, 0.4, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (1.0, 1.0, 1.0, 1.0),
+            )
+        ),
+        Button(
+            transform: (
+                id: "slow down button",
+                x: -165.0,
+                y: 20.0,
+                width: 100.0,
+                height: 36.0,
+                anchor: BottomRight,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Slow Down",
+                font: File("assets/fonts/OpenSans-Regular.ttf", Ttf, ()),
+                font_size: 24.0,
+                normal_image: Data(Rgba((0.5, 0.5, 0.5, 1.0), (dynamic:false, channel:Srgb))),
+                hover_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                press_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                normal_text_color: (0.4, 0.4, 0.4, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (1.0, 1.0, 1.0, 1.0),
+            )
+        ),
+        Button(
+            transform: (
+                id: "speed up button",
+                x: -55.0,
+                y: 20.0,
+                width: 100.0,
+                height: 36.0,
+                anchor: BottomRight,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Speed Up",
+                font: File("assets/fonts/OpenSans-Regular.ttf", Ttf, ()),
+                font_size: 24.0,
+                normal_image: Data(Rgba((0.5, 0.5, 0.5, 1.0), (dynamic:false, channel:Srgb))),
+                hover_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                press_image: Data(Rgba((0.5, 0.5, 0.5, 1.), (dynamic:false, channel:Srgb))),
+                normal_text_color: (0.4, 0.4, 0.4, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (1.0, 1.0, 1.0, 1.0),
+            )
+        ),
+    ]
+)

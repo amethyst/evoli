@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate amethyst_derive;
 
+#[macro_use]
+extern crate log;
+
 use amethyst;
 use amethyst::assets::PrefabLoaderSystem;
 use amethyst::{

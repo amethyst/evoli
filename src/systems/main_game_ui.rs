@@ -1,5 +1,4 @@
 use amethyst::{
-    assets::{AssetStorage, Loader},
     ecs::*,
     input::InputEvent,
     shrev::{EventChannel, ReaderId},
@@ -25,7 +24,12 @@ impl Default for &ButtonInfo {
 }
 
 // centralize the button strings here (used in both button creation and response logic)
-// if/when the ui creation moves to a .ron, these strings will need to be kept in alignment with that file
+// NOTE these strings will need to be kept in alignment with main_game.ron
+const MENU_BUTTON: ButtonInfo = ButtonInfo {
+    name: "menu button",
+    text: "Menu",
+    action: "Menu",
+};
 const PAUSE_BUTTON: ButtonInfo = ButtonInfo {
     name: "pause button",
     text: "Pause",
@@ -42,54 +46,12 @@ const SPEED_UP_BUTTON: ButtonInfo = ButtonInfo {
     action: "SpeedUp",
 };
 
-pub fn create_time_control_ui(world: &mut World) {
-    world.add_resource(AssetStorage::<FontAsset>::new());
-    let font_handle = {
-        let loader = world.write_resource::<Loader>();
-        let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
-        loader.load(
-            "assets/fonts/OpenSans-Regular.ttf",
-            TtfFormat,
-            (),
-            (),
-            &font_storage,
-        )
-    };
-
-    // TODO move widget specification to time_control.ron
-    let _ = UiButtonBuilder::new(PAUSE_BUTTON.name, PAUSE_BUTTON.text)
-        .with_anchor(Anchor::BottomRight)
-        .with_size(80.0, 36.0)
-        .with_position(-255.0, 20.0)
-        .with_font(font_handle.clone())
-        .with_font_size(24.0f32)
-        .with_text_color([0.0f32, 0.0, 0.0, 1.0])
-        .with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-        .with_press_text_color([0.5, 0.5, 0.5, 1.0])
-        .build_from_world(world);
-
-    let _ = UiButtonBuilder::new(SLOW_DOWN_BUTTON.name, SLOW_DOWN_BUTTON.text)
-        .with_anchor(Anchor::BottomRight)
-        .with_size(100.0, 36.0)
-        .with_position(-160.0, 20.0)
-        .with_font(font_handle.clone())
-        .with_font_size(24.0f32)
-        .with_text_color([0.0f32, 0.0, 0.0, 1.0])
-        .with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-        .with_press_text_color([0.5, 0.5, 0.5, 1.0])
-        .build_from_world(world);
-
-    let _ = UiButtonBuilder::new(SPEED_UP_BUTTON.name, SPEED_UP_BUTTON.text)
-        .with_anchor(Anchor::BottomRight)
-        .with_size(100.0, 36.0)
-        .with_position(-55.0, 20.0)
-        .with_font(font_handle.clone())
-        .with_font_size(24.0f32)
-        .with_text_color([0.0f32, 0.0, 0.0, 1.0])
-        .with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-        .with_press_text_color([0.5, 0.5, 0.5, 1.0])
-        .build_from_world(world);
-}
+const BUTTON_INFOS: [&ButtonInfo; 4] = [
+    &MENU_BUTTON,
+    &PAUSE_BUTTON,
+    &SLOW_DOWN_BUTTON,
+    &SPEED_UP_BUTTON,
+];
 
 #[derive(Default)]
 struct Button {
@@ -98,7 +60,7 @@ struct Button {
 }
 
 #[derive(Default)]
-pub struct TimeControlSystem {
+pub struct MainGameUiSystem {
     ui_reader_id: Option<ReaderId<UiEvent>>,
     input_reader_id: Option<ReaderId<InputEvent<String>>>,
     buttons: Vec<Button>,
@@ -110,24 +72,18 @@ fn make_ui_text_name(button_name: &str) -> String {
     format!("{}_btn_txt", button_name)
 }
 
-impl<'s> TimeControlSystem {
+impl<'s> MainGameUiSystem {
     fn find_ui_elements(&mut self, finder: &UiFinder) {
-        if !self.buttons.is_empty() {
-            return;
+        if self.buttons.is_empty() {
+            self.buttons = BUTTON_INFOS
+                .iter()
+                .map(|info| Button {
+                    info,
+                    entity: finder.find(info.name),
+                })
+                .collect::<Vec<Button>>();
+            self.pause_button_text = finder.find(&make_ui_text_name(PAUSE_BUTTON.name));
         }
-        self.buttons.push(Button {
-            info: &PAUSE_BUTTON,
-            entity: finder.find(PAUSE_BUTTON.name),
-        });
-        self.buttons.push(Button {
-            info: &SPEED_UP_BUTTON,
-            entity: finder.find(SPEED_UP_BUTTON.name),
-        });
-        self.buttons.push(Button {
-            info: &SLOW_DOWN_BUTTON,
-            entity: finder.find(SLOW_DOWN_BUTTON.name),
-        });
-        self.pause_button_text = finder.find(&make_ui_text_name(PAUSE_BUTTON.name));
     }
 
     // translate ui button clicks into input actions for registered buttons
@@ -146,10 +102,12 @@ impl<'s> TimeControlSystem {
     }
 
     fn handle_action(&self, action: &str, ui_texts: &mut WriteStorage<'s, UiText>) {
-        // only one action handled right now; change to match when we handle more
+        // only one action handled right now; change to 'match' when we handle more
         if action != PAUSE_BUTTON.action {
             return;
         }
+
+        // toggle text between 'Play' and 'Pause' depending on what the next click will do
         const PAUSE_TEXT: &str = PAUSE_BUTTON.text;
         const PLAY_TEXT: &str = "Play";
         if let Some(text_entity) = self.pause_button_text {
@@ -164,7 +122,7 @@ impl<'s> TimeControlSystem {
     }
 }
 
-impl<'s> System<'s> for TimeControlSystem {
+impl<'s> System<'s> for MainGameUiSystem {
     type SystemData = (
         UiFinder<'s>,
         Read<'s, EventChannel<UiEvent>>,

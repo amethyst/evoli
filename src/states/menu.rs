@@ -26,14 +26,13 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
     fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         // assume UiPrefab loading has happened in a previous state
         // look through the UiPrefabRegistry for the "menu" prefab and instantiate it
-        eprintln!("start main menu");
         let menu_prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
             .find(data.world, MENU_ID);
-        if let Some(unwrapped_menu) = menu_prefab {
-            eprintln!("instantiating main menu");
-            self.root = Some(data.world.create_entity().with(unwrapped_menu).build());
+        if let Some(menu_prefab) = menu_prefab {
+            info!("instantiating main menu");
+            self.root = Some(data.world.create_entity().with(menu_prefab).build());
         }
     }
 
@@ -58,10 +57,10 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
                 target,
             }) => {
                 if Some(target) == self.start_button {
-                    eprintln!("start button clicked");
+                    info!("start button clicked");
                     Trans::Switch(Box::new(MainGameState::new(data.world)))
                 } else if Some(target) == self.exit_button {
-                    eprintln!("exit button clicked");
+                    info!("exit button clicked");
                     Trans::Quit
                 } else {
                     Trans::None

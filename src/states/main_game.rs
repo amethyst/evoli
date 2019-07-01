@@ -16,8 +16,11 @@ use crate::systems::behaviors::decision::{
 };
 use crate::systems::behaviors::obstacle::{ClosestObstacleSystem, Obstacle};
 use crate::{
-    resources::{debug::DebugConfig, spatial_grid::SpatialGrid, world_bounds::WorldBounds},
-    states::{paused::PausedState, CustomStateEvent},
+    resources::{
+        debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
+        world_bounds::WorldBounds,
+    },
+    states::{menu::MenuState, paused::PausedState, CustomStateEvent},
     systems::*,
 };
 use rand::{thread_rng, Rng};
@@ -190,8 +193,8 @@ impl MainGameState {
             // the user can interact with the UI even if the game is in the `Paused` game state.
             ui_dispatcher: DispatcherBuilder::new()
                 .with(
-                    time_control::TimeControlSystem::default(),
-                    "time_control",
+                    main_game_ui::MainGameUiSystem::default(),
+                    "main_game_ui",
                     &[],
                 )
                 .build(),
@@ -225,6 +228,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                         let current_time_scale = time_resource.time_scale();
                         time_resource.set_time_scale(0.5 * current_time_scale);
                     }
+                    "Menu" => return Trans::Switch(Box::new(MenuState::default())),
                     _ => (),
                 },
                 _ => (),
@@ -233,7 +237,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         Trans::None
     }
 
-    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         self.dispatcher.setup(&mut data.world.res);
         self.debug_dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
@@ -243,14 +247,24 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
         data.world.add_resource(SpatialGrid::new(1.0f32));
 
-        time_control::create_time_control_ui(&mut data.world);
+        // main game ui
+        let ui_prefab = data
+            .world
+            .read_resource::<UiPrefabRegistry>()
+            .find(data.world, "main game");
+        if let Some(ui_prefab) = ui_prefab {
+            info!("instantiating main game ui...");
+            let _main_game_ui = Some(data.world.create_entity().with(ui_prefab).build());
+        }
 
         // Add some plants
+        info!("growing plants...");
         let (left, right, bottom, top) = {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
         };
 
+        info!("spawning critters...");
         {
             let mut rng = thread_rng();
             for _ in 0..25 {
@@ -274,6 +288,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         }
 
         // Setup camera
+        info!("setting up camera...");
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();
             (dim.width(), dim.height())
@@ -293,11 +308,15 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             .build();
     }
 
+    fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+        data.world.delete_all();
+    }
+
     fn update(
         &mut self,
         data: StateData<'_, GameData<'a, 'a>>,
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
-        self.dispatcher.dispatch(&mut data.world.res);
+        self.dispatcher.dispatch(&data.world.res);
 
         let show_debug = {
             let debug_config = data.world.read_resource::<DebugConfig>();
@@ -305,7 +324,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         };
 
         if show_debug {
-            self.debug_dispatcher.dispatch(&mut data.world.res);
+            self.debug_dispatcher.dispatch(&data.world.res);
         }
 
         data.data.update(&data.world);
@@ -313,6 +332,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
     }
 
     fn shadow_update(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        self.ui_dispatcher.dispatch(&mut data.world.res);
+        self.ui_dispatcher.dispatch(&data.world.res);
     }
 }
