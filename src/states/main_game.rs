@@ -204,6 +204,34 @@ impl MainGameState {
             camera: None,
         }
     }
+
+    fn handle_action<'a>(
+        &self,
+        action: &str,
+        world: &mut World,
+    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+        if action == "ToggleDebug" {
+            let mut debug_config = world.write_resource::<DebugConfig>();
+            debug_config.visible = !debug_config.visible;
+            Trans::None
+        } else if action == main_game_ui::PAUSE_BUTTON.action {
+            Trans::Push(Box::new(PausedState::default()))
+        } else if action == main_game_ui::SPEED_UP_BUTTON.action {
+            let mut time_resource = world.write_resource::<Time>();
+            let current_time_scale = time_resource.time_scale();
+            time_resource.set_time_scale(2.0 * current_time_scale);
+            Trans::None
+        } else if action == main_game_ui::SLOW_DOWN_BUTTON.action {
+            let mut time_resource = world.write_resource::<Time>();
+            let current_time_scale = time_resource.time_scale();
+            time_resource.set_time_scale(0.5 * current_time_scale);
+            Trans::None
+        } else if action == main_game_ui::MENU_BUTTON.action {
+            Trans::Switch(Box::new(MenuState::default()))
+        } else {
+            Trans::None
+        }
+    }
 }
 
 impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
@@ -213,32 +241,16 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         event: CustomStateEvent,
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         match event {
-            CustomStateEvent::Window(_) => (), // Events related to the window and inputs.
-            CustomStateEvent::Ui(_) => (),     // Ui event. Button presses, mouse hover, etc...
-            CustomStateEvent::Input(input_event) => match input_event {
-                InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
-                    "ToggleDebug" => {
-                        let mut debug_config = data.world.write_resource::<DebugConfig>();
-                        debug_config.visible = !debug_config.visible;
-                    }
-                    "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
-                    "SpeedUp" => {
-                        let mut time_resource = data.world.write_resource::<Time>();
-                        let current_time_scale = time_resource.time_scale();
-                        time_resource.set_time_scale(2.0 * current_time_scale);
-                    }
-                    "SlowDown" => {
-                        let mut time_resource = data.world.write_resource::<Time>();
-                        let current_time_scale = time_resource.time_scale();
-                        time_resource.set_time_scale(0.5 * current_time_scale);
-                    }
-                    "Menu" => return Trans::Switch(Box::new(MenuState::default())),
-                    _ => (),
-                },
-                _ => (),
-            },
-        };
-        Trans::None
+            CustomStateEvent::Window(_) => Trans::None, // Events related to the window and inputs.
+            CustomStateEvent::Ui(_) => Trans::None, // Ui event. Button presses, mouse hover, etc...
+            CustomStateEvent::Input(input_event) => {
+                if let InputEvent::ActionPressed(action) = input_event {
+                    self.handle_action(&action, data.world)
+                } else {
+                    Trans::None
+                }
+            }
+        }
     }
 
     fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {

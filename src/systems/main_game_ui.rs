@@ -5,10 +5,10 @@ use amethyst::{
     ui::*,
 };
 
-struct ButtonInfo {
-    name: &'static str,
-    text: &'static str,
-    action: &'static str,
+pub struct ButtonInfo {
+    pub name: &'static str,
+    pub text: &'static str,
+    pub action: &'static str,
 }
 
 const DEFAULT_BUTTON: ButtonInfo = ButtonInfo {
@@ -24,29 +24,29 @@ impl Default for &ButtonInfo {
 }
 
 // centralize the button strings here (used in both button creation and response logic)
-// NOTE these strings will need to be kept in alignment with main_game.ron
-const MENU_BUTTON: ButtonInfo = ButtonInfo {
+// NOTE name and text will need to be kept in alignment with main_game.ron; action will need to be kept in alignment with input.ron
+pub const MENU_BUTTON: ButtonInfo = ButtonInfo {
     name: "menu button",
     text: "Menu",
     action: "Menu",
 };
-const PAUSE_BUTTON: ButtonInfo = ButtonInfo {
+pub const PAUSE_BUTTON: ButtonInfo = ButtonInfo {
     name: "pause button",
     text: "Pause",
     action: "TogglePause",
 };
-const SLOW_DOWN_BUTTON: ButtonInfo = ButtonInfo {
+pub const SLOW_DOWN_BUTTON: ButtonInfo = ButtonInfo {
     name: "slow down button",
     text: "Slow Down",
     action: "SlowDown",
 };
-const SPEED_UP_BUTTON: ButtonInfo = ButtonInfo {
+pub const SPEED_UP_BUTTON: ButtonInfo = ButtonInfo {
     name: "speed up button",
     text: "Speed Up",
     action: "SpeedUp",
 };
 
-const BUTTON_INFOS: [&ButtonInfo; 4] = [
+pub const BUTTON_INFOS: [&ButtonInfo; 4] = [
     &MENU_BUTTON,
     &PAUSE_BUTTON,
     &SLOW_DOWN_BUTTON,
