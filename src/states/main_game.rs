@@ -30,6 +30,8 @@ pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
     debug_dispatcher: Dispatcher<'static, 'static>,
     ui_dispatcher: Dispatcher<'static, 'static>,
+    ui: Option<Entity>,
+    camera: Option<Entity>,
 }
 
 impl MainGameState {
@@ -198,6 +200,8 @@ impl MainGameState {
                     &[],
                 )
                 .build(),
+            ui: None,
+            camera: None,
         }
     }
 }
@@ -254,7 +258,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             .find(data.world, "main game");
         if let Some(ui_prefab) = ui_prefab {
             info!("instantiating main game ui...");
-            let _main_game_ui = Some(data.world.create_entity().with(ui_prefab).build());
+            self.ui = Some(data.world.create_entity().with(ui_prefab).build());
         }
 
         // Add some plants
@@ -263,8 +267,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
         };
-
-        info!("spawning critters...");
         {
             let mut rng = thread_rng();
             for _ in 0..25 {
@@ -280,6 +282,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 let mut spawn_events = data
                     .world
                     .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+                // TODO unfortunate naming here; plants are not creatures...OrganismSpawnEvent or just SpawnEvent?
                 spawn_events.single_write(spawner::CreatureSpawnEvent {
                     creature_type: "Plant".to_string(),
                     entity: plant_entity,
@@ -297,19 +300,29 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         let mut transform = Transform::default();
         transform.set_position([0.0, 0.0, 12.0].into());
 
-        data.world
-            .create_entity()
-            .named("Main camera")
-            .with(Camera::from(Projection::perspective(
-                width / height,
-                std::f32::consts::FRAC_PI_2,
-            )))
-            .with(transform)
-            .build();
+        self.camera = Some(
+            data.world
+                .create_entity()
+                .named("Main camera")
+                .with(Camera::from(Projection::perspective(
+                    width / height,
+                    std::f32::consts::FRAC_PI_2,
+                )))
+                .with(transform)
+                .build(),
+        );
     }
 
     fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        data.world.delete_all();
+        // TODO delete all main game entities (e.g. creatures, plants, etc.)
+        if let Some(ui) = self.ui {
+            data.world.delete_entity(ui);
+            self.ui = None;
+        }
+        if let Some(camera) = self.camera {
+            data.world.delete_entity(camera);
+            self.camera = None;
+        }
     }
 
     fn update(
