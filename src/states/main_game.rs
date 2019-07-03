@@ -317,12 +317,14 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
     fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         if let Some(ui) = self.ui {
-            data.world.delete_entity(ui);
-            self.ui = None;
+            if data.world.delete_entity(ui).is_ok() {
+                self.ui = None;
+            }
         }
         if let Some(camera) = self.camera {
-            data.world.delete_entity(camera);
-            self.camera = None;
+            if data.world.delete_entity(camera).is_ok() {
+                self.camera = None;
+            }
         }
 
         // delete all organisms (e.g. creatures, plants, etc.)
@@ -335,7 +337,9 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         {
             organisms.push(entity);
         }
-        data.world.delete_entities(&organisms);
+        if data.world.delete_entities(&organisms).is_err() {
+            info!("failed to delete all organisms");
+        }
     }
 
     fn update(

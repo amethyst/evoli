@@ -69,13 +69,9 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
 
     fn run(&mut self, (_entities, spawn_events, prefabs, lazy_update): Self::SystemData) {
         for event in spawn_events.read(self.spawn_reader_id.as_mut().unwrap()) {
-            let creature_prefab = prefabs.get_prefab(&event.creature_type);
-            match creature_prefab {
-                Some(prefab) => {
-                    lazy_update.insert(event.entity, prefab.clone());
-                    lazy_update.insert(event.entity, CreatureTag::default());
-                }
-                None => (),
+            if let Some(creature_prefab) = prefabs.get_prefab(&event.creature_type) {
+                lazy_update.insert(event.entity, creature_prefab.clone());
+                lazy_update.insert(event.entity, CreatureTag::default());
             }
         }
     }
