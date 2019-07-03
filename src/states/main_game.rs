@@ -261,6 +261,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             self.ui = Some(data.world.create_entity().with(ui_prefab).build());
         }
 
+        data.world.register::<spawner::CreatureTag>();
+
         // Add some plants
         info!("growing plants...");
         let (left, right, bottom, top) = {
@@ -314,7 +316,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
     }
 
     fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        // TODO delete all main game entities (e.g. creatures, plants, etc.)
         if let Some(ui) = self.ui {
             data.world.delete_entity(ui);
             self.ui = None;
@@ -323,6 +324,18 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             data.world.delete_entity(camera);
             self.camera = None;
         }
+
+        // delete all organisms (e.g. creatures, plants, etc.)
+        let mut organisms: Vec<Entity> = Vec::new();
+        for (entity, _) in (
+            &data.world.entities(),
+            &data.world.read_storage::<spawner::CreatureTag>(),
+        )
+            .join()
+        {
+            organisms.push(entity);
+        }
+        data.world.delete_entities(&organisms);
     }
 
     fn update(
