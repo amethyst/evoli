@@ -1,12 +1,9 @@
-use amethyst::renderer::{
-    palette::Srgba,
-    debug_drawing::DebugLines
-};
+use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::{core::{
-    Float,
-    Transform
-}, ecs::*};
+use amethyst::{
+    core::{Float, Transform},
+    ecs::*,
+};
 use log::info;
 use std::f32;
 #[cfg(feature = "profiler")]
@@ -24,7 +21,7 @@ impl<'s> System<'s> for EnforceBoundsSystem {
 
     fn run(&mut self, (mut locals, bounds): Self::SystemData) {
         for local in (&mut locals).join() {
-            let pos =vector3_to_f32(local.translation());
+            let pos = vector3_to_f32(local.translation());
             if pos.x > bounds.right {
                 local.translation_mut().x = Float::from(bounds.right);
             } else if pos.x < bounds.left {

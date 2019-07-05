@@ -1,9 +1,4 @@
-use amethyst::core::{
-    Float,
-    math::*,
-    transform::Transform,
-    Time
-};
+use amethyst::core::{math::*, transform::Transform, Float, Time};
 use amethyst::ecs::*;
 use shred::Resource;
 
@@ -99,8 +94,8 @@ impl<T> Closest<T> {
 }
 
 impl<T> Component for Closest<T>
-    where
-        T: Resource + Default,
+where
+    T: Resource + Default,
 {
     type Storage = DenseVecStorage<Self>;
 }
@@ -114,8 +109,8 @@ impl<T> Component for Closest<T>
 pub struct ClosestSystem<T: Default>(PhantomData<T>);
 
 impl<'s, T> System<'s> for ClosestSystem<T>
-    where
-        T: Resource + Default,
+where
+    T: Resource + Default,
 {
     type SystemData = (
         Entities<'s>,
@@ -154,7 +149,8 @@ impl<'s, T> System<'s> for ClosestSystem<T>
             }
 
             if let Some(c) = closest_opt {
-                let closest_component = Closest::new(Vector3::new(c[0].as_f32(), c[1].as_f32(), c[2].as_f32()));
+                let closest_component =
+                    Closest::new(Vector3::new(c[0].as_f32(), c[1].as_f32(), c[2].as_f32()));
                 closest
                     .insert(entity, closest_component)
                     .expect("unreachable: we just queried");
@@ -183,8 +179,8 @@ impl<T> SeekSystem<T> {
 }
 
 impl<'s, T> System<'s> for SeekSystem<T>
-    where
-        T: Resource + Default,
+where
+    T: Resource + Default,
 {
     type SystemData = (
         Entities<'s>,

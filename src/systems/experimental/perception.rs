@@ -1,22 +1,20 @@
 use amethyst::{
-    core::{Float, math::{
-        Point3,
-        Vector4
-    }, transform::Transform},
+    core::{
+        math::{Point3, Vector4},
+        transform::Transform,
+        Float,
+    },
     ecs::{
         BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
     },
-    renderer::{
-        palette::Srgba,
-        debug_drawing::DebugLines
-    },
+    renderer::{debug_drawing::DebugLines, palette::Srgba},
 };
 
+use crate::resources::spatial_grid::SpatialGrid;
 use crate::{
     components::perception::{DetectedEntities, Perception},
     utils::vector3_to_f32,
 };
-use crate::resources::spatial_grid::SpatialGrid;
 
 pub struct EntityDetectionSystem;
 

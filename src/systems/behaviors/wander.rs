@@ -1,19 +1,12 @@
-use amethyst::core::{
-    transform::Transform,
-    math::Point3,
-    Time,
-    Float
-};
+use amethyst::core::{math::Point3, transform::Transform, Float, Time};
 use amethyst::ecs::*;
-use amethyst::renderer::{palette::{
-    Alpha,
-    Srgba,
-},debug_drawing::DebugLines, *};
-
-use crate::{
-    components::creatures,
-    utils::vector3_to_f32,
+use amethyst::renderer::{
+    debug_drawing::DebugLines,
+    palette::{Alpha, Srgba},
+    *,
 };
+
+use crate::{components::creatures, utils::vector3_to_f32};
 use rand::{thread_rng, Rng};
 
 pub struct WanderSystem;

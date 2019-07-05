@@ -1,10 +1,7 @@
 use crate::resources::world_bounds::WorldBounds;
 use amethyst::{
     ecs::{System, Write, WriteExpect},
-    renderer::{
-        palette::Srgba,
-        debug_drawing::DebugLines
-    },
+    renderer::{debug_drawing::DebugLines, palette::Srgba},
 };
 
 pub struct DebugSystem;

@@ -1,6 +1,6 @@
 use amethyst::core::{
-    Float,
     math::{Vector2, Vector3},
+    Float,
 };
 
 pub fn vector2_to_f32(v: &Vector2<Float>) -> Vector2<f32> {
