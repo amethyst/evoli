@@ -1,6 +1,6 @@
 use amethyst::core::math::Vector3;
 use amethyst::{
-    core::{Float, Transform},
+    core::Transform,
     ecs::{join::Join, Entities, Read, ReadExpect, ReadStorage, System, WriteStorage},
 };
 
@@ -14,7 +14,7 @@ use crate::systems::behaviors::decision::Closest;
 pub struct Obstacle;
 
 /// Determine the closest bounding wall based on a location
-fn closest_wall(location: &Vector3<Float>, bounds: &WorldBounds) -> Vector3<Float> {
+fn closest_wall(location: &Vector3<f32>, bounds: &WorldBounds) -> Vector3<f32> {
     let mut bounds_left = location.clone();
     bounds_left.x = bounds.left.into();
     let mut bounds_right = location.clone();
@@ -58,16 +58,12 @@ impl<'s> System<'s> for ClosestObstacleSystem {
         // safe to clear this out.
         closest_obstacle.clear();
 
-        let threshold = Float::from(3.0f32.powi(2));
+        let threshold = 3.0f32.powi(2);
         for (entity, transform, _) in (&entities, &transforms, &movements).join() {
             // Find the closest wall to this entity
             let wall_dir = closest_wall(&transform.translation(), &world_bounds);
             if wall_dir.magnitude_squared() < threshold {
-                let dir = Vector3::new(
-                    wall_dir[0].as_f32(),
-                    wall_dir[1].as_f32(),
-                    wall_dir[2].as_f32(),
-                );
+                let dir = Vector3::new(wall_dir[0], wall_dir[1], wall_dir[2]);
                 closest_obstacle
                     .insert(entity, Closest::<Obstacle>::new(dir))
                     .expect("Unable to add obstacle to entity");

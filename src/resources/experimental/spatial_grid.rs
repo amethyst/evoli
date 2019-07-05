@@ -28,8 +28,8 @@ impl SpatialGrid {
     // This might have to change when upgrading Amethyst to 0.11 as the GlobalTransform component was removed.
     pub fn insert(&mut self, entity: Entity, transform: &Transform) {
         let global_matrix = transform.global_matrix();
-        let x_cell = (global_matrix[(3, 0)].as_f32() / self.cell_size).floor() as i32;
-        let y_cell = (global_matrix[(3, 1)].as_f32() / self.cell_size).floor() as i32;
+        let x_cell = (global_matrix[(3, 0)] / self.cell_size).floor() as i32;
+        let y_cell = (global_matrix[(3, 1)] / self.cell_size).floor() as i32;
         let row_entry = self.cells.entry(x_cell).or_insert(HashMap::new());
         let col_entry = row_entry.entry(y_cell).or_insert(Vec::new());
         col_entry.push(entity);
@@ -39,8 +39,8 @@ impl SpatialGrid {
     // The range of the query is defined by the range input.
     pub fn query(&self, transform: &Transform, range: f32) -> Vec<Entity> {
         let global_matrix = transform.global_matrix();
-        let x_cell = (global_matrix[(3, 0)].as_f32() / self.cell_size).floor() as i32;
-        let y_cell = (global_matrix[(3, 1)].as_f32() / self.cell_size).floor() as i32;
+        let x_cell = (global_matrix[(3, 0)] / self.cell_size).floor() as i32;
+        let y_cell = (global_matrix[(3, 1)] / self.cell_size).floor() as i32;
         let integer_range = 1 + (range / self.cell_size).ceil() as i32;
         let mut entities = Vec::new();
         for x in -integer_range..integer_range {

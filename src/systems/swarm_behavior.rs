@@ -17,7 +17,6 @@ use crate::{
         swarm::{SwarmBehavior, SwarmCenter},
     },
     systems::spawner::CreatureSpawnEvent,
-    utils::vector3_to_f32,
 };
 
 #[derive(Default)]
@@ -145,7 +144,7 @@ impl<'s> System<'s> for SwarmBehaviorSystem {
         for (transform, swarm_behavior, mut movement) in
             (&transforms, &swarm_behaviors, &mut movements).join()
         {
-            let original_position = vector3_to_f32(transform.translation());
+            let original_position = transform.translation();
             let mut current_position = original_position.clone();
             let mut current_velocity = movement.velocity.clone();
             let pull_factor = 10.0;

@@ -56,13 +56,8 @@ impl<'s> System<'s> for DebugFullnessSystem {
         for (entity, fullness, local) in (&entities, &fullnesses, &locals).join() {
             let pos = local.global_matrix();
             debug_lines.draw_line(
-                [pos[(3, 0)].as_f32(), pos[(3, 1)].as_f32(), 0.0].into(),
-                [
-                    pos[(3, 0)].as_f32() + fullness.value / 100.0,
-                    pos[(3, 1)].as_f32(),
-                    0.0,
-                ]
-                .into(),
+                [pos[(3, 0)], pos[(3, 1)], 0.0].into(),
+                [pos[(3, 0)] + fullness.value / 100.0, pos[(3, 1)], 0.0].into(),
                 Srgba::new(0.0, 1.0, 0.0, 1.0),
             )
         }

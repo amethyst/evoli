@@ -1,9 +1,6 @@
 use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::{
-    core::{Float, Transform},
-    ecs::*,
-};
+use amethyst::{core::Transform, ecs::*};
 use log::info;
 use std::f32;
 #[cfg(feature = "profiler")]
@@ -12,7 +9,6 @@ use thread_profiler::profile_scope;
 use crate::components::collider;
 use crate::components::creatures;
 use crate::resources::world_bounds::*;
-use crate::utils::vector3_to_f32;
 
 pub struct EnforceBoundsSystem;
 
@@ -21,17 +17,17 @@ impl<'s> System<'s> for EnforceBoundsSystem {
 
     fn run(&mut self, (mut locals, bounds): Self::SystemData) {
         for local in (&mut locals).join() {
-            let pos = vector3_to_f32(local.translation());
+            let pos = local.translation().clone();
             if pos.x > bounds.right {
-                local.translation_mut().x = Float::from(bounds.right);
+                local.translation_mut().x = bounds.right;
             } else if pos.x < bounds.left {
-                local.translation_mut().x = Float::from(bounds.left);
+                local.translation_mut().x = bounds.left;
             }
 
             if pos.y > bounds.top {
-                local.translation_mut().y = Float::from(bounds.top);
+                local.translation_mut().y = bounds.top;
             } else if pos.y < bounds.bottom {
-                local.translation_mut().y = Float::from(bounds.bottom);
+                local.translation_mut().y = bounds.bottom;
             }
         }
     }
@@ -77,7 +73,7 @@ impl<'s> System<'s> for CollisionSystem {
                 }
 
                 let allowed_distance = circle_a.radius + circle_b.radius;
-                let direction = vector3_to_f32(&(local_a.translation() - local_b.translation()));
+                let direction = (local_a.translation() - local_b.translation());
                 if direction.magnitude_squared() < allowed_distance * allowed_distance {
                     collision_events.single_write(CollisionEvent::new(entity_a, entity_b));
 
@@ -104,7 +100,7 @@ impl<'s> System<'s> for DebugColliderSystem {
 
     fn run(&mut self, (circles, locals, mut debug_lines): Self::SystemData) {
         for (circle, local) in (&circles, &locals).join() {
-            let position = vector3_to_f32(local.translation());
+            let position = local.translation().clone();
             debug_lines.draw_line(
                 [position.x - circle.radius, position.y, 0.0].into(),
                 [position.x + circle.radius, position.y, 0.0].into(),

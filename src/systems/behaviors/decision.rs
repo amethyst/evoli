@@ -1,6 +1,5 @@
-use amethyst::core::{math::*, transform::Transform, Float, Time};
+use amethyst::core::{math::*, transform::Transform, Time};
 use amethyst::ecs::*;
-use shred::Resource;
 
 use crate::components::combat::{FactionPrey, HasFaction};
 use crate::components::creatures::*;
@@ -8,7 +7,7 @@ use std::marker::PhantomData;
 
 /// A query is a component that contains the queried bit set that can be used to join with other components
 pub struct Query<T>(BitSet, PhantomData<T>);
-impl<T: Resource> Component for Query<T> {
+impl<T: shred::Resource> Component for Query<T> {
     type Storage = HashMapStorage<Self>;
 }
 
@@ -95,7 +94,7 @@ impl<T> Closest<T> {
 
 impl<T> Component for Closest<T>
 where
-    T: Resource + Default,
+    T: shred::Resource + Default,
 {
     type Storage = DenseVecStorage<Self>;
 }
@@ -110,7 +109,7 @@ pub struct ClosestSystem<T: Default>(PhantomData<T>);
 
 impl<'s, T> System<'s> for ClosestSystem<T>
 where
-    T: Resource + Default,
+    T: shred::Resource + Default,
 {
     type SystemData = (
         Entities<'s>,
@@ -135,7 +134,7 @@ where
             }
 
             let mut closest_opt = None;
-            let mut min_sq_distance = Float::from(5.0f32.powi(2));
+            let mut min_sq_distance = 5.0f32.powi(2);
 
             for (_, query_transform) in (&query_entities.unwrap().0, &transforms).join() {
                 let position = transform.translation();
@@ -149,8 +148,7 @@ where
             }
 
             if let Some(c) = closest_opt {
-                let closest_component =
-                    Closest::new(Vector3::new(c[0].as_f32(), c[1].as_f32(), c[2].as_f32()));
+                let closest_component = Closest::new(c);
                 closest
                     .insert(entity, closest_component)
                     .expect("unreachable: we just queried");
@@ -180,7 +178,7 @@ impl<T> SeekSystem<T> {
 
 impl<'s, T> System<'s> for SeekSystem<T>
 where
-    T: Resource + Default,
+    T: shred::Resource + Default,
 {
     type SystemData = (
         Entities<'s>,

@@ -2,7 +2,6 @@ use amethyst::{
     core::{
         math::{Point3, Vector4},
         transform::Transform,
-        Float,
     },
     ecs::{
         BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
@@ -10,11 +9,8 @@ use amethyst::{
     renderer::{debug_drawing::DebugLines, palette::Srgba},
 };
 
+use crate::components::perception::{DetectedEntities, Perception};
 use crate::resources::spatial_grid::SpatialGrid;
-use crate::{
-    components::perception::{DetectedEntities, Perception},
-    utils::vector3_to_f32,
-};
 
 pub struct EntityDetectionSystem;
 
@@ -48,7 +44,7 @@ impl<'s> System<'s> for EntityDetectionSystem {
             detected.entities = BitSet::new();
             let nearby_entities = grid.query(transform, perception.range);
             let pos = transform.global_matrix().column(3).xyz();
-            let sq_range = Float::from(perception.range * perception.range);
+            let sq_range = perception.range * perception.range;
             let mut nearby_entities_bitset = BitSet::new();
             for other_entity in &nearby_entities {
                 if entity == *other_entity {
@@ -96,9 +92,9 @@ impl<'s> System<'s> for DebugEntityDetectionSystem {
 
     fn run(&mut self, (detected_entities, transforms, mut debug_lines): Self::SystemData) {
         for (detected, transform) in (&detected_entities, &transforms).join() {
-            let pos = vector3_to_f32(&transform.global_matrix().column(3).xyz());
+            let pos = transform.global_matrix().column(3).xyz();
             for (other_transform, _) in (&transforms, &detected.entities).join() {
-                let other_pos = vector3_to_f32(&other_transform.global_matrix().column(3).xyz());
+                let other_pos = other_transform.global_matrix().column(3).xyz();
                 debug_lines.draw_line(
                     Point3::from(pos),
                     Point3::from(other_pos),

@@ -1,4 +1,4 @@
-use amethyst::core::{math::Point3, transform::Transform, Float, Time};
+use amethyst::core::{math::Point3, transform::Transform, Time};
 use amethyst::ecs::*;
 use amethyst::renderer::{
     debug_drawing::DebugLines,
@@ -6,7 +6,7 @@ use amethyst::renderer::{
     *,
 };
 
-use crate::{components::creatures, utils::vector3_to_f32};
+use crate::components::creatures;
 use rand::{thread_rng, Rng};
 
 pub struct WanderSystem;
@@ -27,7 +27,7 @@ impl<'s> System<'s> for WanderSystem {
         let mut rng = thread_rng();
 
         for (wander, movement, local) in (&mut wanders, &mut movements, &locals).join() {
-            let position = vector3_to_f32(&local.translation());
+            let position = local.translation();
             let future_position = position + movement.velocity * 0.5;
 
             let direction = wander.get_direction();
@@ -45,7 +45,7 @@ impl<'s> System<'s> for WanderSystem {
             }
 
             debug_lines.draw_line(
-                Point3::from(position),
+                Point3::from(*position),
                 Point3::from(future_position),
                 Srgba::new(1.0, 0.05, 0.65, 1.0),
             );

@@ -5,7 +5,7 @@ authors = []
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulkan"]}
+amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["nightly", "vulkan"]}
 #amethyst_test = "0.1.0"
 rand = "0.6.5"
 log = "0.4.6"
@@ -20,8 +20,5 @@ profiler = [
     "thread_profiler/thread_profiler",
     "amethyst/profiler"
 ]
-
-[dependencies.shred]
-features = ["nightly"]
 
 
