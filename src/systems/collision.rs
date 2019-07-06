@@ -73,7 +73,7 @@ impl<'s> System<'s> for CollisionSystem {
                 }
 
                 let allowed_distance = circle_a.radius + circle_b.radius;
-                let direction = (local_a.translation() - local_b.translation());
+                let direction = local_a.translation() - local_b.translation();
                 if direction.magnitude_squared() < allowed_distance * allowed_distance {
                     collision_events.single_write(CollisionEvent::new(entity_a, entity_b));
 

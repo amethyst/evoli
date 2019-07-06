@@ -6,56 +6,6 @@ use amethyst::{
     ui::*,
 };
 
-pub fn create_time_control_ui(world: &mut World) {
-    world.add_resource(AssetStorage::<FontAsset>::new());
-    let font_handle = {
-        let loader = world.write_resource::<Loader>();
-        let font_storage = world.read_resource::<AssetStorage<FontAsset>>();
-        loader.load(
-            "assets/fonts/OpenSans-Regular.ttf",
-            TtfFormat,
-            (),
-            &font_storage,
-        )
-    };
-
-    let _ = UiButtonBuilder::<(), u32>::new("Pause")
-        .with_id(0u32)
-        .with_anchor(Anchor::BottomRight)
-        .with_size(80.0, 36.0)
-        .with_position(-255.0, 20.0)
-        .with_font(font_handle.clone())
-        .with_font_size(24.0f32)
-        .with_text_color([0.0f32, 0.0, 0.0, 1.0])
-        .with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-        .with_press_text_color([0.5, 0.5, 0.5, 1.0])
-        .build_from_world(world);
-
-    //let _ = UiButtonBuilder::<String, String>::new("Slow Down")
-    //.with_id("slow down button".to_string())
-    //.with_anchor(Anchor::BottomRight)
-    //.with_size(100.0, 36.0)
-    //.with_position(-160.0, 20.0)
-    //.with_font(font_handle.clone())
-    //.with_font_size(24.0f32)
-    //.with_text_color([0.0f32, 0.0, 0.0, 1.0])
-    //.with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-    //.with_press_text_color([0.5, 0.5, 0.5, 1.0])
-    //.build_from_world(world);
-
-    //let _ = UiButtonBuilder::<String, String>::new("Speed Up")
-    //.with_id("speed up button".to_string())
-    //.with_anchor(Anchor::BottomRight)
-    //.with_size(100.0, 36.0)
-    //.with_position(-55.0, 20.0)
-    //.with_font(font_handle.clone())
-    //.with_font_size(24.0f32)
-    //.with_text_color([0.0f32, 0.0, 0.0, 1.0])
-    //.with_hover_text_color([0.2f32, 0.2f32, 0.2f32, 1.0f32])
-    //.with_press_text_color([0.5, 0.5, 0.5, 1.0])
-    //.build_from_world(world);
-}
-
 #[derive(Default)]
 pub struct TimeControlSystem {
     ui_reader_id: Option<ReaderId<UiEvent>>,
@@ -68,7 +18,6 @@ pub struct TimeControlSystem {
 
 impl<'s> System<'s> for TimeControlSystem {
     type SystemData = (
-        UiFinder<'s>,
         Read<'s, EventChannel<UiEvent>>,
         WriteStorage<'s, UiText>,
         Write<'s, EventChannel<InputEvent<String>>>,
@@ -141,7 +90,7 @@ impl<'s> System<'s> for TimeControlSystem {
         );
     }
 
-    fn run(&mut self, (finder, ui_events, mut ui_texts, mut input_events): Self::SystemData) {
+    fn run(&mut self, (ui_events, mut ui_texts, mut input_events): Self::SystemData) {
         for event in ui_events.read(self.ui_reader_id.as_mut().unwrap()) {
             match event.event_type {
                 UiEventType::Click => {

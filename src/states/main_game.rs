@@ -7,7 +7,10 @@ use amethyst::{
     ecs::*,
     input::InputEvent,
     prelude::*,
-    renderer::camera::{Camera, Projection},
+    renderer::{
+        camera::{Camera, Projection},
+        debug_drawing::DebugLinesParams,
+    },
     shrev::EventChannel,
     window::ScreenDimensions,
     State,
@@ -269,6 +272,8 @@ impl SimpleState for MainGameState {
         }
 
         data.world.register::<spawner::CreatureTag>();
+        let debug_lines_params = DebugLinesParams { line_width: 2.0f32 };
+        data.world.add_resource(debug_lines_params);
 
         // Add some plants
         info!("growing plants...");

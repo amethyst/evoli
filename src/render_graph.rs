@@ -51,7 +51,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
     ) -> GraphBuilder<DefaultBackend, Resources> {
         self.dirty = false;
 
-        let window = <ReadExpect<'_, Arc<Window>>>::fetch(res);
+        let window = <ReadExpect<'_, Window>>::fetch(res);
         let surface = factory.create_surface(&window);
         // cache surface format to speed things up
         let surface_format = *self
@@ -65,7 +65,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
             window_kind,
             1,
             surface_format,
-            Some(ClearValue::Color([0.02, 0.35, 0.02, 1.0].into())),
+            Some(ClearValue::Color([0.02, 0.25, 0.02, 1.0].into())),
         );
 
         let depth = graph_builder.create_image(
