@@ -94,6 +94,7 @@ impl MainGameState {
                     "avoid_obstacle_system",
                     &["closest_obstacle_system"],
                 )
+                .with(behaviors::ricochet::RicochetSystem, "ricochet_system", &[])
                 .with(
                     behaviors::wander::WanderSystem,
                     "wander_system",
@@ -101,6 +102,7 @@ impl MainGameState {
                         "seek_prey_system",
                         "avoid_predator_system",
                         "avoid_obstacle_system",
+                        "ricochet_system",
                     ],
                 )
                 .with(
@@ -272,7 +274,26 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 });
             }
         }
+        //insert single nushi
+        {
+            let mut rng = thread_rng();
+            let x = rng.gen_range(left, right);
+            let y = rng.gen_range(bottom, top);
+            let scale = rng.gen_range(0.8f32, 1.2f32);
 
+            let mut transform = Transform::default();
+            transform.set_xyz(x, y, 0.0);
+            transform.set_scale(scale, scale, 1.0);
+
+            let nushi_entity = data.world.create_entity().with(transform).build();
+            let mut spawn_events = data
+                .world
+                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+            spawn_events.single_write(spawner::CreatureSpawnEvent {
+                creature_type: "Nushi".to_string(),
+                entity: nushi_entity,
+            });
+        }
         // Setup camera
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();

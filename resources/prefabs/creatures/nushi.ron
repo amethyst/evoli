@@ -1,0 +1,24 @@
+
+#![enable(implicit_some)]
+Prefab (
+    entities: [
+        (
+            data: (
+                name: (
+                    name: "Nushi"
+                ),
+                graphics: (
+                    mesh: Shape((shape: Plane(None),)),
+                    material: (
+                        albedo: File("assets/nushi.png", Png, (channel: Srgb),),
+                    ),
+                ),
+                movement: (
+                    velocity: [10.0, 10.0, 10.0],
+                    max_movement_speed: 2.0,
+                ),
+                ricochet_tag : (),
+            ),
+        ),
+    ],
+)
