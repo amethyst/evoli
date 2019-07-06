@@ -14,6 +14,13 @@ use std::f32::consts::PI;
 
 use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
 
+// tag all creatures for when we need to run operations against everything
+#[derive(Clone, Copy, Debug, Default)]
+pub struct CreatureTag;
+impl Component for CreatureTag {
+    type Storage = NullStorage<Self>;
+}
+
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
     pub creature_type: String,
@@ -62,12 +69,9 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
 
     fn run(&mut self, (_entities, spawn_events, prefabs, lazy_update): Self::SystemData) {
         for event in spawn_events.read(self.spawn_reader_id.as_mut().unwrap()) {
-            let creature_prefab = prefabs.get_prefab(&event.creature_type);
-            match creature_prefab {
-                Some(prefab) => {
-                    lazy_update.insert(event.entity, prefab.clone());
-                }
-                None => (),
+            if let Some(creature_prefab) = prefabs.get_prefab(&event.creature_type) {
+                lazy_update.insert(event.entity, creature_prefab.clone());
+                lazy_update.insert(event.entity, CreatureTag::default());
             }
         }
     }

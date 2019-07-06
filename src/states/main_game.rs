@@ -16,8 +16,11 @@ use crate::systems::behaviors::decision::{
 };
 use crate::systems::behaviors::obstacle::{ClosestObstacleSystem, Obstacle};
 use crate::{
-    resources::{debug::DebugConfig, spatial_grid::SpatialGrid, world_bounds::WorldBounds},
-    states::{paused::PausedState, CustomStateEvent},
+    resources::{
+        debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
+        world_bounds::WorldBounds,
+    },
+    states::{menu::MenuState, paused::PausedState, CustomStateEvent},
     systems::*,
 };
 use rand::{thread_rng, Rng};
@@ -27,6 +30,8 @@ pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
     debug_dispatcher: Dispatcher<'static, 'static>,
     ui_dispatcher: Dispatcher<'static, 'static>,
+    ui: Option<Entity>,
+    camera: Option<Entity>,
 }
 
 impl MainGameState {
@@ -192,11 +197,41 @@ impl MainGameState {
             // the user can interact with the UI even if the game is in the `Paused` game state.
             ui_dispatcher: DispatcherBuilder::new()
                 .with(
-                    time_control::TimeControlSystem::default(),
-                    "time_control",
+                    main_game_ui::MainGameUiSystem::default(),
+                    "main_game_ui",
                     &[],
                 )
                 .build(),
+            ui: None,
+            camera: None,
+        }
+    }
+
+    fn handle_action<'a>(
+        &self,
+        action: &str,
+        world: &mut World,
+    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+        if action == "ToggleDebug" {
+            let mut debug_config = world.write_resource::<DebugConfig>();
+            debug_config.visible = !debug_config.visible;
+            Trans::None
+        } else if action == main_game_ui::PAUSE_BUTTON.action {
+            Trans::Push(Box::new(PausedState::default()))
+        } else if action == main_game_ui::SPEED_UP_BUTTON.action {
+            let mut time_resource = world.write_resource::<Time>();
+            let current_time_scale = time_resource.time_scale();
+            time_resource.set_time_scale(2.0 * current_time_scale);
+            Trans::None
+        } else if action == main_game_ui::SLOW_DOWN_BUTTON.action {
+            let mut time_resource = world.write_resource::<Time>();
+            let current_time_scale = time_resource.time_scale();
+            time_resource.set_time_scale(0.5 * current_time_scale);
+            Trans::None
+        } else if action == main_game_ui::MENU_BUTTON.action {
+            Trans::Switch(Box::new(MenuState::default()))
+        } else {
+            Trans::None
         }
     }
 }
@@ -208,34 +243,19 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         event: CustomStateEvent,
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
         match event {
-            CustomStateEvent::Window(_) => (), // Events related to the window and inputs.
-            CustomStateEvent::Ui(_) => (),     // Ui event. Button presses, mouse hover, etc...
-            CustomStateEvent::Input(input_event) => match input_event {
-                InputEvent::ActionPressed(action_name) => match action_name.as_ref() {
-                    "ToggleDebug" => {
-                        let mut debug_config = data.world.write_resource::<DebugConfig>();
-                        debug_config.visible = !debug_config.visible;
-                    }
-                    "TogglePause" => return Trans::Push(Box::new(PausedState::default())),
-                    "SpeedUp" => {
-                        let mut time_resource = data.world.write_resource::<Time>();
-                        let current_time_scale = time_resource.time_scale();
-                        time_resource.set_time_scale(2.0 * current_time_scale);
-                    }
-                    "SlowDown" => {
-                        let mut time_resource = data.world.write_resource::<Time>();
-                        let current_time_scale = time_resource.time_scale();
-                        time_resource.set_time_scale(0.5 * current_time_scale);
-                    }
-                    _ => (),
-                },
-                _ => (),
-            },
-        };
-        Trans::None
+            CustomStateEvent::Window(_) => Trans::None, // Events related to the window and inputs.
+            CustomStateEvent::Ui(_) => Trans::None, // Ui event. Button presses, mouse hover, etc...
+            CustomStateEvent::Input(input_event) => {
+                if let InputEvent::ActionPressed(action) = input_event {
+                    self.handle_action(&action, data.world)
+                } else {
+                    Trans::None
+                }
+            }
+        }
     }
 
-    fn on_start(&mut self, mut data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
         self.dispatcher.setup(&mut data.world.res);
         self.debug_dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
@@ -245,14 +265,24 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
 
         data.world.add_resource(SpatialGrid::new(1.0f32));
 
-        time_control::create_time_control_ui(&mut data.world);
+        // main game ui
+        let ui_prefab = data
+            .world
+            .read_resource::<UiPrefabRegistry>()
+            .find(data.world, "main game");
+        if let Some(ui_prefab) = ui_prefab {
+            info!("instantiating main game ui...");
+            self.ui = Some(data.world.create_entity().with(ui_prefab).build());
+        }
+
+        data.world.register::<spawner::CreatureTag>();
 
         // Add some plants
+        info!("growing plants...");
         let (left, right, bottom, top) = {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
         };
-
         {
             let mut rng = thread_rng();
             for _ in 0..25 {
@@ -268,6 +298,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 let mut spawn_events = data
                     .world
                     .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+                // TODO unfortunate naming here; plants are not creatures...OrganismSpawnEvent or just SpawnEvent?
                 spawn_events.single_write(spawner::CreatureSpawnEvent {
                     creature_type: "Plant".to_string(),
                     entity: plant_entity,
@@ -295,6 +326,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             });
         }
         // Setup camera
+        info!("setting up camera...");
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();
             (dim.width(), dim.height())
@@ -303,22 +335,51 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         let mut transform = Transform::default();
         transform.set_position([0.0, 0.0, 12.0].into());
 
-        data.world
-            .create_entity()
-            .named("Main camera")
-            .with(Camera::from(Projection::perspective(
-                width / height,
-                std::f32::consts::FRAC_PI_2,
-            )))
-            .with(transform)
-            .build();
+        self.camera = Some(
+            data.world
+                .create_entity()
+                .named("Main camera")
+                .with(Camera::from(Projection::perspective(
+                    width / height,
+                    std::f32::consts::FRAC_PI_2,
+                )))
+                .with(transform)
+                .build(),
+        );
+    }
+
+    fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+        if let Some(ui) = self.ui {
+            if data.world.delete_entity(ui).is_ok() {
+                self.ui = None;
+            }
+        }
+        if let Some(camera) = self.camera {
+            if data.world.delete_entity(camera).is_ok() {
+                self.camera = None;
+            }
+        }
+
+        // delete all organisms (e.g. creatures, plants, etc.)
+        let mut organisms: Vec<Entity> = Vec::new();
+        for (entity, _) in (
+            &data.world.entities(),
+            &data.world.read_storage::<spawner::CreatureTag>(),
+        )
+            .join()
+        {
+            organisms.push(entity);
+        }
+        if data.world.delete_entities(&organisms).is_err() {
+            info!("failed to delete all organisms");
+        }
     }
 
     fn update(
         &mut self,
         data: StateData<'_, GameData<'a, 'a>>,
     ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
-        self.dispatcher.dispatch(&mut data.world.res);
+        self.dispatcher.dispatch(&data.world.res);
 
         let show_debug = {
             let debug_config = data.world.read_resource::<DebugConfig>();
@@ -326,7 +387,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         };
 
         if show_debug {
-            self.debug_dispatcher.dispatch(&mut data.world.res);
+            self.debug_dispatcher.dispatch(&data.world.res);
         }
 
         data.data.update(&data.world);
@@ -334,6 +395,6 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
     }
 
     fn shadow_update(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        self.ui_dispatcher.dispatch(&mut data.world.res);
+        self.ui_dispatcher.dispatch(&data.world.res);
     }
 }
