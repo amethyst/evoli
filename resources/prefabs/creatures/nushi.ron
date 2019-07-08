@@ -10,7 +10,7 @@ Prefab (
                 graphics: (
                     mesh: Shape((shape: Plane(None),)),
                     material: (
-                        albedo: File("assets/nushi.png", Png, (channel: Srgb),),
+                        albedo: File("assets/nushi.png", ("IMAGE", ())),
                     ),
                 ),
                 movement: (

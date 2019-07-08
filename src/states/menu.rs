@@ -1,5 +1,5 @@
 use crate::resources::prefabs::UiPrefabRegistry;
-use crate::states::{main_game::MainGameState, CustomStateEvent};
+use crate::states::main_game::MainGameState;
 use amethyst::{
     ecs::Entity,
     prelude::*,
@@ -22,8 +22,8 @@ const EXIT_BUTTON_ID: &str = "exit";
 // load the menu.ron prefab then instantiate it
 // if the "start" button is clicked, goto MainGameState
 // if the "exit" button is clicked, exit app
-impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
-    fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+impl<'a> SimpleState for MenuState {
+    fn on_start(&mut self, data: StateData<GameData>) {
         // assume UiPrefab loading has happened in a previous state
         // look through the UiPrefabRegistry for the "menu" prefab and instantiate it
         let menu_prefab = data
@@ -31,12 +31,11 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
             .read_resource::<UiPrefabRegistry>()
             .find(data.world, MENU_ID);
         if let Some(menu_prefab) = menu_prefab {
-            info!("instantiating main menu");
             self.root = Some(data.world.create_entity().with(menu_prefab).build());
         }
     }
 
-    fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_stop(&mut self, data: StateData<GameData>) {
         if let Some(root) = self.root {
             if data.world.delete_entity(root).is_ok() {
                 self.root = None;
@@ -46,21 +45,15 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
         self.exit_button = None;
     }
 
-    fn handle_event(
-        &mut self,
-        data: StateData<GameData<'a, 'a>>,
-        event: CustomStateEvent,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans {
         match event {
-            CustomStateEvent::Ui(UiEvent {
+            StateEvent::Ui(UiEvent {
                 event_type: UiEventType::Click,
                 target,
             }) => {
                 if Some(target) == self.start_button {
-                    info!("start button clicked");
                     Trans::Switch(Box::new(MainGameState::new(data.world)))
                 } else if Some(target) == self.exit_button {
-                    info!("exit button clicked");
                     Trans::Quit
                 } else {
                     Trans::None
@@ -70,10 +63,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MenuState {
         }
     }
 
-    fn update(
-        &mut self,
-        data: StateData<'_, GameData<'a, 'a>>,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
         // once deferred creation of the root ui entity finishes, look up buttons
         if self.start_button.is_none() || self.exit_button.is_none() {

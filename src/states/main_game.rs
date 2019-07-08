@@ -25,7 +25,7 @@ use crate::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
     },
-    states::{menu::MenuState, paused::PausedState, CustomStateEvent},
+    states::{menu::MenuState, paused::PausedState},
     systems::*,
 };
 use rand::{thread_rng, Rng};
@@ -212,27 +212,27 @@ impl MainGameState {
         }
     }
 
-    fn handle_action<'a>(&self, action: &str, world: &mut World) -> SimpleTrans {
+    fn handle_action(&self, action: &str, world: &mut World) -> SimpleTrans {
         if action == "ToggleDebug" {
             let mut debug_config = world.write_resource::<DebugConfig>();
             debug_config.visible = !debug_config.visible;
-            SimpleTrans::None
+            Trans::None
         } else if action == main_game_ui::PAUSE_BUTTON.action {
-            SimpleTrans::Push(Box::new(PausedState::default()))
+            Trans::Push(Box::new(PausedState::default()))
         } else if action == main_game_ui::SPEED_UP_BUTTON.action {
             let mut time_resource = world.write_resource::<Time>();
             let current_time_scale = time_resource.time_scale();
             time_resource.set_time_scale(2.0 * current_time_scale);
-            SimpleTrans::None
+            Trans::None
         } else if action == main_game_ui::SLOW_DOWN_BUTTON.action {
             let mut time_resource = world.write_resource::<Time>();
             let current_time_scale = time_resource.time_scale();
             time_resource.set_time_scale(0.5 * current_time_scale);
-            SimpleTrans::None
+            Trans::None
         } else if action == main_game_ui::MENU_BUTTON.action {
-            SimpleTrans::Switch(Box::new(MenuState::default()))
+            Trans::Switch(Box::new(MenuState::default()))
         } else {
-            SimpleTrans::None
+            Trans::None
         }
     }
 }
@@ -240,13 +240,13 @@ impl MainGameState {
 impl SimpleState for MainGameState {
     fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans {
         match event {
-            StateEvent::Window(_) => SimpleTrans::None, // Events related to the window and inputs.
-            StateEvent::Ui(_) => SimpleTrans::None, // Ui event. Button presses, mouse hover, etc...
+            StateEvent::Window(_) => Trans::None, // Events related to the window and inputs.
+            StateEvent::Ui(_) => Trans::None,     // Ui event. Button presses, mouse hover, etc...
             StateEvent::Input(input_event) => {
                 if let InputEvent::ActionPressed(action) = input_event {
                     self.handle_action(&action, data.world)
                 } else {
-                    SimpleTrans::None
+                    Trans::None
                 }
             }
         }
@@ -267,16 +267,12 @@ impl SimpleState for MainGameState {
             .read_resource::<UiPrefabRegistry>()
             .find(data.world, "main game");
         if let Some(ui_prefab) = ui_prefab {
-            info!("instantiating main game ui...");
             self.ui = Some(data.world.create_entity().with(ui_prefab).build());
         }
 
         data.world.register::<spawner::CreatureTag>();
-        let debug_lines_params = DebugLinesParams { line_width: 2.0f32 };
-        data.world.add_resource(debug_lines_params);
 
         // Add some plants
-        info!("growing plants...");
         let (left, right, bottom, top) = {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
@@ -312,7 +308,7 @@ impl SimpleState for MainGameState {
 
             let mut transform = Transform::default();
             transform.set_translation_xyz(x, y, 0.0);
-            transform.set_scale(scale, scale, 1.0);
+            transform.set_scale(Vector3::new(scale, scale, 1.0));
 
             let nushi_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
@@ -324,7 +320,6 @@ impl SimpleState for MainGameState {
             });
         }
         // Setup camera
-        info!("setting up camera...");
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();
             (dim.width(), dim.height())
@@ -340,13 +335,15 @@ impl SimpleState for MainGameState {
                 .with(Camera::from(Projection::perspective(
                     width / height,
                     std::f32::consts::FRAC_PI_2,
+                    0.01f32,
+                    1000.0f32,
                 )))
                 .with(transform)
                 .build(),
         );
     }
 
-    fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_stop(&mut self, data: StateData<GameData>) {
         if let Some(ui) = self.ui {
             if data.world.delete_entity(ui).is_ok() {
                 self.ui = None;
@@ -367,9 +364,6 @@ impl SimpleState for MainGameState {
             .join()
         {
             organisms.push(entity);
-        }
-        if data.world.delete_entities(&organisms).is_err() {
-            info!("failed to delete all organisms");
         }
     }
 

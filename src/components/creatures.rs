@@ -29,7 +29,7 @@ impl Component for RicochetTag {
     type Storage = NullStorage<Self>;
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData, Inspect)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct IntelligenceTag;
 impl Component for IntelligenceTag {

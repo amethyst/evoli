@@ -34,9 +34,8 @@ impl SimpleState for LoadingState {
         load_factions(data.world);
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
-        data.world.add_resource(DebugLinesParams {
-            line_width: 1.0 / 20.0,
-        });
+        data.world
+            .add_resource(DebugLinesParams { line_width: 2.0 });
 
         data.world.add_resource(DebugLines::new());
         data.world
@@ -50,13 +49,13 @@ impl SimpleState for LoadingState {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);
                 if env::args().any(|arg| arg == SKIP_MENU_ARG) {
-                    return SimpleTrans::Switch(Box::new(MainGameState::new(data.world)));
+                    return Trans::Switch(Box::new(MainGameState::new(data.world)));
                 } else {
-                    return SimpleTrans::Switch(Box::new(MenuState::default()));
+                    return Trans::Switch(Box::new(MenuState::default()));
                 }
             }
         }
 
-        SimpleTrans::None
+        Trans::None
     }
 }
