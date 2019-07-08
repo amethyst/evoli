@@ -71,5 +71,4 @@ mod tests {
         spatial_grid.insert(world.create_entity().build(), &transform);
         assert!(spatial_grid.query(&transform, 1.0f32).len() == 1);
     }
-
 }
