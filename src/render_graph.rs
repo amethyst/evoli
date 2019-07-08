@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
 use amethyst::{
     ecs::{ReadExpect, Resources, SystemData},
     renderer::{
-        pass::{DrawDebugLinesDesc, DrawFlat2DDesc, DrawFlat2DTransparentDesc, DrawFlatDesc},
+        pass::{DrawDebugLinesDesc, DrawFlatDesc},
         rendy::{
             factory::Factory,
             graph::{

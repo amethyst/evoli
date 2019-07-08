@@ -1,7 +1,7 @@
 use amethyst::core::math::Vector3;
 use amethyst::{
     core::Transform,
-    ecs::{join::Join, Entities, Read, ReadExpect, ReadStorage, System, WriteStorage},
+    ecs::{join::Join, Entities, ReadExpect, ReadStorage, System, WriteStorage},
 };
 
 use std::cmp::Ordering;

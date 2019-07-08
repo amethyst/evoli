@@ -18,14 +18,6 @@ impl Component for Digestion {
     type Storage = DenseVecStorage<Self>;
 }
 
-impl Digestion {
-    pub fn new(nutrition_burn_rate: f32) -> Digestion {
-        Digestion {
-            nutrition_burn_rate,
-        }
-    }
-}
-
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Fullness {
@@ -37,15 +29,6 @@ impl Component for Fullness {
     type Storage = DenseVecStorage<Self>;
 }
 
-impl Fullness {
-    pub fn new(initial: f32, max: f32) -> Fullness {
-        Fullness {
-            value: initial,
-            max,
-        }
-    }
-}
-
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Nutrition {
@@ -55,12 +38,6 @@ pub struct Nutrition {
 
 impl Component for Nutrition {
     type Storage = DenseVecStorage<Self>;
-}
-
-impl Nutrition {
-    pub fn new(value: f32) -> Nutrition {
-        Nutrition { value }
-    }
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]

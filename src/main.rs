@@ -3,16 +3,14 @@ use amethyst::{
     assets::Processor,
     audio::{AudioBundle, DjSystem},
     core::frame_limiter::FrameRateLimitStrategy,
-    core::transform::{Transform, TransformBundle},
-    core::Named,
-    ecs::*,
+    core::transform::TransformBundle,
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
         sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend, RenderingSystem,
-        SpriteSheet, *,
+        SpriteSheet,
     },
-    ui::{DrawUi, NoCustomUi, UiBundle, UiTransform},
+    ui::UiBundle,
     utils::application_root_dir,
     window::{DisplayConfig, WindowBundle},
 };
@@ -24,11 +22,7 @@ mod states;
 mod systems;
 mod utils;
 
-use crate::components::combat;
-use crate::components::combat::Health;
-use crate::components::combat::{Cooldown, Damage, Speed};
-use crate::components::creatures::{self, IntelligenceTag, Movement, RicochetTag, Wander};
-use crate::components::digestion::{Digestion, Fullness, Nutrition};
+use crate::components::{combat, creatures};
 use crate::render_graph::RenderGraph;
 use crate::resources::audio::Music;
 use crate::states::loading::LoadingState;

@@ -1,5 +1,5 @@
 use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
-use amethyst::{core::transform::ParentHierarchy, core::Time, core::Transform, ecs::*};
+use amethyst::{core::Time, core::Transform, ecs::*};
 use std::f32;
 
 use crate::components::digestion::{Digestion, Fullness};
@@ -42,18 +42,13 @@ pub struct DebugFullnessSystem;
 
 impl<'s> System<'s> for DebugFullnessSystem {
     type SystemData = (
-        Entities<'s>,
         ReadStorage<'s, Fullness>,
         ReadStorage<'s, Transform>,
-        ReadExpect<'s, ParentHierarchy>,
         Write<'s, DebugLines>,
     );
 
-    fn run(
-        &mut self,
-        (entities, fullnesses, locals, hierarchy, mut debug_lines): Self::SystemData,
-    ) {
-        for (entity, fullness, local) in (&entities, &fullnesses, &locals).join() {
+    fn run(&mut self, (fullnesses, locals, mut debug_lines): Self::SystemData) {
+        for (fullness, local) in (&fullnesses, &locals).join() {
             let pos = local.global_matrix();
             debug_lines.draw_line(
                 [pos[(3, 0)], pos[(3, 1)], 0.0].into(),

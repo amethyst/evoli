@@ -1,19 +1,14 @@
 use amethyst;
 
 use amethyst::{
-    assets::PrefabLoader,
-    core::math::{Rotation3, Vector2, Vector3},
+    core::math::{Rotation3, Vector3},
     core::{transform::Transform, ArcThreadPool, Time},
     ecs::*,
     input::InputEvent,
     prelude::*,
-    renderer::{
-        camera::{Camera, Projection},
-        debug_drawing::DebugLinesParams,
-    },
+    renderer::camera::{Camera, Projection},
     shrev::EventChannel,
     window::ScreenDimensions,
-    State,
 };
 
 use crate::systems::behaviors::decision::{

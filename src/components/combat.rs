@@ -23,15 +23,6 @@ impl Component for Health {
     type Storage = DenseVecStorage<Self>;
 }
 
-impl Health {
-    pub fn new(max_health: f32) -> Health {
-        Health {
-            max_health,
-            value: max_health,
-        }
-    }
-}
-
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct Damage {
@@ -41,12 +32,6 @@ pub struct Damage {
 
 impl Component for Damage {
     type Storage = DenseVecStorage<Self>;
-}
-
-impl Damage {
-    pub fn new(damage: f32) -> Damage {
-        Damage { damage }
-    }
 }
 
 ///
@@ -60,12 +45,6 @@ pub struct Speed {
 
 impl Component for Speed {
     type Storage = DenseVecStorage<Self>;
-}
-
-impl Speed {
-    pub fn new(attacks_per_second: f32) -> Speed {
-        Speed { attacks_per_second }
-    }
 }
 
 ///

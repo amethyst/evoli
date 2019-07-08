@@ -1,7 +1,4 @@
-use amethyst::{
-    core::{math::Vector4, transform::Transform},
-    ecs::Entity,
-};
+use amethyst::{core::transform::Transform, ecs::Entity};
 
 use std::collections::HashMap;
 use std::f32;

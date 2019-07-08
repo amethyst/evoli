@@ -6,7 +6,6 @@ use amethyst::{
     renderer::{
         formats::GraphicsPrefab,
         rendy::mesh::{Normal, Position, TexCoord},
-        TexturePrefab,
     },
     Error,
 };
@@ -64,13 +63,6 @@ impl Component for Wander {
 }
 
 impl Wander {
-    pub fn new(radius: f32) -> Wander {
-        Wander {
-            angle: 0.0,
-            radius: radius,
-        }
-    }
-
     pub fn get_direction(&self) -> Vector3<f32> {
         Vector3::new(
             self.radius * self.angle.cos(),

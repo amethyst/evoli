@@ -1,8 +1,5 @@
 use amethyst::{
-    core::{
-        math::{Point3, Vector4},
-        transform::Transform,
-    },
+    core::{math::Point3, transform::Transform},
     ecs::{
         BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
     },

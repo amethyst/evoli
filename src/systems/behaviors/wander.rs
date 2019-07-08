@@ -1,10 +1,6 @@
 use amethyst::core::{math::Point3, transform::Transform, Time};
 use amethyst::ecs::*;
-use amethyst::renderer::{
-    debug_drawing::DebugLines,
-    palette::{Alpha, Srgba},
-    *,
-};
+use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
 
 use crate::components::creatures;
 use rand::{thread_rng, Rng};
