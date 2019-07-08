@@ -299,7 +299,7 @@ impl SimpleState for MainGameState {
             let mut rng = thread_rng();
             let x = rng.gen_range(left, right);
             let y = rng.gen_range(bottom, top);
-            let scale = rng.gen_range(0.8f32, 1.2f32);
+            let scale = 0.4f32;
 
             let mut transform = Transform::default();
             transform.set_translation_xyz(x, y, 0.0);

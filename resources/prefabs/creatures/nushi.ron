@@ -8,7 +8,7 @@ Prefab (
                     name: "Nushi"
                 ),
                 graphics: (
-                    mesh: Shape((shape: Plane(None),)),
+                    mesh: Asset(File("assets/plane.obj", ("OBJ", ()))),
                     material: (
                         albedo: File("assets/nushi.png", ("IMAGE", ())),
                     ),
