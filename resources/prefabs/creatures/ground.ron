@@ -1,0 +1,42 @@
+#![enable(implicit_some)]
+Prefab (
+    entities: [
+        (
+            data: (
+                name: (
+                    name: "Ground"
+                ),
+                graphics: (
+                    mesh: Asset(File("assets/plane.obj", ("OBJ", ()))),
+                    material: (
+                        albedo: File("assets/ground.png", ("IMAGE", ())),
+                    ),
+                ),
+                digestion: (
+                    digestion: (
+                        nutrition_burn_rate: 1.0,
+                    ),
+                    fullness: (
+                        max: 100.0,
+                        value: 100.0,
+                    ),
+                    nutrition: (
+                        value: 20.0,
+                    ),
+                ),
+                collider: (
+                    radius: 0.8,
+                ),
+                combat: (
+                    health: (
+                        max_health: 20.0,
+                        value: 20.0,
+                    ),
+                    has_faction: (
+                        faction: "Plants",
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

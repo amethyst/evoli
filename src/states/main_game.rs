@@ -314,6 +314,21 @@ impl SimpleState for MainGameState {
                 entity: nushi_entity,
             });
         }
+
+        {
+            let scale = 20.0f32;
+            let mut transform = Transform::default();
+            transform.set_scale(Vector3::new(scale, scale, 1.0));
+
+            let ground_entity = data.world.create_entity().with(transform).build();
+            let mut spawn_events = data
+                .world
+                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+            spawn_events.single_write(spawner::CreatureSpawnEvent {
+                creature_type: "Ground".to_string(),
+                entity: ground_entity,
+            });
+        }
         // Setup camera
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();
