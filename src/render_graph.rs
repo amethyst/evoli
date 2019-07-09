@@ -1,7 +1,7 @@
 use amethyst::{
     ecs::{ReadExpect, Resources, SystemData},
     renderer::{
-        pass::{DrawDebugLinesDesc, DrawFlatDesc},
+        pass::DrawFlatDesc,
         rendy::{
             factory::Factory,
             graph::{
@@ -21,6 +21,8 @@ use amethyst::{
     ui::DrawUiDesc,
     window::{ScreenDimensions, Window},
 };
+
+//use amethyst::renderer::pass::DrawDebugLinesDesc;
 
 #[derive(Default)]
 pub struct RenderGraph {
@@ -76,7 +78,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
         let main_pass = graph_builder.add_node(
             SubpassBuilder::new()
                 .with_group(DrawFlatDesc::new().builder())
-                .with_group(DrawDebugLinesDesc::new().builder())
+                //.with_group(DrawDebugLinesDesc::new().builder())
                 .with_group(DrawUiDesc::new().builder())
                 .with_color(color)
                 .with_depth_stencil(depth)

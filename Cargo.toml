@@ -9,7 +9,7 @@ amethyst = { git = "https://github.com/amethyst/amethyst.git", features = ["vulk
 #amethyst_test = "0.2.0"
 rand = "0.6.5"
 log = "0.4.6"
-#amethyst-imgui = { git = "https://github.com/awpteamoose/amethyst-imgui.git"}
+#amethyst-imgui = "0.3.0"
 #amethyst-inspector = { git = "https://github.com/awpteamoose/amethyst-inspector.git"}
 smart-default = "0.5.2"
 serde = "1.0.90"
