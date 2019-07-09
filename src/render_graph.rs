@@ -75,6 +75,8 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
             Some(ClearValue::DepthStencil(ClearDepthStencil(1.0, 0))),
         );
 
+        // The DebugLines pass is commented as it crashes on Mac and is very buggy on Windows and
+        // Ubuntu.
         let main_pass = graph_builder.add_node(
             SubpassBuilder::new()
                 .with_group(DrawFlatDesc::new().builder())
