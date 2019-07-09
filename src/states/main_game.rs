@@ -1,14 +1,14 @@
 use amethyst;
 
 use amethyst::{
-    core::nalgebra::{Rotation3, Vector3},
+    core::math::{Rotation3, Vector3},
     core::{transform::Transform, ArcThreadPool, Time},
     ecs::*,
     input::InputEvent,
     prelude::*,
-    renderer::*,
+    renderer::camera::{Camera, Projection},
     shrev::EventChannel,
-    State,
+    window::ScreenDimensions,
 };
 
 use crate::systems::behaviors::decision::{
@@ -20,7 +20,7 @@ use crate::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
     },
-    states::{menu::MenuState, paused::PausedState, CustomStateEvent},
+    states::{menu::MenuState, paused::PausedState},
     systems::*,
 };
 use rand::{thread_rng, Rng};
@@ -207,11 +207,7 @@ impl MainGameState {
         }
     }
 
-    fn handle_action<'a>(
-        &self,
-        action: &str,
-        world: &mut World,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn handle_action(&self, action: &str, world: &mut World) -> SimpleTrans {
         if action == "ToggleDebug" {
             let mut debug_config = world.write_resource::<DebugConfig>();
             debug_config.visible = !debug_config.visible;
@@ -236,16 +232,12 @@ impl MainGameState {
     }
 }
 
-impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
-    fn handle_event(
-        &mut self,
-        data: StateData<GameData<'a, 'a>>,
-        event: CustomStateEvent,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+impl SimpleState for MainGameState {
+    fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans {
         match event {
-            CustomStateEvent::Window(_) => Trans::None, // Events related to the window and inputs.
-            CustomStateEvent::Ui(_) => Trans::None, // Ui event. Button presses, mouse hover, etc...
-            CustomStateEvent::Input(input_event) => {
+            StateEvent::Window(_) => Trans::None, // Events related to the window and inputs.
+            StateEvent::Ui(_) => Trans::None,     // Ui event. Button presses, mouse hover, etc...
+            StateEvent::Input(input_event) => {
                 if let InputEvent::ActionPressed(action) = input_event {
                     self.handle_action(&action, data.world)
                 } else {
@@ -255,14 +247,13 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         }
     }
 
-    fn on_start(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_start(&mut self, data: StateData<GameData>) {
         self.dispatcher.setup(&mut data.world.res);
         self.debug_dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
 
         // Setup debug config resource
         data.world.add_resource(DebugConfig::default());
-
         data.world.add_resource(SpatialGrid::new(1.0f32));
 
         // main game ui
@@ -271,14 +262,12 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             .read_resource::<UiPrefabRegistry>()
             .find(data.world, "main game");
         if let Some(ui_prefab) = ui_prefab {
-            info!("instantiating main game ui...");
             self.ui = Some(data.world.create_entity().with(ui_prefab).build());
         }
 
         data.world.register::<spawner::CreatureTag>();
 
         // Add some plants
-        info!("growing plants...");
         let (left, right, bottom, top) = {
             let wb = data.world.read_resource::<WorldBounds>();
             (wb.left, wb.right, wb.bottom, wb.top)
@@ -291,8 +280,8 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 let scale = rng.gen_range(0.8f32, 1.2f32);
                 let rotation = rng.gen_range(0.0f32, PI);
                 let mut transform = Transform::default();
-                transform.set_xyz(x, y, 0.0);
-                transform.set_scale(scale, scale, 1.0);
+                transform.set_translation_xyz(x, y, 0.0);
+                transform.set_scale(Vector3::new(scale, scale, 1.0));
                 transform.set_rotation_euler(0.0, 0.0, rotation);
                 let plant_entity = data.world.create_entity().with(transform).build();
                 let mut spawn_events = data
@@ -310,11 +299,11 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             let mut rng = thread_rng();
             let x = rng.gen_range(left, right);
             let y = rng.gen_range(bottom, top);
-            let scale = rng.gen_range(0.8f32, 1.2f32);
+            let scale = 0.4f32;
 
             let mut transform = Transform::default();
-            transform.set_xyz(x, y, 0.0);
-            transform.set_scale(scale, scale, 1.0);
+            transform.set_translation_xyz(x, y, 0.0);
+            transform.set_scale(Vector3::new(scale, scale, 1.0));
 
             let nushi_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
@@ -326,14 +315,13 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
             });
         }
         // Setup camera
-        info!("setting up camera...");
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();
             (dim.width(), dim.height())
         };
 
         let mut transform = Transform::default();
-        transform.set_position([0.0, 0.0, 12.0].into());
+        transform.set_translation_xyz(0.0, 0.0, 12.0);
 
         self.camera = Some(
             data.world
@@ -342,13 +330,15 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
                 .with(Camera::from(Projection::perspective(
                     width / height,
                     std::f32::consts::FRAC_PI_2,
+                    0.01f32,
+                    1000.0f32,
                 )))
                 .with(transform)
                 .build(),
         );
     }
 
-    fn on_stop(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
+    fn on_stop(&mut self, data: StateData<GameData>) {
         if let Some(ui) = self.ui {
             if data.world.delete_entity(ui).is_ok() {
                 self.ui = None;
@@ -370,15 +360,9 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         {
             organisms.push(entity);
         }
-        if data.world.delete_entities(&organisms).is_err() {
-            info!("failed to delete all organisms");
-        }
     }
 
-    fn update(
-        &mut self,
-        data: StateData<'_, GameData<'a, 'a>>,
-    ) -> Trans<GameData<'a, 'a>, CustomStateEvent> {
+    fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         self.dispatcher.dispatch(&data.world.res);
 
         let show_debug = {
@@ -394,7 +378,7 @@ impl<'a> State<GameData<'a, 'a>, CustomStateEvent> for MainGameState {
         Trans::None
     }
 
-    fn shadow_update(&mut self, data: StateData<'_, GameData<'a, 'a>>) {
-        self.ui_dispatcher.dispatch(&data.world.res);
+    fn shadow_update(&mut self, data: StateData<GameData>) {
+        self.ui_dispatcher.dispatch(&mut data.world.res);
     }
 }

@@ -14,7 +14,7 @@ pub struct Music {
 }
 
 fn load_audio_track(loader: &Loader, world: &World, file: &str) -> SourceHandle {
-    loader.load(file, OggFormat, (), (), &world.read_resource())
+    loader.load(file, OggFormat, (), &world.read_resource())
 }
 
 // Initialise audio in the world. This sets up the background music

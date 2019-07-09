@@ -1,4 +1,4 @@
-use amethyst::renderer::DebugLines;
+use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
 use amethyst::shrev::{EventChannel, ReaderId};
 use amethyst::{core::Transform, ecs::*};
 use log::info;
@@ -13,19 +13,20 @@ use crate::resources::world_bounds::*;
 pub struct EnforceBoundsSystem;
 
 impl<'s> System<'s> for EnforceBoundsSystem {
-    type SystemData = (WriteStorage<'s, Transform>, Read<'s, WorldBounds>);
+    type SystemData = (WriteStorage<'s, Transform>, ReadExpect<'s, WorldBounds>);
 
     fn run(&mut self, (mut locals, bounds): Self::SystemData) {
         for local in (&mut locals).join() {
-            if local.translation().x > bounds.right {
+            let pos = local.translation().clone();
+            if pos.x > bounds.right {
                 local.translation_mut().x = bounds.right;
-            } else if local.translation().x < bounds.left {
+            } else if pos.x < bounds.left {
                 local.translation_mut().x = bounds.left;
             }
 
-            if local.translation().y > bounds.top {
+            if pos.y > bounds.top {
                 local.translation_mut().y = bounds.top;
-            } else if local.translation().y < bounds.bottom {
+            } else if pos.y < bounds.bottom {
                 local.translation_mut().y = bounds.bottom;
             }
         }
@@ -99,16 +100,16 @@ impl<'s> System<'s> for DebugColliderSystem {
 
     fn run(&mut self, (circles, locals, mut debug_lines): Self::SystemData) {
         for (circle, local) in (&circles, &locals).join() {
-            let position = local.translation();
+            let position = local.translation().clone();
             debug_lines.draw_line(
                 [position.x - circle.radius, position.y, 0.0].into(),
                 [position.x + circle.radius, position.y, 0.0].into(),
-                [1.0, 0.5, 0.5, 1.0].into(),
+                Srgba::new(1.0, 0.5, 0.5, 1.0),
             );
             debug_lines.draw_line(
                 [position.x, position.y - circle.radius, 0.0].into(),
                 [position.x, position.y + circle.radius, 0.0].into(),
-                [1.0, 0.5, 0.5, 1.0].into(),
+                Srgba::new(1.0, 0.5, 0.5, 1.0),
             );
         }
     }

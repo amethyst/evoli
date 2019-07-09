@@ -7,9 +7,9 @@ Prefab (
                     name: "Ixie"
                 ),
                 graphics: (
-                    mesh: Shape((shape: Plane(None),)),
+                    mesh: Asset(File("assets/plane.obj", ("OBJ", ()))),
                     material: (
-                        albedo: File("assets/tiny-ixie.png", Png, (channel: Srgb),),
+                        albedo: File("assets/tiny-ixie.png", ("IMAGE", ()))
                     ),
                 ),
                 digestion: (

@@ -3,7 +3,7 @@
   dimensions: Some((1280, 960)),
   max_dimensions: None,
   min_dimensions: None,
-  fullscreen: false,
+  fullscreen: None,
   multisampling: 4,
   visibility: true,
   vsync: true,

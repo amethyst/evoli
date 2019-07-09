@@ -8,10 +8,10 @@ use crate::components::combat;
 use crate::components::combat::{Cooldown, Damage, Health, Speed};
 use crate::components::digestion::{Fullness, Nutrition};
 use crate::systems::collision::CollisionEvent;
-#[cfg(test)]
-use amethyst::Error;
-#[cfg(test)]
-use amethyst_test::AmethystApplication;
+//#[cfg(test)]
+//use amethyst::Error;
+//#[cfg(test)]
+//use amethyst_test::AmethystApplication;
 use std::f32;
 use std::time::Duration;
 
@@ -176,40 +176,40 @@ impl<'s> System<'s> for FindAttackSystem {
     }
 }
 
-#[test]
-fn test_cooldown_is_reduced() -> Result<(), Error> {
-    AmethystApplication::blank()
-        .with_system(CooldownSystem, "cooldown_system", &[])
-        .with_setup(|world| {
-            world
-                .create_entity()
-                .with(Cooldown::new(Duration::from_millis(5000)))
-                .build();
-        })
-        .with_assertion(|world| {
-            let entity = world.entities().entity(0);
-            let cooldowns = world.read_storage::<Cooldown>();
-            let cooldown = cooldowns.get(entity).unwrap();
-            assert!(cooldown.time_left.as_millis() < 5000);
-        })
-        .run()
-}
+//#[test]
+//fn test_cooldown_is_reduced() -> Result<(), Error> {
+//AmethystApplication::blank()
+//.with_system(CooldownSystem, "cooldown_system", &[])
+//.with_setup(|world| {
+//world
+//.create_entity()
+//.with(Cooldown::new(Duration::from_millis(5000)))
+//.build();
+//})
+//.with_assertion(|world| {
+//let entity = world.entities().entity(0);
+//let cooldowns = world.read_storage::<Cooldown>();
+//let cooldown = cooldowns.get(entity).unwrap();
+//assert!(cooldown.time_left.as_millis() < 5000);
+//})
+//.run()
+//}
 
-#[test]
-fn test_cooldown_is_removed() -> Result<(), Error> {
-    AmethystApplication::blank()
-        .with_system(CooldownSystem, "cooldown_system", &[])
-        .with_setup(|world| {
-            world
-                .create_entity()
-                .with(Cooldown::new(Duration::from_millis(0)))
-                .build();
-        })
-        .with_assertion(|world| {
-            let entity = world.entities().entity(0);
-            let cooldowns = world.read_storage::<Cooldown>();
-            let cooldown = cooldowns.get(entity);
-            assert!(cooldown.is_none());
-        })
-        .run()
-}
+//#[test]
+//fn test_cooldown_is_removed() -> Result<(), Error> {
+//AmethystApplication::blank()
+//.with_system(CooldownSystem, "cooldown_system", &[])
+//.with_setup(|world| {
+//world
+//.create_entity()
+//.with(Cooldown::new(Duration::from_millis(0)))
+//.build();
+//})
+//.with_assertion(|world| {
+//let entity = world.entities().entity(0);
+//let cooldowns = world.read_storage::<Cooldown>();
+//let cooldown = cooldowns.get(entity);
+//assert!(cooldown.is_none());
+//})
+//.run()
+//}

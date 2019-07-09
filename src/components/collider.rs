@@ -1,7 +1,8 @@
 use amethyst::{
-    assets::{PrefabData, PrefabError},
+    assets::PrefabData,
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, WriteStorage},
+    Error,
 };
 use serde::{Deserialize, Serialize};
 

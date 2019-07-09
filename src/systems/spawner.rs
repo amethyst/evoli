@@ -1,13 +1,12 @@
 use amethyst::{
-    core::timing::Time,
-    core::transform::Transform,
+    core::{math::Vector3, timing::Time, transform::Transform},
     ecs::*,
     shrev::{EventChannel, ReaderId},
 };
 
 use rand::{
     distributions::{Distribution, Standard},
-    thread_rng, Rng, RngCore,
+    thread_rng, Rng,
 };
 
 use std::f32::consts::PI;
@@ -100,20 +99,20 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let mut creature_entity_builder = lazy_update.create_entity(&entities);
             self.timer_to_next_spawn = 1.5;
             let mut rng = thread_rng();
-            let x = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
-            let y = (rng.next_u32() % 100) as f32 / 5.0 - 10.0;
+            let x = rng.gen_range(-5.0f32, 5.0f32);
+            let y = rng.gen_range(-5.0f32, 5.0f32);
             let mut transform = Transform::default();
-            transform.set_xyz(x, y, 0.02);
+            transform.set_translation_xyz(x, y, 0.02);
             let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution =
                 rand::random();
             if creature_type == "Carnivore" || creature_type == "Herbivore" {
-                transform.set_scale(0.5, 0.5, 1.0);
+                transform.set_scale(Vector3::new(0.5, 0.5, 0.5));
             }
             if creature_type == "Plant" {
-                let scale = (rng.next_u32() % 100) as f32 / 250.0 + 0.8;
-                let rotation = (rng.next_u32() % 100) as f32 / 100.0 * PI;
-                transform.set_z(0.0);
-                transform.set_scale(scale, scale, 1.0);
+                let scale = rng.gen_range(0.8f32, 1.2f32);
+                let rotation = rng.gen_range(0.0f32, PI);
+                transform.set_translation_z(0.0);
+                transform.set_scale(Vector3::new(scale, scale, 1.0));
                 transform.set_rotation_euler(0.0, 0.0, rotation);
             }
             creature_entity_builder = creature_entity_builder.with(transform);

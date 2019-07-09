@@ -75,11 +75,15 @@ fn make_name(subdirectory: &str, entry: &std::fs::DirEntry) -> String {
 // When their loading is finished, we read the name of the entity inside to change the keys. This is done in the update_prefabs function.
 pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     let mut progress_counter = ProgressCounter::new();
-
     // load ui prefabs
     {
         let mut ui_prefab_registry = UiPrefabRegistry::default();
-        let prefab_dir_path = application_root_dir() + "/resources/prefabs/ui";
+        let prefab_dir_path = application_root_dir()
+            .unwrap()
+            .into_os_string()
+            .into_string()
+            .unwrap()
+            + "/resources/prefabs/ui";
         let prefab_iter = read_dir(prefab_dir_path).unwrap();
         ui_prefab_registry.prefabs = prefab_iter
             .map(|prefab_dir_entry| {
@@ -97,14 +101,18 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
     // load creature prefabs
     {
         let prefab_iter = {
-            let prefab_dir_path = application_root_dir() + "/resources/prefabs/creatures";
+            let prefab_dir_path = application_root_dir()
+                .unwrap()
+                .into_os_string()
+                .into_string()
+                .unwrap()
+                + "/resources/prefabs/creatures";
             let prefab_iter = read_dir(prefab_dir_path).unwrap();
             prefab_iter.map(|prefab_dir_entry| {
                 world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
                     loader.load(
                         make_name("prefabs/creatures/", &prefab_dir_entry.unwrap()),
                         RonFormat,
-                        (),
                         &mut progress_counter,
                     )
                 })

@@ -1,7 +1,6 @@
-use amethyst::core::transform::Transform;
-use amethyst::core::Time;
+use amethyst::core::{math::Point3, transform::Transform, Time};
 use amethyst::ecs::*;
-use amethyst::renderer::*;
+use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
 
 use crate::components::creatures;
 use rand::{thread_rng, Rng};
@@ -42,15 +41,15 @@ impl<'s> System<'s> for WanderSystem {
             }
 
             debug_lines.draw_line(
-                [position.x, position.y, position.z].into(),
-                [future_position.x, future_position.y, future_position.z].into(),
-                [1.0, 0.05, 0.65, 1.0].into(),
+                Point3::from(*position),
+                Point3::from(future_position),
+                Srgba::new(1.0, 0.05, 0.65, 1.0),
             );
 
             debug_lines.draw_direction(
-                [future_position.x, future_position.y, future_position.z].into(),
-                [direction.x, direction.y, direction.z].into(),
-                [1.0, 0.05, 0.65, 1.0].into(),
+                Point3::from(future_position),
+                direction,
+                Srgba::new(1.0, 0.05, 0.65, 1.0),
             );
         }
     }

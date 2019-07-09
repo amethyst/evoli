@@ -1,7 +1,7 @@
-use amethyst::core::nalgebra::Vector3;
+use amethyst::core::math::Vector3;
 use amethyst::{
     core::Transform,
-    ecs::{join::Join, Entities, Read, ReadStorage, System, WriteStorage},
+    ecs::{join::Join, Entities, ReadExpect, ReadStorage, System, WriteStorage},
 };
 
 use std::cmp::Ordering;
@@ -16,13 +16,13 @@ pub struct Obstacle;
 /// Determine the closest bounding wall based on a location
 fn closest_wall(location: &Vector3<f32>, bounds: &WorldBounds) -> Vector3<f32> {
     let mut bounds_left = location.clone();
-    bounds_left.x = bounds.left;
+    bounds_left.x = bounds.left.into();
     let mut bounds_right = location.clone();
-    bounds_right.x = bounds.right;
+    bounds_right.x = bounds.right.into();
     let mut bounds_top = location.clone();
-    bounds_top.y = bounds.top;
+    bounds_top.y = bounds.top.into();
     let mut bounds_bottom = location.clone();
-    bounds_bottom.y = bounds.bottom;
+    bounds_bottom.y = bounds.bottom.into();
 
     // Iterates through each bound
     [bounds_left, bounds_right, bounds_top, bounds_bottom]
@@ -46,7 +46,7 @@ impl<'s> System<'s> for ClosestObstacleSystem {
         Entities<'s>,
         ReadStorage<'s, Transform>,
         ReadStorage<'s, Movement>,
-        Read<'s, WorldBounds>,
+        ReadExpect<'s, WorldBounds>,
         WriteStorage<'s, Closest<Obstacle>>,
     );
 
@@ -58,12 +58,14 @@ impl<'s> System<'s> for ClosestObstacleSystem {
         // safe to clear this out.
         closest_obstacle.clear();
 
+        let threshold = 3.0f32.powi(2);
         for (entity, transform, _) in (&entities, &transforms, &movements).join() {
             // Find the closest wall to this entity
             let wall_dir = closest_wall(&transform.translation(), &world_bounds);
-            if wall_dir.magnitude_squared() < 3.0f32.powi(2) {
+            if wall_dir.magnitude_squared() < threshold {
+                let dir = Vector3::new(wall_dir[0], wall_dir[1], wall_dir[2]);
                 closest_obstacle
-                    .insert(entity, Closest::<Obstacle>::new(wall_dir))
+                    .insert(entity, Closest::<Obstacle>::new(dir))
                     .expect("Unable to add obstacle to entity");
             }
         }
