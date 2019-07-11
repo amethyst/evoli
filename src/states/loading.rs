@@ -51,7 +51,7 @@ impl SimpleState for LoadingState {
                 if env::args().any(|arg| arg == SKIP_MENU_ARG) {
                     return Trans::Switch(Box::new(MainGameState::new(data.world)));
                 } else {
-                    return Trans::Switch(Box::new(MenuState::default()));
+                    return Trans::Switch(Box::new(MenuState::new(false)));
                 }
             }
         }

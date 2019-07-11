@@ -13,6 +13,17 @@ pub struct MenuState {
     start_button: Option<Entity>,
     exit_button: Option<Entity>,
     root: Option<Entity>,
+
+    pause_menu: bool,
+}
+
+impl MenuState {
+    pub fn new(pause: bool) -> MenuState {
+        MenuState {
+            pause_menu: pause,
+            ..Default::default()
+        }
+    }
 }
 
 const MENU_ID: &str = "menu";
@@ -52,7 +63,12 @@ impl<'a> SimpleState for MenuState {
                 target,
             }) => {
                 if Some(target) == self.start_button {
-                    Trans::Switch(Box::new(MainGameState::new(data.world)))
+                    if self.pause_menu {
+                        Trans::Pop
+                    }
+                    else {
+                        Trans::Switch(Box::new(MainGameState::new(data.world)))
+                    }
                 } else if Some(target) == self.exit_button {
                     Trans::Quit
                 } else {

@@ -253,7 +253,7 @@ impl MainGameState {
             self.update_time_scale(world);
             Trans::None
         } else if action == main_game_ui::MENU_BUTTON.action {
-            Trans::Switch(Box::new(MenuState::default()))
+            Trans::Push(Box::new(MenuState::new(true)))
         } else {
             Trans::None
         }
