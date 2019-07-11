@@ -65,8 +65,7 @@ impl<'a> SimpleState for MenuState {
                 if Some(target) == self.start_button {
                     if self.pause_menu {
                         Trans::Pop
-                    }
-                    else {
+                    } else {
                         Trans::Switch(Box::new(MainGameState::new(data.world)))
                     }
                 } else if Some(target) == self.exit_button {
