@@ -7,9 +7,9 @@ Prefab (
                     name: "Plant"
                 ),
                 graphics: (
-                    mesh: Asset(File("assets/plane.obj", ("OBJ", ()))),
+                    mesh: Asset(File("assets/Bush_1.obj", ("OBJ", ()))),
                     material: (
-                        albedo: File("assets/simply_plant.png", ("IMAGE", ())),
+                        albedo: Generate(Srgba(0.04, 0.6, 0.04, 1.0)),
                     ),
                 ),
                 digestion: (

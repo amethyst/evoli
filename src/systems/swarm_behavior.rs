@@ -42,7 +42,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             let x = rng.gen_range(-10.0, 10.0);
             let y = rng.gen_range(-10.0, 10.0);
             let mut transform = Transform::default();
-            transform.set_translation_xyz(x, y, 0.02);
+            transform.set_translation_xyz(x, y, 2.0);
             swarm_entity_builder = swarm_entity_builder.with(transform);
             let movement = Movement {
                 velocity: Vector3::new(0.0, 0.0, 0.0),

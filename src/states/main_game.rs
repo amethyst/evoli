@@ -8,7 +8,8 @@ use amethyst::{
     prelude::*,
     renderer::{
         camera::{Camera, Projection},
-        palette::rgb::Srgba,
+        light::{DirectionalLight, Light},
+        palette::rgb::{Srgb, Srgba},
         resources::Tint,
     },
     shrev::EventChannel,
@@ -332,7 +333,7 @@ impl SimpleState for MainGameState {
             let scale = 0.4f32;
 
             let mut transform = Transform::default();
-            transform.set_translation_xyz(x, y, 0.02);
+            transform.set_translation_xyz(x, y, 1.99);
             transform.set_scale(Vector3::new(scale, scale, 1.0));
 
             let nushi_entity = data.world.create_entity().with(transform).build();
@@ -366,6 +367,19 @@ impl SimpleState for MainGameState {
                 entity: ground_entity,
             });
         }
+        // Setup directional light (sun)
+        let transform = Transform::default();
+        let light_component = Light::Directional(DirectionalLight {
+            color: Srgb::new(1.0, 1.0, 1.0),
+            intensity: 1.0f32,
+            direction: Vector3::new(-0.3, -0.3, -1.0),
+        });
+        data.world
+            .create_entity()
+            .with(transform)
+            .with(light_component)
+            .build();
+
         // Setup camera
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();

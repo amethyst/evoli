@@ -1,7 +1,7 @@
 use amethyst::{
     ecs::{ReadExpect, Resources, SystemData},
     renderer::{
-        pass::DrawFlatDesc,
+        pass::DrawShadedDesc,
         rendy::{
             factory::Factory,
             graph::{
@@ -79,7 +79,7 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
         // Ubuntu.
         let main_pass = graph_builder.add_node(
             SubpassBuilder::new()
-                .with_group(DrawFlatDesc::new().builder())
+                .with_group(DrawShadedDesc::new().builder())
                 //.with_group(DrawDebugLinesDesc::new().builder())
                 .with_group(DrawUiDesc::new().builder())
                 .with_color(color)
