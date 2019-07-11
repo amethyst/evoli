@@ -111,7 +111,7 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             if creature_type == "Plant" {
                 let scale = rng.gen_range(0.8f32, 1.2f32);
                 let rotation = rng.gen_range(0.0f32, PI);
-                transform.set_translation_z(0.0);
+                transform.set_translation_z(0.01);
                 transform.set_scale(Vector3::new(scale, scale, 1.0));
                 transform.set_rotation_euler(0.0, 0.0, rotation);
             }

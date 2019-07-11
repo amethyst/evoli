@@ -1,0 +1,18 @@
+#![enable(implicit_some)]
+Prefab (
+    entities: [
+        (
+            data: (
+                name: (
+                    name: "Ground"
+                ),
+                graphics: (
+                    mesh: Asset(File("assets/plane.obj", ("OBJ", ()))),
+                    material: (
+                        albedo: File("assets/ground.png", ("IMAGE", ())),
+                    ),
+                ),
+            ),
+        ),
+    ],
+)
