@@ -6,7 +6,11 @@ use amethyst::{
     ecs::*,
     input::InputEvent,
     prelude::*,
-    renderer::camera::{Camera, Projection},
+    renderer::{
+        camera::{Camera, Projection},
+        palette::rgb::Srgba,
+        resources::Tint,
+    },
     shrev::EventChannel,
     window::ScreenDimensions,
 };
@@ -306,7 +310,7 @@ impl SimpleState for MainGameState {
                 let scale = rng.gen_range(0.8f32, 1.2f32);
                 let rotation = rng.gen_range(0.0f32, PI);
                 let mut transform = Transform::default();
-                transform.set_translation_xyz(x, y, 0.0);
+                transform.set_translation_xyz(x, y, 0.01);
                 transform.set_scale(Vector3::new(scale, scale, 1.0));
                 transform.set_rotation_euler(0.0, 0.0, rotation);
                 let plant_entity = data.world.create_entity().with(transform).build();
@@ -328,7 +332,7 @@ impl SimpleState for MainGameState {
             let scale = 0.4f32;
 
             let mut transform = Transform::default();
-            transform.set_translation_xyz(x, y, 0.0);
+            transform.set_translation_xyz(x, y, 0.02);
             transform.set_scale(Vector3::new(scale, scale, 1.0));
 
             let nushi_entity = data.world.create_entity().with(transform).build();
@@ -338,6 +342,28 @@ impl SimpleState for MainGameState {
             spawn_events.single_write(spawner::CreatureSpawnEvent {
                 creature_type: "Nushi".to_string(),
                 entity: nushi_entity,
+            });
+        }
+
+        {
+            let scale = 17.0f32;
+            let mut transform = Transform::default();
+            transform.set_scale(Vector3::new(scale, scale, 1.0));
+
+            let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
+
+            let ground_entity = data
+                .world
+                .create_entity()
+                .with(transform)
+                .with(tint)
+                .build();
+            let mut spawn_events = data
+                .world
+                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+            spawn_events.single_write(spawner::CreatureSpawnEvent {
+                creature_type: "Ground".to_string(),
+                entity: ground_entity,
             });
         }
         // Setup camera
