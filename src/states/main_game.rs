@@ -24,7 +24,7 @@ use crate::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
     },
-    states::menu::MenuState,
+    states::pause_menu::PauseMenuState,
     systems::*,
 };
 use rand::{thread_rng, Rng};
@@ -253,7 +253,7 @@ impl MainGameState {
             self.update_time_scale(world);
             Trans::None
         } else if action == main_game_ui::MENU_BUTTON.action {
-            Trans::Push(Box::new(MenuState::new(true)))
+            Trans::Push(Box::new(PauseMenuState::default()))
         } else {
             Trans::None
         }
