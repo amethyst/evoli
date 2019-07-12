@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 use amethyst::assets::PrefabLoaderSystem;
 use amethyst::{
     assets::Processor,

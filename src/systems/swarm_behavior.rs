@@ -139,6 +139,11 @@ impl<'s> System<'s> for SwarmBehaviorSystem {
         (_entities, time, transforms, _swarm_centers, swarm_behaviors, mut movements): Self::SystemData,
     ) {
         let delta_seconds = time.delta_seconds();
+
+        // avoid divide-by-zero when delta_seconds is zero
+        if delta_seconds <= f32::EPSILON {
+            return;
+        }
         let time_step = 0.01;
         let iterations = (delta_seconds / time_step) as u32 + 1;
         for (transform, swarm_behavior, mut movement) in

@@ -1,7 +1,7 @@
 use amethyst;
 
 use amethyst::{
-    core::math::{Rotation3, Vector3},
+    core::math::{clamp, Rotation3, Vector3},
     core::{transform::Transform, ArcThreadPool, Time},
     ecs::*,
     input::InputEvent,
@@ -24,11 +24,14 @@ use crate::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
     },
-    states::{menu::MenuState, paused::PausedState},
+    states::menu::MenuState,
     systems::*,
 };
 use rand::{thread_rng, Rng};
 use std::f32::consts::PI;
+
+const TIME_SCALE_FACTOR: f32 = 2.0;
+const TIME_SCALE_RANGE: (f32, f32) = (1.0 / 4.0, 1.0 * 4.0);
 
 pub struct MainGameState {
     dispatcher: Dispatcher<'static, 'static>,
@@ -36,6 +39,8 @@ pub struct MainGameState {
     ui_dispatcher: Dispatcher<'static, 'static>,
     ui: Option<Entity>,
     camera: Option<Entity>,
+    paused: bool,
+    desired_time_scale: f32,
 }
 
 impl MainGameState {
@@ -197,8 +202,6 @@ impl MainGameState {
                     &[],
                 )
                 .build(),
-            // The ui dispatcher will also run when this game state is paused. This is necessary so that
-            // the user can interact with the UI even if the game is in the `Paused` game state.
             ui_dispatcher: DispatcherBuilder::new()
                 .with(
                     main_game_ui::MainGameUiSystem::default(),
@@ -208,25 +211,46 @@ impl MainGameState {
                 .build(),
             ui: None,
             camera: None,
+            paused: false,
+            desired_time_scale: 1.0,
         }
     }
 
-    fn handle_action(&self, action: &str, world: &mut World) -> SimpleTrans {
+    // push desired_time_scale into effect
+    fn update_time_scale(&self, world: &mut World) {
+        world
+            .write_resource::<Time>()
+            .set_time_scale(if self.paused {
+                0.0
+            } else {
+                self.desired_time_scale
+            });
+    }
+
+    fn handle_action(&mut self, action: &str, world: &mut World) -> SimpleTrans {
         if action == "ToggleDebug" {
             let mut debug_config = world.write_resource::<DebugConfig>();
             debug_config.visible = !debug_config.visible;
             Trans::None
         } else if action == main_game_ui::PAUSE_BUTTON.action {
-            Trans::Push(Box::new(PausedState::default()))
+            self.paused = !self.paused;
+            self.update_time_scale(world);
+            Trans::None
         } else if action == main_game_ui::SPEED_UP_BUTTON.action {
-            let mut time_resource = world.write_resource::<Time>();
-            let current_time_scale = time_resource.time_scale();
-            time_resource.set_time_scale(2.0 * current_time_scale);
+            self.desired_time_scale = clamp(
+                self.desired_time_scale * TIME_SCALE_FACTOR,
+                TIME_SCALE_RANGE.0,
+                TIME_SCALE_RANGE.1,
+            );
+            self.update_time_scale(world);
             Trans::None
         } else if action == main_game_ui::SLOW_DOWN_BUTTON.action {
-            let mut time_resource = world.write_resource::<Time>();
-            let current_time_scale = time_resource.time_scale();
-            time_resource.set_time_scale(0.5 * current_time_scale);
+            self.desired_time_scale = clamp(
+                self.desired_time_scale / TIME_SCALE_FACTOR,
+                TIME_SCALE_RANGE.0,
+                TIME_SCALE_RANGE.1,
+            );
+            self.update_time_scale(world);
             Trans::None
         } else if action == main_game_ui::MENU_BUTTON.action {
             Trans::Switch(Box::new(MenuState::default()))
@@ -252,6 +276,8 @@ impl SimpleState for MainGameState {
     }
 
     fn on_start(&mut self, data: StateData<GameData>) {
+        info!("start main game");
+
         self.dispatcher.setup(&mut data.world.res);
         self.debug_dispatcher.setup(&mut data.world.res);
         self.ui_dispatcher.setup(&mut data.world.res);
@@ -362,9 +388,15 @@ impl SimpleState for MainGameState {
                 .with(transform)
                 .build(),
         );
+
+        // initialize time scale
+        self.paused = false;
+        data.world.write_resource::<Time>().set_time_scale(1.0);
     }
 
     fn on_stop(&mut self, data: StateData<GameData>) {
+        info!("stop main game");
+
         if let Some(ui) = self.ui {
             if data.world.delete_entity(ui).is_ok() {
                 self.ui = None;
@@ -386,6 +418,12 @@ impl SimpleState for MainGameState {
         {
             organisms.push(entity);
         }
+        data.world
+            .delete_entities(&organisms)
+            .expect("failed to delete all organisms");
+
+        // fix up time scale before we leave this state
+        data.world.write_resource::<Time>().set_time_scale(1.0);
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
@@ -401,10 +439,9 @@ impl SimpleState for MainGameState {
         }
 
         data.data.update(&data.world);
-        Trans::None
-    }
 
-    fn shadow_update(&mut self, data: StateData<GameData>) {
-        self.ui_dispatcher.dispatch(&mut data.world.res);
+        self.ui_dispatcher.dispatch(&data.world.res);
+
+        Trans::None
     }
 }
