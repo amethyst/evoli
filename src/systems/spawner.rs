@@ -29,6 +29,7 @@ pub struct CreatureSpawnEvent {
 struct CreatureTypeDistribution {
     creature_type: CreatureType,
 }
+
 impl Distribution<CreatureTypeDistribution> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> CreatureTypeDistribution {
         match rng.gen_range(0, 3) {
