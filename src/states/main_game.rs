@@ -418,7 +418,9 @@ impl SimpleState for MainGameState {
         {
             organisms.push(entity);
         }
-        data.world.delete_entities(&organisms).expect("failed to delete all organisms");
+        data.world
+            .delete_entities(&organisms)
+            .expect("failed to delete all organisms");
 
         // fix up time scale before we leave this state
         data.world.write_resource::<Time>().set_time_scale(1.0);
