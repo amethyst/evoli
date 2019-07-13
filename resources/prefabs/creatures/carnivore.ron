@@ -7,9 +7,9 @@ Prefab (
                     name: "Carnivore"
                 ),
                 graphics: (
-                    mesh: Asset(File("assets/plane.obj", ("OBJ", ()))),
+                    mesh: Asset(File("assets/sphere.obj", ("OBJ", ()))),
                     material: (
-                        albedo: File("assets/carnivore.png", ("IMAGE", ())),
+                        albedo: Generate(Srgba(0.9, 0.8, 0.8, 1.0)),
                     ),
                 ),
                 movement: (

@@ -69,7 +69,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 let x = rng.gen_range(-1.0, 1.0);
                 let y = rng.gen_range(-1.0, 1.0);
                 transform.set_translation_xyz(x, y, 0.0);
-                transform.set_scale(Vector3::new(0.3, 0.3, 1.0));
+                transform.set_scale(Vector3::new(0.1, 0.1, 0.1));
                 let parent = Parent {
                     entity: swarm_entity,
                 };

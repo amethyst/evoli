@@ -334,7 +334,7 @@ impl SimpleState for MainGameState {
 
             let mut transform = Transform::default();
             transform.set_translation_xyz(x, y, 1.99);
-            transform.set_scale(Vector3::new(scale, scale, 1.0));
+            transform.set_scale(Vector3::new(scale, scale, scale));
 
             let nushi_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
