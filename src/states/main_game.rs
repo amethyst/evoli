@@ -436,6 +436,20 @@ impl SimpleState for MainGameState {
             .delete_entities(&organisms)
             .expect("failed to delete all organisms");
 
+        // delete all lights (e.g. creatures, plants, etc.)
+        let mut lights: Vec<Entity> = Vec::new();
+        for (entity, _) in (
+            &data.world.entities(),
+            &data.world.read_storage::<Light>(),
+        )
+            .join()
+            {
+                lights.push(entity);
+            }
+        data.world
+            .delete_entities(&lights)
+            .expect("failed to delete all lights");
+
         // fix up time scale before we leave this state
         data.world.write_resource::<Time>().set_time_scale(1.0);
     }
