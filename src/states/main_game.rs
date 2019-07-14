@@ -438,14 +438,9 @@ impl SimpleState for MainGameState {
 
         // delete all lights (e.g. creatures, plants, etc.)
         let mut lights: Vec<Entity> = Vec::new();
-        for (entity, _) in (
-            &data.world.entities(),
-            &data.world.read_storage::<Light>(),
-        )
-            .join()
-            {
-                lights.push(entity);
-            }
+        for (entity, _) in (&data.world.entities(), &data.world.read_storage::<Light>()).join() {
+            lights.push(entity);
+        }
         data.world
             .delete_entities(&lights)
             .expect("failed to delete all lights");
