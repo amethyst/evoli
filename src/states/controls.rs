@@ -40,7 +40,7 @@ impl ControlsState {
             bindings.sort();
             bindings
         };
-        let y = -150.;
+        let y = -150.; // start below our title label
         let y_step = -40.;
         (
             &world.entities(),
@@ -85,31 +85,44 @@ impl<'a> SimpleState for ControlsState {
             .find(data.world, CONTROLS_ID);
         if let Some(controls_prefab) = controls_prefab {
             self.root = Some(data.world.create_entity().with(controls_prefab).build());
+
+            // find the prefab for our row widget
+            // create a row for each binding in the InputHandler and parent them to our ui root
+            let row_prefab = data
+                .world
+                .read_resource::<UiPrefabRegistry>()
+                .find(data.world, CONTROLS_ROW_ID);
+            if let Some(row_prefab) = row_prefab {
+                let binding_count = data
+                    .world
+                    .read_resource::<InputHandler<StringBindings>>()
+                    .bindings
+                    .actions()
+                    .count();
+                let root = self.root.unwrap();
+                // TODO is there a more clever way to do this with data.world.create_iter()?
+                self.rows = (0..binding_count)
+                    .map(|_row_index| {
+                        data.world
+                            .create_entity()
+                            .with(row_prefab.clone())
+                            .with(Parent::new(root))
+                            .build()
+                    })
+                    .collect::<Vec<Entity>>();
+            }
         }
 
-        let row_prefab = data
-            .world
-            .read_resource::<UiPrefabRegistry>()
-            .find(data.world, CONTROLS_ROW_ID);
-        if let Some(row_prefab) = row_prefab {
-            let binding_count = data
-                .world
-                .read_resource::<InputHandler<StringBindings>>()
-                .bindings
-                .actions()
-                .count();
-            let root = self.root.unwrap();
-            // TODO is there a more clever way to do this with data.world.create_iter()?
-            self.rows = (0..binding_count)
-                .map(|_row_index| {
-                    data.world
-                        .create_entity()
-                        .with(row_prefab.clone())
-                        .with(Parent::new(root))
-                        .build()
-                })
-                .collect::<Vec<Entity>>();
-        }
+        // update the world to finish building all of our ui entities
+        data.data.update(&data.world);
+
+        // look up the done button to make checking its status efficient
+        data.world.exec(|ui_finder: UiFinder<'_>| {
+            self.done_button = ui_finder.find(DONE_BUTTON_ID);
+        });
+
+        // fill the row widgets with data
+        self.fill_rows(data.world);
     }
 
     fn on_stop(&mut self, data: StateData<GameData>) {
@@ -119,6 +132,7 @@ impl<'a> SimpleState for ControlsState {
         };
         self.root = None;
         self.done_button = None;
+        self.rows.clear();
     }
 
     fn handle_event(&mut self, _data: StateData<GameData>, event: StateEvent) -> SimpleTrans {
@@ -139,15 +153,6 @@ impl<'a> SimpleState for ControlsState {
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
-        // once deferred creation of the root ui entity finishes, look up buttons
-        if self.done_button.is_none() {
-            data.world.exec(|ui_finder: UiFinder<'_>| {
-                self.done_button = ui_finder.find(DONE_BUTTON_ID);
-            });
-            if self.done_button.is_some() {
-                self.fill_rows(data.world);
-            }
-        }
         Trans::None
     }
 }

@@ -38,6 +38,16 @@ impl<'a> SimpleState for MenuState {
         if let Some(menu_prefab) = menu_prefab {
             self.root = Some(data.world.create_entity().with(menu_prefab).build());
         }
+
+        // invoke a world update to finish creating our ui entities
+        data.data.update(&data.world);
+
+        // look up our buttons
+        data.world.exec(|ui_finder: UiFinder<'_>| {
+            self.start_button = ui_finder.find(START_BUTTON_ID);
+            self.controls_button = ui_finder.find(CONTROLS_BUTTON_ID);
+            self.exit_button = ui_finder.find(EXIT_BUTTON_ID);
+        });
     }
 
     fn on_stop(&mut self, data: StateData<GameData>) {
@@ -45,17 +55,10 @@ impl<'a> SimpleState for MenuState {
             hierarchy_util::delete_hierarchy(root, data.world)
                 .expect("failed to delete all main menu widgets");
         }
+        self.root = None;
         self.start_button = None;
         self.controls_button = None;
         self.exit_button = None;
-    }
-
-    fn on_pause(&mut self, data: StateData<GameData>) {
-        // TODO hide buttons
-    }
-
-    fn on_resume(&mut self, data: StateData<GameData>) {
-        // TODO show buttons
     }
 
     fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans {
@@ -80,17 +83,6 @@ impl<'a> SimpleState for MenuState {
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
-        // once deferred creation of the root ui entity finishes, look up buttons
-        if self.start_button.is_none()
-            || self.controls_button.is_none()
-            || self.exit_button.is_none()
-        {
-            data.world.exec(|ui_finder: UiFinder<'_>| {
-                self.start_button = ui_finder.find(START_BUTTON_ID);
-                self.controls_button = ui_finder.find(CONTROLS_BUTTON_ID);
-                self.exit_button = ui_finder.find(EXIT_BUTTON_ID);
-            });
-        }
         Trans::None
     }
 }
