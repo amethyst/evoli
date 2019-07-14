@@ -1,0 +1,16 @@
+#![enable(implicit_some)]
+Label(
+    transform: (
+        id: "controls_row",
+        anchor: TopMiddle,
+        width: 800.0,
+        height: 100.0,
+        z: 10.0,
+    ),
+    text: (
+        text: "CONTROLS ROW PLACEHOLDER",
+        font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
+        font_size: 30.0,
+        color: (0.0, 0.0, 0.0, 1.0),
+    )
+)
