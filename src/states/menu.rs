@@ -30,7 +30,7 @@ const EXIT_BUTTON_ID: &str = "exit";
 impl<'a> SimpleState for MenuState {
     fn on_start(&mut self, data: StateData<GameData>) {
         // assume UiPrefab loading has happened in a previous state
-        // look through the UiPrefabRegistry for the "controls" prefab and instantiate it
+        // look through the UiPrefabRegistry for the "menu" prefab and instantiate it
         let menu_prefab = data
             .world
             .read_resource::<UiPrefabRegistry>()
