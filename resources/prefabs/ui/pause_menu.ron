@@ -1,7 +1,7 @@
 #![enable(implicit_some)]
 Container(
     transform: (
-        id: "menu",
+        id: "pause_menu",
         anchor: Middle,
         stretch: XY( x_margin: 0.0, y_margin: 0.0, keep_aspect_ratio: true),
         width: 1280.0,
@@ -10,7 +10,7 @@ Container(
     children: [
         Button(
             transform: (
-                id: "start",
+                id: "resume",
                 x: 0.0,
                 y: 30.0,
                 width: 300.0,
@@ -19,7 +19,7 @@ Container(
                 mouse_reactive: true,
             ),
             button: (
-                text: "Start",
+                text: "Resume",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
                 font_size: 36.0,
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
@@ -32,7 +32,7 @@ Container(
         ),
         Button(
             transform: (
-                id: "exit",
+                id: "exit_to_main_menu",
                 x: 0.0,
                 y: -30.0,
                 width: 300.0,
@@ -41,7 +41,7 @@ Container(
                 mouse_reactive: true,
             ),
             button: (
-                text: "Exit",
+                text: "Exit to Main Menu",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
                 font_size: 36.0,
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
