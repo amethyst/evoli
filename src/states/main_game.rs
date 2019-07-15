@@ -349,7 +349,7 @@ impl SimpleState for MainGameState {
         {
             let scale = 17.0f32;
             let mut transform = Transform::default();
-            transform.set_scale(Vector3::new(scale, scale, 1.0));
+            transform.set_scale(Vector3::new(scale, scale, scale));
 
             let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
 
