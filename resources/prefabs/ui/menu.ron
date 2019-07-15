@@ -12,7 +12,7 @@ Container(
             transform: (
                 id: "title",
                 x: 0.0,
-                y: -100.0,
+                y: -200.0,
                 z: 10.0,
                 width: 1000.0,
                 height: 150.0,
@@ -23,7 +23,7 @@ Container(
                 text: "Evolution Island",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
                 font_size: 150.0,
-                color: (0., 0., 0., 1.0),
+                color: (1., 1., 1., 1.0),
             ),
         ),
         Button(
@@ -52,16 +52,16 @@ Container(
             transform: (
                 id: "controls",
                 x: 0.0,
-                y: 50.0,
+                y: 60.0,
                 width: 300.0,
-                height: 75.0,
+                height: 50.0,
                 anchor: Middle,
                 mouse_reactive: true,
             ),
             button: (
                 text: "Controls",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
-                font_size: 100.0,
+                font_size: 36.0,
                 normal_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 press_image: SolidColor(0.5, 0.5, 0.5, 1.),

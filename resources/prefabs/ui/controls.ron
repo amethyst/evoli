@@ -50,7 +50,7 @@ Container(
             button: (
                 text: "Done",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
-                font_size: 50.0,
+                font_size: 36.0,
                 normal_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 press_image: SolidColor(0.5, 0.5, 0.5, 1.),
