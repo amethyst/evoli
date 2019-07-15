@@ -53,6 +53,8 @@ impl SimpleState for LoadingState {
                 } else {
                     return Trans::Switch(Box::new(MenuState::default()));
                 }
+            } else {
+                println!("Still loading");
             }
         }
 

@@ -1,8 +1,9 @@
 use amethyst::{
-    assets::{PrefabData, ProgressCounter},
+    assets::{AssetPrefab, PrefabData, ProgressCounter},
     core::{math::Vector3, Named},
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, NullStorage, WriteStorage},
+    gltf::{GltfSceneAsset, GltfSceneFormat},
     renderer::{
         formats::GraphicsPrefab,
         rendy::mesh::{Normal, Position, TexCoord},
@@ -82,6 +83,7 @@ impl Wander {
 pub struct CreaturePrefabData {
     pub name: Option<Named>,
     graphics: Option<GraphicsPrefab<(Vec<Position>, Vec<Normal>, Vec<TexCoord>)>>,
+    gltf: Option<AssetPrefab<GltfSceneAsset, GltfSceneFormat>>,
     movement: Option<Movement>,
     wander: Option<Wander>,
     collider: Option<Circle>,
