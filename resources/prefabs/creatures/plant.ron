@@ -6,12 +6,7 @@ Prefab (
                 name: (
                     name: "Plant"
                 ),
-                graphics: (
-                    mesh: Asset(File("assets/Bush_1.obj", ("OBJ", ()))),
-                    material: (
-                        albedo: Generate(Srgba(0.04, 0.6, 0.04, 1.0)),
-                    ),
-                ),
+                gltf: File("assets/NormalTangentTest.glb", ()),
                 digestion: (
                     digestion: (
                         nutrition_burn_rate: 1.0,

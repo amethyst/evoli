@@ -82,7 +82,7 @@ impl Wander {
 #[serde(deny_unknown_fields)]
 pub struct CreaturePrefabData {
     pub name: Option<Named>,
-    graphics: Option<GraphicsPrefab<(Vec<Position>, Vec<Normal>, Vec<TexCoord>)>>,
+    //graphics: Option<GraphicsPrefab<(Vec<Position>, Vec<Normal>, Vec<TexCoord>)>>,
     gltf: Option<AssetPrefab<GltfSceneAsset, GltfSceneFormat>>,
     movement: Option<Movement>,
     wander: Option<Wander>,

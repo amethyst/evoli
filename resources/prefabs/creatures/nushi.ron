@@ -7,12 +7,7 @@ Prefab (
                 name: (
                     name: "Nushi"
                 ),
-                graphics: (
-                    mesh: Asset(File("assets/sphere.obj", ("OBJ", ()))),
-                    material: (
-                        albedo: Generate(Srgba(0.5, 0.7, 0.9, 1.0)),
-                    ),
-                ),
+                gltf: File("assets/NormalTangentTest.glb", ()),
                 movement: (
                     velocity: [10.0, 10.0, 10.0],
                     max_movement_speed: 2.0,
