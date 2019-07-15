@@ -416,7 +416,9 @@ impl SimpleState for MainGameState {
             .join()
             .map(|(entity, _creature_tag)| entity)
             .collect::<Vec<Entity>>();
-        data.world.delete_entities(&organisms).expect("failed to delete all organisms");
+        data.world
+            .delete_entities(&organisms)
+            .expect("failed to delete all organisms");
 
         // fix up time scale before we leave this state
         data.world.write_resource::<Time>().set_time_scale(1.0);
