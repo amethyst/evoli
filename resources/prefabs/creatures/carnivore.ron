@@ -6,7 +6,7 @@ Prefab (
                 name: (
                     name: "Carnivore"
                 ),
-                gltf: File("assets/NormalTangentTest.glb", ()),
+                gltf: File("assets/sphere.gltf", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
                     max_movement_speed: 2.0,

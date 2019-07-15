@@ -6,7 +6,7 @@ Prefab (
                 name: (
                     name: "Ixie"
                 ),
-                gltf: File("assets/NormalTangentTest.glb", ()),
+                gltf: File("assets/sphere.gltf", ()),
                 digestion: (
                     digestion: (
                         nutrition_burn_rate: 0.1,
