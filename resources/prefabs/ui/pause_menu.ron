@@ -1,43 +1,25 @@
 #![enable(implicit_some)]
 Container(
     transform: (
-        id: "menu",
+        id: "pause_menu",
         anchor: Middle,
         stretch: XY( x_margin: 0.0, y_margin: 0.0, keep_aspect_ratio: true),
         width: 1280.0,
         height: 960.0,
     ),
     children: [
-        Label(
-            transform: (
-                id: "title",
-                x: 0.0,
-                y: -100.0,
-                z: 10.0,
-                width: 1000.0,
-                height: 150.0,
-                anchor: TopMiddle,
-                mouse_reactive: false,
-            ),
-            text: (
-                text: "Evolution Island",
-                font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
-                font_size: 150.0,
-                color: (0., 0., 0., 1.0),
-            ),
-        ),
         Button(
             transform: (
-                id: "start",
+                id: "resume",
                 x: 0.0,
-                y: 150.0,
+                y: 30.0,
                 width: 300.0,
                 height: 50.0,
                 anchor: Middle,
                 mouse_reactive: true,
             ),
             button: (
-                text: "Start",
+                text: "Resume",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
                 font_size: 36.0,
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
@@ -50,29 +32,7 @@ Container(
         ),
         Button(
             transform: (
-                id: "controls",
-                x: 0.0,
-                y: 50.0,
-                width: 300.0,
-                height: 75.0,
-                anchor: Middle,
-                mouse_reactive: true,
-            ),
-            button: (
-                text: "Controls",
-                font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
-                font_size: 100.0,
-                normal_image: SolidColor(0.5, 0.5, 0.5, 1.),
-                hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
-                press_image: SolidColor(0.5, 0.5, 0.5, 1.),
-                normal_text_color: (0.2, 0.2, 0.2, 1.0),
-                hover_text_color: (0.7, 0.7, 0.7, 1.0),
-                press_text_color: (1.0, 1.0, 1.0, 1.0),
-            )
-        ),
-        Button(
-            transform: (
-                id: "exit",
+                id: "exit_to_main_menu",
                 x: 0.0,
                 y: -30.0,
                 width: 300.0,
@@ -81,7 +41,7 @@ Container(
                 mouse_reactive: true,
             ),
             button: (
-                text: "Exit",
+                text: "Exit to Main Menu",
                 font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
                 font_size: 36.0,
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
