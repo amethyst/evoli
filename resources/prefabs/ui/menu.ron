@@ -12,7 +12,7 @@ Container(
             transform: (
                 id: "title",
                 x: 0.0,
-                y: -200.0,
+                y: -100.0,
                 z: 10.0,
                 width: 1000.0,
                 height: 150.0,
