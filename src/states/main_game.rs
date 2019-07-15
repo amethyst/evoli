@@ -347,7 +347,7 @@ impl SimpleState for MainGameState {
         }
 
         {
-            let scale = 17.0f32;
+            let scale = 1.7f32;
             let mut transform = Transform::default();
             transform.set_scale(Vector3::new(scale, scale, scale));
 
