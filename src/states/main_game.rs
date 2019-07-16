@@ -423,15 +423,13 @@ impl SimpleState for MainGameState {
         }
 
         // delete all organisms (e.g. creatures, plants, etc.)
-        let mut organisms: Vec<Entity> = Vec::new();
-        for (entity, _) in (
+        let organisms = (
             &data.world.entities(),
             &data.world.read_storage::<spawner::CreatureTag>(),
         )
             .join()
-        {
-            organisms.push(entity);
-        }
+            .map(|(entity, _creature_tag)| entity)
+            .collect::<Vec<Entity>>();
         data.world
             .delete_entities(&organisms)
             .expect("failed to delete all organisms");

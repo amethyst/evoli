@@ -8,11 +8,29 @@ Container(
         height: 960.0,
     ),
     children: [
+        Label(
+            transform: (
+                id: "title",
+                x: 0.0,
+                y: -100.0,
+                z: 10.0,
+                width: 1000.0,
+                height: 150.0,
+                anchor: TopMiddle,
+                mouse_reactive: false,
+            ),
+            text: (
+                text: "Evolution Island",
+                font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
+                font_size: 150.0,
+                color: (1., 1., 1., 1.0),
+            ),
+        ),
         Button(
             transform: (
                 id: "start",
                 x: 0.0,
-                y: 30.0,
+                y: 150.0,
                 width: 300.0,
                 height: 50.0,
                 anchor: Middle,
@@ -25,6 +43,28 @@ Container(
                 normal_image: SolidColor(0.4, 0.4, 0.4, 1.),
                 hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 press_image: SolidColor(0.2, 0.2, 0.2, 1.),
+                normal_text_color: (0.2, 0.2, 0.2, 1.0),
+                hover_text_color: (0.7, 0.7, 0.7, 1.0),
+                press_text_color: (1.0, 1.0, 1.0, 1.0),
+            )
+        ),
+        Button(
+            transform: (
+                id: "controls",
+                x: 0.0,
+                y: 60.0,
+                width: 300.0,
+                height: 50.0,
+                anchor: Middle,
+                mouse_reactive: true,
+            ),
+            button: (
+                text: "Controls",
+                font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
+                font_size: 36.0,
+                normal_image: SolidColor(0.5, 0.5, 0.5, 1.),
+                hover_image: SolidColor(0.5, 0.5, 0.5, 1.),
+                press_image: SolidColor(0.5, 0.5, 0.5, 1.),
                 normal_text_color: (0.2, 0.2, 0.2, 1.0),
                 hover_text_color: (0.7, 0.7, 0.7, 1.0),
                 press_text_color: (1.0, 1.0, 1.0, 1.0),
