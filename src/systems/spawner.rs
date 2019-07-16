@@ -107,7 +107,7 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution =
                 rand::random();
             if creature_type == "Carnivore" || creature_type == "Herbivore" {
-                transform.set_scale(Vector3::new(0.8, 0.8, 0.8));
+                transform.set_scale(Vector3::new(0.4, 0.4, 0.4));
             }
             if creature_type == "Plant" {
                 let scale = rng.gen_range(0.8f32, 1.2f32);

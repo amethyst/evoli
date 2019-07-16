@@ -6,7 +6,7 @@ Prefab (
                 name: (
                     name: "Herbivore"
                 ),
-                gltf: File("assets/herbivore.gltf", ()),
+                gltf: File("assets/slime.glb", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
                     max_movement_speed: 1.75,
