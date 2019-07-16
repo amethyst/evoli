@@ -10,3 +10,6 @@
 
 # IntelliJ folder
 .idea
+
+# profiles
+thread_profile*

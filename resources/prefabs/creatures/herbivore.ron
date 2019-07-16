@@ -6,12 +6,7 @@ Prefab (
                 name: (
                     name: "Herbivore"
                 ),
-                graphics: (
-                    mesh: Asset(File("assets/sphere.obj", ("OBJ", ()))),
-                    material: (
-                        albedo: Generate(Srgba(0.9, 0.3, 0.3, 1.0)),
-                    ),
-                ),
+                gltf: File("assets/herbivore.gltf", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
                     max_movement_speed: 1.75,

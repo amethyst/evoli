@@ -6,12 +6,7 @@ Prefab (
                 name: (
                     name: "Ixie"
                 ),
-                graphics: (
-                    mesh: Asset(File("assets/sphere.obj", ("OBJ", ()))),
-                    material: (
-                        albedo: Generate(Srgba(0.95, 0.95, 0.15, 1.0)),
-                    ),
-                ),
+                gltf: File("assets/ixie.gltf", ()),
                 digestion: (
                     digestion: (
                         nutrition_burn_rate: 0.1,
