@@ -367,6 +367,7 @@ impl SimpleState for MainGameState {
                 entity: ground_entity,
             });
         }
+
         // Setup directional light (sun)
         let light_component = Light::Directional(DirectionalLight {
             color: Srgb::new(1.0, 1.0, 1.0),
