@@ -7,10 +7,10 @@ use amethyst::{
     input::InputEvent,
     prelude::*,
     renderer::{
-        camera::{Camera, Orthographic, Projection},
+        camera::{Camera, Projection},
         light::{DirectionalLight, Light},
         palette::rgb::{Srgb, Srgba},
-        resources::{AmbientColor, Tint},
+        resources::AmbientColor,
     },
     shrev::EventChannel,
     window::ScreenDimensions,
@@ -353,14 +353,7 @@ impl SimpleState for MainGameState {
             let mut transform = Transform::default();
             transform.set_scale(Vector3::new(scale, scale, 1.0f32));
 
-            let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
-
-            let ground_entity = data
-                .world
-                .create_entity()
-                .with(transform)
-                //                .with(tint)
-                .build();
+            let ground_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
                 .world
                 .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
