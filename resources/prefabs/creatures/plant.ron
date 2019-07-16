@@ -6,7 +6,7 @@ Prefab (
                 name: (
                     name: "Plant"
                 ),
-                gltf: File("assets/bush.glb", ()),
+                gltf: File("assets/tree.glb", ()),
                 digestion: (
                     digestion: (
                         nutrition_burn_rate: 1.0,

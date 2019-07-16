@@ -53,12 +53,6 @@ impl SimpleState for LoadingState {
                 } else {
                     return Trans::Switch(Box::new(MenuState::default()));
                 }
-            } else {
-                println!(
-                    "Still loading {} assets, failed {}",
-                    self.prefab_loading_progress.as_ref().unwrap().num_loading(),
-                    self.prefab_loading_progress.as_ref().unwrap().num_failed()
-                );
             }
         }
 
