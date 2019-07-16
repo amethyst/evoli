@@ -16,6 +16,8 @@ use amethyst::{
     window::ScreenDimensions,
 };
 
+use std::f32;
+
 use crate::systems::behaviors::decision::{
     ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
 };
@@ -347,9 +349,9 @@ impl SimpleState for MainGameState {
         }
 
         {
-            let scale = 1.7f32;
+            let scale = 1.05f32;
             let mut transform = Transform::default();
-            transform.set_scale(Vector3::new(scale, scale, scale));
+            transform.set_scale(Vector3::new(scale, scale, 0.8f32));
 
             let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
 
@@ -383,7 +385,10 @@ impl SimpleState for MainGameState {
         };
 
         let mut transform = Transform::default();
-        transform.set_translation_xyz(0.0, 0.0, 12.0);
+        transform.set_translation_xyz(-8.0, -10.0, 8.0);
+        let pi = f32::consts::PI;
+        transform.set_rotation_euler(pi / 4.0, 0.0, -pi / 6.0);
+
 
         self.camera = Some(
             data.world
