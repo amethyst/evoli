@@ -7,10 +7,10 @@ use amethyst::{
     input::InputEvent,
     prelude::*,
     renderer::{
-        camera::{Camera, Projection},
+        camera::{Camera, Orthographic, Projection},
         light::{DirectionalLight, Light},
         palette::rgb::{Srgb, Srgba},
-        resources::Tint,
+        resources::{AmbientColor, Tint},
     },
     shrev::EventChannel,
     window::ScreenDimensions,
@@ -351,7 +351,7 @@ impl SimpleState for MainGameState {
         {
             let scale = 1.05f32;
             let mut transform = Transform::default();
-            transform.set_scale(Vector3::new(scale, scale, 0.8f32));
+            transform.set_scale(Vector3::new(scale, scale, 1.0f32));
 
             let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
 
@@ -359,7 +359,7 @@ impl SimpleState for MainGameState {
                 .world
                 .create_entity()
                 .with(transform)
-                .with(tint)
+                //                .with(tint)
                 .build();
             let mut spawn_events = data
                 .world
@@ -374,9 +374,12 @@ impl SimpleState for MainGameState {
         let light_component = Light::Directional(DirectionalLight {
             color: Srgb::new(1.0, 1.0, 1.0),
             intensity: 1.0f32,
-            direction: Vector3::new(-0.3, -0.3, -1.0),
+            direction: Vector3::new(0.4, 0.3, -1.0),
         });
         data.world.create_entity().with(light_component).build();
+
+        data.world
+            .add_resource(AmbientColor(Srgba::new(0.2f32, 0.2f32, 0.2f32, 1.0f32)));
 
         // Setup camera
         let (width, height) = {
@@ -385,19 +388,20 @@ impl SimpleState for MainGameState {
         };
 
         let mut transform = Transform::default();
-        transform.set_translation_xyz(-8.0, -10.0, 8.0);
+        transform.set_translation_xyz(-6.0, -10.0, 8.0);
         let pi = f32::consts::PI;
-        transform.set_rotation_euler(pi / 4.0, 0.0, -pi / 6.0);
-
+        transform.set_rotation_euler(pi / 3.0, 0.0, -pi / 6.0);
 
         self.camera = Some(
             data.world
                 .create_entity()
                 .named("Main camera")
-                .with(Camera::from(Projection::perspective(
-                    width / height,
-                    std::f32::consts::FRAC_PI_2,
-                    0.01f32,
+                .with(Camera::from(Projection::orthographic(
+                    -width / 100.0,
+                    width / 100.0,
+                    -height / 100.0,
+                    height / 100.0,
+                    0.1f32,
                     1000.0f32,
                 )))
                 .with(transform)

@@ -8,13 +8,17 @@ use thread_profiler::profile_scope;
 
 use crate::components::collider;
 use crate::components::creatures;
-use crate::systems::spawner::CreatureTag;
 use crate::resources::world_bounds::*;
+use crate::systems::spawner::CreatureTag;
 
 pub struct EnforceBoundsSystem;
 
 impl<'s> System<'s> for EnforceBoundsSystem {
-    type SystemData = (WriteStorage<'s, Transform>, ReadStorage<'s, CreatureTag>, ReadExpect<'s, WorldBounds>);
+    type SystemData = (
+        WriteStorage<'s, Transform>,
+        ReadStorage<'s, CreatureTag>,
+        ReadExpect<'s, WorldBounds>,
+    );
 
     fn run(&mut self, (mut locals, tags, bounds): Self::SystemData) {
         for (local, _) in (&mut locals, &tags).join() {
