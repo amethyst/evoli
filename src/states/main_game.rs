@@ -8,7 +8,8 @@ use amethyst::{
     prelude::*,
     renderer::{
         camera::{Camera, Projection},
-        palette::rgb::Srgba,
+        light::{DirectionalLight, Light},
+        palette::rgb::{Srgb, Srgba},
         resources::Tint,
     },
     shrev::EventChannel,
@@ -332,8 +333,8 @@ impl SimpleState for MainGameState {
             let scale = 0.4f32;
 
             let mut transform = Transform::default();
-            transform.set_translation_xyz(x, y, 0.02);
-            transform.set_scale(Vector3::new(scale, scale, 1.0));
+            transform.set_translation_xyz(x, y, 1.99);
+            transform.set_scale(Vector3::new(scale, scale, scale));
 
             let nushi_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
@@ -346,9 +347,9 @@ impl SimpleState for MainGameState {
         }
 
         {
-            let scale = 17.0f32;
+            let scale = 1.7f32;
             let mut transform = Transform::default();
-            transform.set_scale(Vector3::new(scale, scale, 1.0));
+            transform.set_scale(Vector3::new(scale, scale, scale));
 
             let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
 
@@ -366,6 +367,19 @@ impl SimpleState for MainGameState {
                 entity: ground_entity,
             });
         }
+        // Setup directional light (sun)
+        let transform = Transform::default();
+        let light_component = Light::Directional(DirectionalLight {
+            color: Srgb::new(1.0, 1.0, 1.0),
+            intensity: 1.0f32,
+            direction: Vector3::new(-0.3, -0.3, -1.0),
+        });
+        data.world
+            .create_entity()
+            .with(transform)
+            .with(light_component)
+            .build();
+
         // Setup camera
         let (width, height) = {
             let dim = data.world.read_resource::<ScreenDimensions>();
@@ -421,6 +435,15 @@ impl SimpleState for MainGameState {
         data.world
             .delete_entities(&organisms)
             .expect("failed to delete all organisms");
+
+        // delete all lights (e.g. creatures, plants, etc.)
+        let mut lights: Vec<Entity> = Vec::new();
+        for (entity, _) in (&data.world.entities(), &data.world.read_storage::<Light>()).join() {
+            lights.push(entity);
+        }
+        data.world
+            .delete_entities(&lights)
+            .expect("failed to delete all lights");
 
         // fix up time scale before we leave this state
         data.world.write_resource::<Time>().set_time_scale(1.0);
