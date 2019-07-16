@@ -7,7 +7,7 @@ Prefab (
                 name: (
                     name: "Nushi"
                 ),
-                gltf: File("assets/sphere.gltf", ()),
+                gltf: File("assets/nushi.gltf", ()),
                 movement: (
                     velocity: [10.0, 10.0, 10.0],
                     max_movement_speed: 2.0,
