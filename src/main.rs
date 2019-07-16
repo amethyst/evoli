@@ -7,6 +7,7 @@ use amethyst::{
     audio::{AudioBundle, DjSystem},
     core::frame_limiter::FrameRateLimitStrategy,
     core::transform::TransformBundle,
+    gltf::GltfSceneLoaderSystem,
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
@@ -53,8 +54,13 @@ fn main() -> amethyst::Result<()> {
         )?
         .with(
             PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
-            "",
+            "creature_loader",
             &[],
+        )
+        .with(
+            GltfSceneLoaderSystem::default(),
+            "gltf_loader",
+            &["creature_loader"],
         )
         .with(
             PrefabLoaderSystem::<combat::FactionPrefabData>::default(),

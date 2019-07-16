@@ -1,12 +1,9 @@
 use amethyst::{
-    assets::{PrefabData, ProgressCounter},
+    assets::{AssetPrefab, PrefabData, ProgressCounter},
     core::{math::Vector3, Named},
     derive::PrefabData,
     ecs::{Component, DenseVecStorage, Entity, NullStorage, WriteStorage},
-    renderer::{
-        formats::GraphicsPrefab,
-        rendy::mesh::{Normal, Position, TexCoord},
-    },
+    gltf::{GltfSceneAsset, GltfSceneFormat},
     Error,
 };
 //use amethyst_inspector::Inspect;
@@ -81,7 +78,7 @@ impl Wander {
 #[serde(deny_unknown_fields)]
 pub struct CreaturePrefabData {
     pub name: Option<Named>,
-    graphics: Option<GraphicsPrefab<(Vec<Position>, Vec<Normal>, Vec<TexCoord>)>>,
+    gltf: Option<AssetPrefab<GltfSceneAsset, GltfSceneFormat>>,
     movement: Option<Movement>,
     wander: Option<Wander>,
     collider: Option<Circle>,

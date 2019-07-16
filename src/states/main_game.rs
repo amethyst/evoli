@@ -367,18 +367,14 @@ impl SimpleState for MainGameState {
                 entity: ground_entity,
             });
         }
+
         // Setup directional light (sun)
-        let transform = Transform::default();
         let light_component = Light::Directional(DirectionalLight {
             color: Srgb::new(1.0, 1.0, 1.0),
             intensity: 1.0f32,
             direction: Vector3::new(-0.3, -0.3, -1.0),
         });
-        data.world
-            .create_entity()
-            .with(transform)
-            .with(light_component)
-            .build();
+        data.world.create_entity().with(light_component).build();
 
         // Setup camera
         let (width, height) = {
@@ -423,15 +419,13 @@ impl SimpleState for MainGameState {
         }
 
         // delete all organisms (e.g. creatures, plants, etc.)
-        let mut organisms: Vec<Entity> = Vec::new();
-        for (entity, _) in (
+        let organisms = (
             &data.world.entities(),
             &data.world.read_storage::<spawner::CreatureTag>(),
         )
             .join()
-        {
-            organisms.push(entity);
-        }
+            .map(|(entity, _creature_tag)| entity)
+            .collect::<Vec<Entity>>();
         data.world
             .delete_entities(&organisms)
             .expect("failed to delete all organisms");
