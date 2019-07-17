@@ -23,6 +23,7 @@ use crate::systems::behaviors::decision::{
 };
 use crate::systems::behaviors::obstacle::{ClosestObstacleSystem, Obstacle};
 use crate::{
+    components::creatures::CreatureTag,
     resources::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
@@ -298,7 +299,7 @@ impl SimpleState for MainGameState {
             self.ui = Some(data.world.create_entity().with(ui_prefab).build());
         }
 
-        data.world.register::<spawner::CreatureTag>();
+        data.world.register::<CreatureTag>();
 
         // Add some plants
         let (left, right, bottom, top) = {
@@ -366,8 +367,8 @@ impl SimpleState for MainGameState {
         // Setup directional light (sun)
         let light_component = Light::Directional(DirectionalLight {
             color: Srgb::new(1.0, 1.0, 1.0),
-            intensity: 1.0f32,
-            direction: Vector3::new(0.4, 0.3, -1.0),
+            intensity: 2.0f32,
+            direction: Vector3::new(0.0, 0.3, -1.0),
         });
         data.world.create_entity().with(light_component).build();
 
@@ -423,7 +424,7 @@ impl SimpleState for MainGameState {
         // delete all organisms (e.g. creatures, plants, etc.)
         let organisms = (
             &data.world.entities(),
-            &data.world.read_storage::<spawner::CreatureTag>(),
+            &data.world.read_storage::<CreatureTag>(),
         )
             .join()
             .map(|(entity, _creature_tag)| entity)

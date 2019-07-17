@@ -9,14 +9,13 @@ use thread_profiler::profile_scope;
 use crate::components::collider;
 use crate::components::creatures;
 use crate::resources::world_bounds::*;
-use crate::systems::spawner::CreatureTag;
 
 pub struct EnforceBoundsSystem;
 
 impl<'s> System<'s> for EnforceBoundsSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,
-        ReadStorage<'s, CreatureTag>,
+        ReadStorage<'s, creatures::CreatureTag>,
         ReadExpect<'s, WorldBounds>,
     );
 

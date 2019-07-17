@@ -1,6 +1,6 @@
 use amethyst::{core::transform::Transform, core::Time, ecs::*};
 
-use crate::{components::creatures::Movement, systems::spawner::CreatureTag};
+use crate::components::creatures::{CreatureTag, Movement};
 
 pub struct MovementSystem;
 impl<'s> System<'s> for MovementSystem {
