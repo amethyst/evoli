@@ -10,17 +10,20 @@ use amethyst::{
         camera::{Camera, Projection},
         light::{DirectionalLight, Light},
         palette::rgb::{Srgb, Srgba},
-        resources::Tint,
+        resources::AmbientColor,
     },
     shrev::EventChannel,
     window::ScreenDimensions,
 };
+
+use std::f32;
 
 use crate::systems::behaviors::decision::{
     ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
 };
 use crate::systems::behaviors::obstacle::{ClosestObstacleSystem, Obstacle};
 use crate::{
+    components::creatures::CreatureTag,
     resources::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
@@ -296,7 +299,7 @@ impl SimpleState for MainGameState {
             self.ui = Some(data.world.create_entity().with(ui_prefab).build());
         }
 
-        data.world.register::<spawner::CreatureTag>();
+        data.world.register::<CreatureTag>();
 
         // Add some plants
         let (left, right, bottom, top) = {
@@ -347,18 +350,11 @@ impl SimpleState for MainGameState {
         }
 
         {
-            let scale = 1.7f32;
+            let scale = 1.05f32;
             let mut transform = Transform::default();
-            transform.set_scale(Vector3::new(scale, scale, scale));
+            transform.set_scale(Vector3::new(scale, scale, 1.0f32));
 
-            let tint = Tint(Srgba::new(0.5f32, 0.5f32, 0.5f32, 0.5f32));
-
-            let ground_entity = data
-                .world
-                .create_entity()
-                .with(transform)
-                .with(tint)
-                .build();
+            let ground_entity = data.world.create_entity().with(transform).build();
             let mut spawn_events = data
                 .world
                 .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
@@ -371,10 +367,13 @@ impl SimpleState for MainGameState {
         // Setup directional light (sun)
         let light_component = Light::Directional(DirectionalLight {
             color: Srgb::new(1.0, 1.0, 1.0),
-            intensity: 1.0f32,
-            direction: Vector3::new(-0.3, -0.3, -1.0),
+            intensity: 2.0f32,
+            direction: Vector3::new(0.0, 0.3, -1.0),
         });
         data.world.create_entity().with(light_component).build();
+
+        data.world
+            .add_resource(AmbientColor(Srgba::new(0.2f32, 0.2f32, 0.2f32, 1.0f32)));
 
         // Setup camera
         let (width, height) = {
@@ -383,16 +382,21 @@ impl SimpleState for MainGameState {
         };
 
         let mut transform = Transform::default();
-        transform.set_translation_xyz(0.0, 0.0, 12.0);
+        transform.set_translation_xyz(-10.0, -10.0, 8.0);
+        let pi = f32::consts::PI;
+        transform.set_rotation_euler(pi / 3.0, 0.0, -pi / 4.0);
+        let zoom_factor = 95.0;
 
         self.camera = Some(
             data.world
                 .create_entity()
                 .named("Main camera")
-                .with(Camera::from(Projection::perspective(
-                    width / height,
-                    std::f32::consts::FRAC_PI_2,
-                    0.01f32,
+                .with(Camera::from(Projection::orthographic(
+                    -width / zoom_factor,
+                    width / zoom_factor,
+                    -height / zoom_factor,
+                    height / zoom_factor,
+                    0.1f32,
                     1000.0f32,
                 )))
                 .with(transform)
@@ -421,7 +425,7 @@ impl SimpleState for MainGameState {
         // delete all organisms (e.g. creatures, plants, etc.)
         let organisms = (
             &data.world.entities(),
-            &data.world.read_storage::<spawner::CreatureTag>(),
+            &data.world.read_storage::<CreatureTag>(),
         )
             .join()
             .map(|(entity, _creature_tag)| entity)
