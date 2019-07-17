@@ -5,7 +5,7 @@ For more information about the current game design and our goals and history so 
 
 ## Media
 
-![may-10](https://github.com/amethyst/evoli/raw/master/evoli-ixies.gif) 
+![may-10](https://github.com/amethyst/evoli/raw/master/evoli-sample.gif) 
 
 ## Install / Play
 
