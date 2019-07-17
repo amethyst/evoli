@@ -382,19 +382,20 @@ impl SimpleState for MainGameState {
         };
 
         let mut transform = Transform::default();
-        transform.set_translation_xyz(-6.0, -10.0, 8.0);
+        transform.set_translation_xyz(-10.0, -10.0, 8.0);
         let pi = f32::consts::PI;
-        transform.set_rotation_euler(pi / 3.0, 0.0, -pi / 6.0);
+        transform.set_rotation_euler(pi / 3.0, 0.0, -pi / 4.0);
+        let zoom_factor = 95.0;
 
         self.camera = Some(
             data.world
                 .create_entity()
                 .named("Main camera")
                 .with(Camera::from(Projection::orthographic(
-                    -width / 100.0,
-                    width / 100.0,
-                    -height / 100.0,
-                    height / 100.0,
+                    -width / zoom_factor,
+                    width / zoom_factor,
+                    -height / zoom_factor,
+                    height / zoom_factor,
                     0.1f32,
                     1000.0f32,
                 )))
