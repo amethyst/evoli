@@ -5,7 +5,7 @@ For more information about the current game design and our goals and history so 
 
 ## Media
 
-![may-10](https://raw.githubusercontent.com/sunreef/evoli/update_readme/evoli-sample.gif) 
+![may-10](https://raw.githubusercontent.com/sunreef/evoli/update_readme/evoli-shot.png) 
 
 ## Install / Play
 
