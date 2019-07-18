@@ -1,9 +1,13 @@
-use amethyst::core::{math::*, transform::Transform, Time};
-use amethyst::ecs::*;
+use amethyst::{
+    core::{math::*, transform::Transform, Time},
+    ecs::*,
+};
+
+use std::f32;
+use std::marker::PhantomData;
 
 use crate::components::combat::{FactionPrey, HasFaction};
 use crate::components::creatures::*;
-use std::marker::PhantomData;
 
 /// A query is a component that contains the queried bit set that can be used to join with other components
 pub struct Query<T>(BitSet, PhantomData<T>);
@@ -190,7 +194,7 @@ where
     fn run(&mut self, (_entities, closest_things, time, mut movements): Self::SystemData) {
         let delta_time = time.delta_seconds();
         for (movement, closest) in (&mut movements, &closest_things).join() {
-            if closest.distance.norm() == 0.0 {
+            if closest.distance.norm() < f32::EPSILON {
                 continue;
             }
             let target_velocity = closest.distance.normalize() * self.attraction_magnitude;

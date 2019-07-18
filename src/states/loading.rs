@@ -39,7 +39,7 @@ impl SimpleState for LoadingState {
 
         data.world.add_resource(DebugLines::new());
         data.world
-            .add_resource(WorldBounds::new(-12.75, 12.75, -11.0, 11.0));
+            .add_resource(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {

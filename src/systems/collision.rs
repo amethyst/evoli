@@ -13,10 +13,14 @@ use crate::resources::world_bounds::*;
 pub struct EnforceBoundsSystem;
 
 impl<'s> System<'s> for EnforceBoundsSystem {
-    type SystemData = (WriteStorage<'s, Transform>, ReadExpect<'s, WorldBounds>);
+    type SystemData = (
+        WriteStorage<'s, Transform>,
+        ReadStorage<'s, creatures::CreatureTag>,
+        ReadExpect<'s, WorldBounds>,
+    );
 
-    fn run(&mut self, (mut locals, bounds): Self::SystemData) {
-        for local in (&mut locals).join() {
+    fn run(&mut self, (mut locals, tags, bounds): Self::SystemData) {
+        for (local, _) in (&mut locals, &tags).join() {
             let pos = local.translation().clone();
             if pos.x > bounds.right {
                 local.translation_mut().x = bounds.right;

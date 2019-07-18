@@ -11,14 +11,10 @@ use rand::{
 
 use std::f32::consts::PI;
 
-use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
-
-// tag all creatures for when we need to run operations against everything
-#[derive(Clone, Copy, Debug, Default)]
-pub struct CreatureTag;
-impl Component for CreatureTag {
-    type Storage = NullStorage<Self>;
-}
+use crate::{
+    components::creatures::{CreatureTag, CreatureType},
+    resources::prefabs::CreaturePrefabs,
+};
 
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
@@ -107,7 +103,7 @@ impl<'s> System<'s> for DebugSpawnTriggerSystem {
             let CreatureTypeDistribution { creature_type }: CreatureTypeDistribution =
                 rand::random();
             if creature_type == "Carnivore" || creature_type == "Herbivore" {
-                transform.set_scale(Vector3::new(0.8, 0.8, 0.8));
+                transform.set_scale(Vector3::new(0.4, 0.4, 0.4));
             }
             if creature_type == "Plant" {
                 let scale = rng.gen_range(0.8f32, 1.2f32);

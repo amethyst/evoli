@@ -17,6 +17,13 @@ use crate::components::{
 
 pub type CreatureType = String;
 
+// tag all creatures for when we need to run operations against everything
+#[derive(Clone, Copy, Debug, Default, PrefabData)]
+pub struct CreatureTag;
+impl Component for CreatureTag {
+    type Storage = NullStorage<Self>;
+}
+
 #[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
 pub struct RicochetTag;
@@ -77,6 +84,9 @@ impl Wander {
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 pub struct CreaturePrefabData {
+    #[serde(skip)]
+    tag: CreatureTag,
+
     pub name: Option<Named>,
     gltf: Option<AssetPrefab<GltfSceneAsset, GltfSceneFormat>>,
     movement: Option<Movement>,
