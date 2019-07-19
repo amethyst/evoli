@@ -6,6 +6,7 @@ Prefab (
                 name: (
                     name: "Herbivore"
                 ),
+                creature_tag: (),
                 gltf: File("assets/slime.glb", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],

@@ -6,7 +6,10 @@ use amethyst::{
     renderer::{debug_drawing::DebugLines, palette::Srgba},
 };
 
-use crate::components::perception::{DetectedEntities, Perception};
+use crate::components::{
+    creatures::CreatureTag,
+    perception::{DetectedEntities, Perception},
+};
 use crate::resources::spatial_grid::SpatialGrid;
 
 pub struct EntityDetectionSystem;
@@ -24,18 +27,6 @@ impl<'s> System<'s> for EntityDetectionSystem {
         &mut self,
         (entities, perceptions, mut detected_entities, grid, transforms): Self::SystemData,
     ) {
-        let mut count = 0;
-        for (_,) in (&entities,).join() {
-            count += 1;
-        }
-        println!("Total entities: {}", count);
-
-        let mut count = 0;
-        for (_, _) in (&entities, &transforms).join() {
-            count += 1;
-        }
-        println!("Total entities with transform: {}", count);
-
         for (entity, _) in (&entities, &perceptions).join() {
             match detected_entities.get(entity) {
                 Some(_) => (),
@@ -52,10 +43,6 @@ impl<'s> System<'s> for EntityDetectionSystem {
         {
             detected.entities = BitSet::new();
             let nearby_entities = grid.query(transform, perception.range);
-            println!(
-                "{} entities detected",
-                (&nearby_entities).into_iter().count()
-            );
             let pos = transform.global_matrix().column(3).xyz();
             let sq_range = perception.range * perception.range;
             for (other_entity, other_transform, _) in
@@ -76,12 +63,13 @@ impl<'s> System<'s> for SpatialGridSystem {
     type SystemData = (
         Entities<'s>,
         ReadStorage<'s, Transform>,
+        ReadStorage<'s, CreatureTag>,
         WriteExpect<'s, SpatialGrid>,
     );
 
-    fn run(&mut self, (entities, transforms, mut spatial_grid): Self::SystemData) {
+    fn run(&mut self, (entities, transforms, tags, mut spatial_grid): Self::SystemData) {
         spatial_grid.reset();
-        for (entity, transform) in (&entities, &transforms).join() {
+        for (entity, transform, _) in (&entities, &transforms, &tags).join() {
             spatial_grid.insert(entity, transform);
         }
     }

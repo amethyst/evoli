@@ -6,6 +6,7 @@ Prefab (
                 name: (
                     name: "Carnivore"
                 ),
+                creature_tag: (),
                 gltf: File("assets/devil_slime.glb", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],

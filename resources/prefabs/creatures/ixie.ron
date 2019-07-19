@@ -6,6 +6,7 @@ Prefab (
                 name: (
                     name: "Ixie"
                 ),
+                creature_tag: (),
                 gltf: File("assets/ixie.glb", ()),
                 digestion: (
                     digestion: (
