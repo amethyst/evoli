@@ -11,7 +11,7 @@ pub struct SpatialHasher {
 
 impl Hasher for SpatialHasher {
     fn finish(&self) -> u64 {
-        u64::from_be_bytes(self.bytes)
+        u64::from_le_bytes(self.bytes)
     }
 
     fn write(&mut self, bytes: &[u8]) {
