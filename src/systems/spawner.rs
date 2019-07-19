@@ -11,10 +11,7 @@ use rand::{
 
 use std::f32::consts::PI;
 
-use crate::{
-    components::creatures::{CreatureTag, CreatureType},
-    resources::prefabs::CreaturePrefabs,
-};
+use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
 
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
