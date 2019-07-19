@@ -339,14 +339,14 @@ impl SimpleState for MainGameState {
             transform.set_translation_xyz(x, y, 1.99);
             transform.set_scale(Vector3::new(scale, scale, scale));
 
-            let nushi_entity = data.world.create_entity().with(transform).build();
-            let mut spawn_events = data
-                .world
-                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
-            spawn_events.single_write(spawner::CreatureSpawnEvent {
-                creature_type: "Nushi".to_string(),
-                entity: nushi_entity,
-            });
+            //let nushi_entity = data.world.create_entity().with(transform).build();
+            //let mut spawn_events = data
+            //.world
+            //.write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+            //spawn_events.single_write(spawner::CreatureSpawnEvent {
+            //creature_type: "Nushi".to_string(),
+            //entity: nushi_entity,
+            //});
         }
 
         {

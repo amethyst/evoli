@@ -36,59 +36,59 @@ impl<'s> System<'s> for SwarmSpawnSystem {
         let delta_seconds = time.delta_seconds();
         self.swarm_timer -= delta_seconds;
         if self.swarm_timer <= 0.0 {
-            let mut rng = thread_rng();
-            self.swarm_timer = 10.0f32;
-            let mut swarm_entity_builder = lazy_update.create_entity(&entities);
-            let x = rng.gen_range(-10.0, 10.0);
-            let y = rng.gen_range(-10.0, 10.0);
-            let mut transform = Transform::default();
-            transform.set_translation_xyz(x, y, 2.0);
-            swarm_entity_builder = swarm_entity_builder.with(transform);
-            let movement = Movement {
-                velocity: Vector3::new(0.0, 0.0, 0.0),
-                max_movement_speed: 0.8,
-            };
-            swarm_entity_builder = swarm_entity_builder.with(movement);
-            let wander = Wander {
-                radius: 1.0,
-                angle: 0.0,
-            };
-            swarm_entity_builder = swarm_entity_builder.with(wander);
-            let swarm_entity = swarm_entity_builder.build();
-            let mut swarm_center = SwarmCenter::default();
-            let nb_swarm_individuals = rng.gen_range(3, 10);
-            for _ in 0..nb_swarm_individuals {
-                let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
-                let swarm_behavior = SwarmBehavior {
-                    swarm_center: Some(swarm_entity),
-                    attraction: 0.5f32,
-                    deviation: 0.5f32,
-                };
-                swarmling_entity_builder = swarmling_entity_builder.with(swarm_behavior);
-                let mut transform = Transform::default();
-                let x = rng.gen_range(-1.0, 1.0);
-                let y = rng.gen_range(-1.0, 1.0);
-                transform.set_translation_xyz(x, y, 0.0);
-                transform.set_scale(Vector3::new(0.1, 0.1, 0.1));
-                let parent = Parent {
-                    entity: swarm_entity,
-                };
-                let movement = Movement {
-                    velocity: Vector3::new(rng.gen_range(-1.0, 1.0), rng.gen_range(-1.0, 1.0), 0.0),
-                    max_movement_speed: 5.0,
-                };
-                swarmling_entity_builder = swarmling_entity_builder
-                    .with(transform)
-                    .with(parent)
-                    .with(movement);
-                let swarmling_entity = swarmling_entity_builder.build();
-                swarm_center.entities.push(swarmling_entity);
-                spawn_events.single_write(CreatureSpawnEvent {
-                    creature_type: "Ixie".to_string(),
-                    entity: swarmling_entity,
-                });
-            }
-            lazy_update.insert(swarm_entity, swarm_center);
+            //let mut rng = thread_rng();
+            //self.swarm_timer = 10.0f32;
+            //let mut swarm_entity_builder = lazy_update.create_entity(&entities);
+            //let x = rng.gen_range(-10.0, 10.0);
+            //let y = rng.gen_range(-10.0, 10.0);
+            //let mut transform = Transform::default();
+            //transform.set_translation_xyz(x, y, 2.0);
+            //swarm_entity_builder = swarm_entity_builder.with(transform);
+            //let movement = Movement {
+            //velocity: Vector3::new(0.0, 0.0, 0.0),
+            //max_movement_speed: 0.8,
+            //};
+            //swarm_entity_builder = swarm_entity_builder.with(movement);
+            //let wander = Wander {
+            //radius: 1.0,
+            //angle: 0.0,
+            //};
+            //swarm_entity_builder = swarm_entity_builder.with(wander);
+            //let swarm_entity = swarm_entity_builder.build();
+            //let mut swarm_center = SwarmCenter::default();
+            //let nb_swarm_individuals = rng.gen_range(3, 10);
+            //for _ in 0..nb_swarm_individuals {
+            //let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
+            //let swarm_behavior = SwarmBehavior {
+            //swarm_center: Some(swarm_entity),
+            //attraction: 0.5f32,
+            //deviation: 0.5f32,
+            //};
+            //swarmling_entity_builder = swarmling_entity_builder.with(swarm_behavior);
+            //let mut transform = Transform::default();
+            //let x = rng.gen_range(-1.0, 1.0);
+            //let y = rng.gen_range(-1.0, 1.0);
+            //transform.set_translation_xyz(x, y, 0.0);
+            //transform.set_scale(Vector3::new(0.1, 0.1, 0.1));
+            //let parent = Parent {
+            //entity: swarm_entity,
+            //};
+            //let movement = Movement {
+            //velocity: Vector3::new(rng.gen_range(-1.0, 1.0), rng.gen_range(-1.0, 1.0), 0.0),
+            //max_movement_speed: 5.0,
+            //};
+            //swarmling_entity_builder = swarmling_entity_builder
+            //.with(transform)
+            //.with(parent)
+            //.with(movement);
+            //let swarmling_entity = swarmling_entity_builder.build();
+            //swarm_center.entities.push(swarmling_entity);
+            //spawn_events.single_write(CreatureSpawnEvent {
+            //creature_type: "Ixie".to_string(),
+            //entity: swarmling_entity,
+            //});
+            //}
+            //lazy_update.insert(swarm_entity, swarm_center);
         }
     }
 }

@@ -24,6 +24,18 @@ impl<'s> System<'s> for EntityDetectionSystem {
         &mut self,
         (entities, perceptions, mut detected_entities, grid, transforms): Self::SystemData,
     ) {
+        let mut count = 0;
+        for (_,) in (&entities,).join() {
+            count += 1;
+        }
+        println!("Total entities: {}", count);
+
+        let mut count = 0;
+        for (_, _) in (&entities, &transforms).join() {
+            count += 1;
+        }
+        println!("Total entities with transform: {}", count);
+
         for (entity, _) in (&entities, &perceptions).join() {
             match detected_entities.get(entity) {
                 Some(_) => (),
@@ -35,22 +47,19 @@ impl<'s> System<'s> for EntityDetectionSystem {
             }
         }
 
-        for (entity, perception, mut detected, transform) in
-            (&entities, &perceptions, &mut detected_entities, &transforms).join()
+        for (perception, mut detected, transform) in
+            (&perceptions, &mut detected_entities, &transforms).join()
         {
             detected.entities = BitSet::new();
             let nearby_entities = grid.query(transform, perception.range);
+            println!(
+                "{} entities detected",
+                (&nearby_entities).into_iter().count()
+            );
             let pos = transform.global_matrix().column(3).xyz();
             let sq_range = perception.range * perception.range;
-            let mut nearby_entities_bitset = BitSet::new();
-            for other_entity in &nearby_entities {
-                if entity == *other_entity {
-                    continue;
-                }
-                nearby_entities_bitset.add(other_entity.id());
-            }
             for (other_entity, other_transform, _) in
-                (&entities, &transforms, &nearby_entities_bitset).join()
+                (&entities, &transforms, &nearby_entities).join()
             {
                 let other_pos = other_transform.global_matrix().column(3).xyz();
                 if (pos - other_pos).norm_squared() < sq_range {
