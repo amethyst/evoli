@@ -1178,7 +1178,7 @@ dependencies = [
 
 [[package]]
 name = "evolution-island"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "amethyst 0.11.1 (git+https://github.com/amethyst/amethyst.git?rev=2509c43)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
