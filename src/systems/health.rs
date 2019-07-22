@@ -1,7 +1,7 @@
 use amethyst::{
     core::transform::Transform,
     ecs::*,
-    renderer::{debug_drawing::DebugLines, palette::Srgba},
+    renderer::{debug_drawing::DebugLinesComponent, palette::Srgba},
 };
 use std::f32;
 
@@ -29,15 +29,15 @@ impl<'s> System<'s> for DebugHealthSystem {
     type SystemData = (
         ReadStorage<'s, Health>,
         ReadStorage<'s, Transform>,
-        Write<'s, DebugLines>,
+        WriteStorage<'s, DebugLinesComponent>,
     );
 
-    fn run(&mut self, (healths, transforms, mut debug_lines): Self::SystemData) {
-        for (health, transform) in (&healths, &transforms).join() {
-            let pos = transform.global_matrix();
-            debug_lines.draw_line(
-                [pos[(3, 0)], pos[(3, 1)] + 0.5, 0.0].into(),
-                [pos[(3, 0)] + health.value / 100.0, pos[(3, 1)] + 0.5, 0.0].into(),
+    fn run(&mut self, (healths, transforms, mut debug_lines_comps): Self::SystemData) {
+        for (health, transform, db_comp) in (&healths, &transforms, &mut debug_lines_comps).join() {
+            let pos = transform.global_matrix().column(3).xyz();
+            db_comp.add_line(
+                [pos[0], pos[1] + 0.5, pos[2] + 0.5].into(),
+                [pos[0] + health.value / 100.0, pos[1] + 0.5, pos[2] + 0.5].into(),
                 Srgba::new(0.0, 1.0, 0.0, 1.0),
             )
         }

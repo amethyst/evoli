@@ -1,9 +1,7 @@
 use amethyst::{
     core::{math::Point3, transform::Transform},
-    ecs::{
-        BitSet, Entities, Join, ReadExpect, ReadStorage, System, Write, WriteExpect, WriteStorage,
-    },
-    renderer::{debug_drawing::DebugLines, palette::Srgba},
+    ecs::{BitSet, Entities, Join, ReadExpect, ReadStorage, System, WriteExpect, WriteStorage},
+    renderer::{debug_drawing::DebugLinesComponent, palette::Srgba},
 };
 
 use crate::components::{
@@ -81,15 +79,19 @@ impl<'s> System<'s> for DebugEntityDetectionSystem {
     type SystemData = (
         ReadStorage<'s, DetectedEntities>,
         ReadStorage<'s, Transform>,
-        Write<'s, DebugLines>,
+        WriteStorage<'s, DebugLinesComponent>,
     );
 
-    fn run(&mut self, (detected_entities, transforms, mut debug_lines): Self::SystemData) {
-        for (detected, transform) in (&detected_entities, &transforms).join() {
-            let pos = transform.global_matrix().column(3).xyz();
+    fn run(&mut self, (detected_entities, transforms, mut debug_lines_comps): Self::SystemData) {
+        for (detected, transform, debug_comp) in
+            (&detected_entities, &transforms, &mut debug_lines_comps).join()
+        {
+            let mut pos = transform.global_matrix().column(3).xyz();
+            pos[2] += 0.3;
             for (other_transform, _) in (&transforms, &detected.entities).join() {
-                let other_pos = other_transform.global_matrix().column(3).xyz();
-                debug_lines.draw_line(
+                let mut other_pos = other_transform.global_matrix().column(3).xyz();
+                other_pos[2] += 0.3;
+                debug_comp.add_line(
                     Point3::from(pos),
                     Point3::from(other_pos),
                     Srgba::new(1.0, 1.0, 0.0, 1.0),

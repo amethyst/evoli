@@ -11,8 +11,8 @@ use amethyst::{
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
-        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend, RenderingSystem,
-        SpriteSheet,
+        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend,
+        visibility::VisibilitySortingSystem, RenderingSystem, SpriteSheet,
     },
     ui::UiBundle,
     utils::application_root_dir,
@@ -80,6 +80,11 @@ fn main() -> amethyst::Result<()> {
             Processor::<SpriteSheet>::new(),
             "sprite_sheet_processor",
             &[],
+        )
+        .with(
+            VisibilitySortingSystem::new(),
+            "visibility_system",
+            &["transform_system"],
         )
         .with(
             SpriteVisibilitySortingSystem::new(),
