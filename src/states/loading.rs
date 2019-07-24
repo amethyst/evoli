@@ -35,7 +35,7 @@ impl SimpleState for LoadingState {
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
         data.world
-            .add_resource(DebugLinesParams { line_width: 2.0 });
+            .add_resource(DebugLinesParams { line_width: 1.0 });
 
         data.world.add_resource(DebugLines::new());
         data.world

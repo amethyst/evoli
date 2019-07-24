@@ -6,6 +6,7 @@ Prefab (
                 name: (
                     name: "Ixie"
                 ),
+                creature_tag: (),
                 gltf: File("assets/ixie.glb", ()),
                 digestion: (
                     digestion: (
@@ -23,7 +24,7 @@ Prefab (
                     ),
                 ),
                 perception: (
-                    range: 0.8,
+                    range: 2.0,
                 ),
             ),
         ),

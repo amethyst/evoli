@@ -11,10 +11,7 @@ use rand::{
 
 use std::f32::consts::PI;
 
-use crate::{
-    components::creatures::{CreatureTag, CreatureType},
-    resources::prefabs::CreaturePrefabs,
-};
+use crate::{components::creatures::CreatureType, resources::prefabs::CreaturePrefabs};
 
 #[derive(Debug, Clone)]
 pub struct CreatureSpawnEvent {
@@ -67,7 +64,6 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
         for event in spawn_events.read(self.spawn_reader_id.as_mut().unwrap()) {
             if let Some(creature_prefab) = prefabs.get_prefab(&event.creature_type) {
                 lazy_update.insert(event.entity, creature_prefab.clone());
-                lazy_update.insert(event.entity, CreatureTag::default());
             }
         }
     }

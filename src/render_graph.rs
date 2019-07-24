@@ -22,7 +22,7 @@ use amethyst::{
     window::{ScreenDimensions, Window},
 };
 
-//use amethyst::renderer::pass::DrawDebugLinesDesc;
+use amethyst::renderer::pass::DrawDebugLinesDesc;
 
 #[derive(Default)]
 pub struct RenderGraph {
@@ -79,8 +79,8 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
         // Ubuntu.
         let main_pass = graph_builder.add_node(
             SubpassBuilder::new()
+                .with_group(DrawDebugLinesDesc::new().builder())
                 .with_group(DrawPbrDesc::new().builder())
-                //.with_group(DrawDebugLinesDesc::new().builder())
                 .with_group(DrawUiDesc::new().builder())
                 .with_color(color)
                 .with_depth_stencil(depth)
