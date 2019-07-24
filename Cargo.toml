@@ -5,7 +5,7 @@ authors = []
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", rev = "2509c43", features = ["vulkan", "gltf"]}
+amethyst = { git = "https://github.com/amethyst/amethyst.git", rev = "9709f4f", features = ["vulkan", "gltf"]}
 rand = "0.6.5"
 log = "0.4.6"
 smart-default = "0.5.2"
