@@ -114,7 +114,8 @@ impl<'s> System<'s> for MusicSystem {
                 .as_ref()
                 .and_then(|audio_source| audio_source_storage.get(audio_source))
                 .and_then(|audio_source| {
-                    let audio_sink = AudioSink::new(&audio_output);
+                    let mut audio_sink = AudioSink::new(&audio_output);
+                    audio_sink.set_volume(0.25);
                     audio_sink.append(audio_source).ok().and(Some(audio_sink))
                 });
         };
