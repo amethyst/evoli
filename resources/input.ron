@@ -33,5 +33,14 @@
     "CameraMoveBackward": [
         [Key(LShift), Key(Down)]
     ],
+    "TogglePauseMenu": [
+        [Key(Escape)]
+    ],
+    "StartDay": [
+        [Key(LAlt), Key(Y)]
+    ],
+    "StartNight": [
+        [Key(LAlt), Key(N)]
+    ],
   },
 )

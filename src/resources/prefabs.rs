@@ -1,10 +1,9 @@
-use std::collections::HashMap;
-use std::fs::read_dir;
+use std::{collections::HashMap, fs::read_dir, ops::DerefMut};
 
 use crate::components::creatures::CreaturePrefabData;
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab, PrefabLoader, ProgressCounter, RonFormat},
-    ecs::World,
+    ecs::{World, Write},
     ui::{UiLoader, UiPrefab},
     utils::application_root_dir,
 };
@@ -73,11 +72,18 @@ fn make_name(subdirectory: &str, entry: &std::fs::DirEntry) -> String {
 // These prefabs are then stored in a resource of type CreaturePrefabs that is used by the spawner system.
 // At initialization time, we put temporary keys for the prefabs since they're not loaded yet.
 // When their loading is finished, we read the name of the entity inside to change the keys. This is done in the update_prefabs function.
-pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
-    let mut progress_counter = ProgressCounter::new();
+pub fn initialize_prefabs(world: &mut World) {
+    world
+        .res
+        .entry::<ProgressCounter>()
+        .or_insert(ProgressCounter::default());
+
     // load ui prefabs
     {
-        let mut ui_prefab_registry = UiPrefabRegistry::default();
+        world
+            .res
+            .entry::<UiPrefabRegistry>()
+            .or_insert(UiPrefabRegistry::default());
         let prefab_dir_path = application_root_dir()
             .unwrap()
             .into_os_string()
@@ -85,17 +91,22 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
             .unwrap()
             + "/resources/prefabs/ui";
         let prefab_iter = read_dir(prefab_dir_path).unwrap();
-        ui_prefab_registry.prefabs = prefab_iter
-            .map(|prefab_dir_entry| {
-                world.exec(|loader: UiLoader<'_>| {
-                    loader.load(
-                        make_name("prefabs/ui/", &prefab_dir_entry.unwrap()),
-                        &mut progress_counter,
-                    )
-                })
-            })
-            .collect::<Vec<Handle<UiPrefab>>>();
-        world.add_resource(ui_prefab_registry);
+        world.exec(
+            |(mut ui_prefab_registry, loader, mut progress): (
+                Write<UiPrefabRegistry>,
+                UiLoader,
+                Write<ProgressCounter>,
+            )| {
+                ui_prefab_registry.deref_mut().prefabs = prefab_iter
+                    .map(|prefab_dir_entry| {
+                        loader.load(
+                            make_name("prefabs/ui/", &prefab_dir_entry.unwrap()),
+                            progress.deref_mut(),
+                        )
+                    })
+                    .collect::<Vec<Handle<UiPrefab>>>();
+            },
+        );
     }
 
     // load creature prefabs
@@ -109,13 +120,18 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                 + "/resources/prefabs/creatures";
             let prefab_iter = read_dir(prefab_dir_path).unwrap();
             prefab_iter.map(|prefab_dir_entry| {
-                world.exec(|loader: PrefabLoader<'_, CreaturePrefabData>| {
-                    loader.load(
-                        make_name("prefabs/creatures/", &prefab_dir_entry.unwrap()),
-                        RonFormat,
-                        &mut progress_counter,
-                    )
-                })
+                world.exec(
+                    |(loader, mut progress): (
+                        PrefabLoader<'_, CreaturePrefabData>,
+                        Write<ProgressCounter>,
+                    )| {
+                        loader.load(
+                            make_name("prefabs/creatures/", &prefab_dir_entry.unwrap()),
+                            RonFormat,
+                            progress.deref_mut(),
+                        )
+                    },
+                )
             })
         };
 
@@ -125,8 +141,6 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
         }
         world.add_resource(creature_prefabs);
     }
-
-    progress_counter
 }
 
 // Once the prefabs are loaded, this function is called to update the ekeys in the CreaturePrefabs struct.

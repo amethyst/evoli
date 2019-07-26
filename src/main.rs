@@ -1,12 +1,10 @@
 #[macro_use]
 extern crate log;
 
-use amethyst::assets::PrefabLoaderSystem;
 use amethyst::{
-    assets::Processor,
-    audio::{AudioBundle, DjSystem},
-    core::frame_limiter::FrameRateLimitStrategy,
-    core::transform::TransformBundle,
+    assets::{PrefabLoaderSystem, Processor},
+    audio::AudioBundle,
+    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
     gltf::GltfSceneLoaderSystem,
     input::{InputBundle, StringBindings},
     prelude::*,
@@ -20,16 +18,20 @@ use amethyst::{
 };
 
 mod components;
+mod events;
 mod render_graph;
 mod resources;
 mod states;
 mod systems;
 mod utils;
 
-use crate::components::{combat, creatures};
-use crate::render_graph::RenderGraph;
-use crate::resources::audio::Music;
-use crate::states::loading::LoadingState;
+use crate::{
+    components::{combat, creatures},
+    events::day_night_cycle,
+    render_graph::RenderGraph,
+    states::loading::LoadingState,
+    systems::music::MusicSystem,
+};
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -67,11 +69,6 @@ fn main() -> amethyst::Result<()> {
             "",
             &[],
         )
-        .with(
-            DjSystem::new(|music: &mut Music| music.music.next()),
-            "dj",
-            &[],
-        )
         .with_bundle(TransformBundle::new())?
         .with_bundle(AudioBundle::default())?
         .with_bundle(WindowBundle::from_config(display_config))?
@@ -88,7 +85,8 @@ fn main() -> amethyst::Result<()> {
         )
         .with_thread_local(RenderingSystem::<DefaultBackend, _>::new(
             RenderGraph::default(),
-        ));
+        ))
+        .with(MusicSystem::default(), "music_system", &[]);
 
     // Set up the core application.
     let mut game: Application<GameData> =

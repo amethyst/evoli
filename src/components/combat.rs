@@ -9,8 +9,7 @@ use amethyst::{
 //use amethyst_inspector::Inspect;
 use log::error;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::time::Duration;
+use std::{collections::HashMap, ops::DerefMut, time::Duration};
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PrefabData)]
 #[prefab(Component)]
@@ -211,10 +210,15 @@ pub struct Factions(HashMap<String, Entity>);
 // factions as prey that are on top of their definition. For example, 'Plants' cannot define 'Herbivores' as their prey
 // because 'Herbivores' is defined after 'Plants'.
 pub fn load_factions(world: &mut World) {
-    let prefab_handle = world.exec(|loader: PrefabLoader<'_, FactionPrefabData>| {
-        loader.load("prefabs/factions.ron", RonFormat, ())
-    });
-
+    world
+        .res
+        .entry::<ProgressCounter>()
+        .or_insert(ProgressCounter::default());
+    let prefab_handle = world.exec(
+        |(loader, mut progress): (PrefabLoader<FactionPrefabData>, Write<ProgressCounter>)| {
+            loader.load("prefabs/factions.ron", RonFormat, progress.deref_mut())
+        },
+    );
     world.create_entity().with(prefab_handle.clone()).build();
 }
 

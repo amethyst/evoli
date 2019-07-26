@@ -41,7 +41,7 @@ Container(
                 id: "done button",
                 x: 0.0,
                 y: 50.0,
-                z: 10.0,
+                z: 15.0,
                 width: 100.0,
                 height: 50.0,
                 anchor: BottomMiddle,

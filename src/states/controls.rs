@@ -41,7 +41,7 @@ impl ControlsState {
             bindings
         };
         let y = -150.; // start below our title label
-        let y_step = -40.;
+        let y_step = -30.;
         (
             &world.entities(),
             &mut world.write_storage::<UiTransform>(),
