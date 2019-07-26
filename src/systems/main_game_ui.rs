@@ -1,6 +1,6 @@
 use amethyst::{
     ecs::*,
-    input::InputEvent,
+    input::{InputEvent, StringBindings},
     shrev::{EventChannel, ReaderId},
     ui::*,
 };
@@ -62,7 +62,7 @@ struct Button {
 #[derive(Default)]
 pub struct MainGameUiSystem {
     ui_reader_id: Option<ReaderId<UiEvent>>,
-    input_reader_id: Option<ReaderId<InputEvent<String>>>,
+    input_reader_id: Option<ReaderId<InputEvent<StringBindings>>>,
     buttons: Vec<Button>,
     pause_button_text: Option<Entity>,
 }
@@ -90,7 +90,7 @@ impl<'s> MainGameUiSystem {
     fn translate_click(
         &self,
         clicked: Entity,
-        input_events: &mut Write<'s, EventChannel<InputEvent<String>>>,
+        input_events: &mut Write<'s, EventChannel<InputEvent<StringBindings>>>,
     ) {
         if let Some(button) = self
             .buttons
@@ -127,14 +127,14 @@ impl<'s> System<'s> for MainGameUiSystem {
         UiFinder<'s>,
         Read<'s, EventChannel<UiEvent>>,
         WriteStorage<'s, UiText>,
-        Write<'s, EventChannel<InputEvent<String>>>,
+        Write<'s, EventChannel<InputEvent<StringBindings>>>,
     );
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
         self.ui_reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
         self.input_reader_id = Some(
-            res.fetch_mut::<EventChannel<InputEvent<String>>>()
+            res.fetch_mut::<EventChannel<InputEvent<StringBindings>>>()
                 .register_reader(),
         );
     }

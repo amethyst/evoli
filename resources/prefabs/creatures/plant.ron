@@ -6,6 +6,7 @@ Prefab (
                 name: (
                     name: "Plant"
                 ),
+                creature_tag: (),
                 gltf: File("assets/bush.glb", ()),
                 digestion: (
                     digestion: (

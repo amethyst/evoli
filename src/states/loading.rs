@@ -27,7 +27,7 @@ impl SimpleState for LoadingState {
         load_factions(data.world);
         initialize_prefabs(&mut data.world);
         data.world
-            .add_resource(DebugLinesParams { line_width: 2.0 });
+            .add_resource(DebugLinesParams { line_width: 1.0 });
         data.world.add_resource(DebugLines::new());
         data.world
             .add_resource(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
