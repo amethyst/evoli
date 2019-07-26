@@ -6,6 +6,7 @@ Prefab (
                 name: (
                     name: "Herbivore"
                 ),
+                creature_tag: (),
                 gltf: File("assets/slime.glb", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
@@ -47,7 +48,7 @@ Prefab (
                 ),
                 intelligence_tag: (),
                 perception: (
-                    range: 5.0,
+                    range: 2.5,
                 ),
             ),
         ),

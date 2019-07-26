@@ -1,5 +1,5 @@
 # Evoli
-A micro-ecosystem simulation game, progressively designed and developed as an official showcase project for the Amethyst engine. The current iteration of the game (v0.1.1 and onwards) simulates a few different species occupying the same, limited space.
+A micro-ecosystem simulation game, progressively designed and developed as an official showcase project for the Amethyst engine. The current iteration of the game (v0.2 and onwards) simulates a few different species occupying the same, limited space.
 
 For more information about the current game design and our goals and history so far, read [our introduction](https://community.amethyst.rs/t/evoli-introduction/770).
 
@@ -8,6 +8,8 @@ For more information about the current game design and our goals and history so 
 ![may-10](https://raw.githubusercontent.com/amethyst/evoli/master/evoli-shot.png) 
 
 ## Install / Play
+
+Make sure you have Git LFS installed when cloning the repository as most assets are stored there.
 
 If you are compiling on Linux, you need to install some dependencies first. They are necessary to compile and run the Amethyst engine. Please follow the instructions in the [Amethyst README](https://github.com/amethyst/amethyst#dependencies).
 

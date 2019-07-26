@@ -8,6 +8,7 @@ use amethyst::{
     prelude::*,
     renderer::{
         camera::{Camera, Projection},
+        debug_drawing::DebugLinesComponent,
         light::{DirectionalLight, Light},
         palette::rgb::{Srgb, Srgba},
         resources::AmbientColor,
@@ -161,11 +162,6 @@ impl MainGameState {
                     &["perform_default_attack_system"],
                 )
                 .with(
-                    health::DebugHealthSystem::default(),
-                    "debug_health_system",
-                    &[],
-                )
-                .with(
                     spawner::DebugSpawnTriggerSystem::default(),
                     "debug_spawn_trigger",
                     &[],
@@ -192,18 +188,36 @@ impl MainGameState {
                 )
                 .build(),
             debug_dispatcher: DispatcherBuilder::new()
+                .with(debug::DebugSystem, "debug_system", &[])
                 .with(
                     collision::DebugCollisionEventSystem::default(),
                     "debug_collision_event_system",
-                    &[],
+                    &["debug_system"],
                 )
-                .with(collision::DebugColliderSystem, "debug_collider_system", &[])
-                .with(debug::DebugSystem, "debug_system", &[])
-                .with(digestion::DebugFullnessSystem, "debug_fullness_system", &[])
+                .with(
+                    collision::DebugColliderSystem,
+                    "debug_collider_system",
+                    &["debug_system"],
+                )
+                .with(
+                    behaviors::wander::DebugWanderSystem,
+                    "debug_wander_system",
+                    &["debug_system"],
+                )
+                .with(
+                    digestion::DebugFullnessSystem,
+                    "debug_fullness_system",
+                    &["debug_system"],
+                )
+                .with(
+                    health::DebugHealthSystem::default(),
+                    "debug_health_system",
+                    &["debug_system"],
+                )
                 .with(
                     perception::DebugEntityDetectionSystem,
                     "debug_entity_detection",
-                    &[],
+                    &["debug_system"],
                 )
                 .build(),
             ui_dispatcher: DispatcherBuilder::new()
@@ -339,14 +353,14 @@ impl SimpleState for MainGameState {
             transform.set_translation_xyz(x, y, 1.99);
             transform.set_scale(Vector3::new(scale, scale, scale));
 
-            let nushi_entity = data.world.create_entity().with(transform).build();
-            let mut spawn_events = data
-                .world
-                .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
-            spawn_events.single_write(spawner::CreatureSpawnEvent {
-                creature_type: "Nushi".to_string(),
-                entity: nushi_entity,
-            });
+            //let nushi_entity = data.world.create_entity().with(transform).build();
+            //let mut spawn_events = data
+            //.world
+            //.write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
+            //spawn_events.single_write(spawner::CreatureSpawnEvent {
+            //creature_type: "Nushi".to_string(),
+            //entity: nushi_entity,
+            //});
         }
 
         {
@@ -450,11 +464,13 @@ impl SimpleState for MainGameState {
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         self.dispatcher.dispatch(&data.world.res);
 
+        for (db_comp,) in (&mut data.world.write_storage::<DebugLinesComponent>(),).join() {
+            db_comp.clear();
+        }
         let show_debug = {
             let debug_config = data.world.read_resource::<DebugConfig>();
             debug_config.visible
         };
-
         if show_debug {
             self.debug_dispatcher.dispatch(&data.world.res);
         }

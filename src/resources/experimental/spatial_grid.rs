@@ -1,52 +1,59 @@
-use amethyst::{core::transform::Transform, ecs::Entity};
+use amethyst::{
+    core::{math::Vector2, transform::Transform},
+    ecs::{BitSet, Entity},
+};
 
 use std::collections::HashMap;
 use std::f32;
 
+use crate::utils::spatial_hash::SpatialBuildHasher;
+
 // The SpatialGrid is a spatial hashing structure used to accelerate neighbor searches for entities.
 pub struct SpatialGrid {
     cell_size: f32,
-    cells: HashMap<i32, HashMap<i32, Vec<Entity>>>,
+    cells: HashMap<Vector2<i32>, BitSet, SpatialBuildHasher>,
 }
 
 impl SpatialGrid {
     pub fn new(cell_size: f32) -> Self {
         SpatialGrid {
             cell_size,
-            cells: HashMap::new(),
+            cells: HashMap::with_hasher(SpatialBuildHasher::default()),
         }
     }
 
     pub fn reset(&mut self) {
-        self.cells = HashMap::new();
+        self.cells = HashMap::with_hasher(SpatialBuildHasher::default());
     }
 
     // Insert an entity in the grid based on its GlobalTransform component.
     // This might have to change when upgrading Amethyst to 0.11 as the GlobalTransform component was removed.
     pub fn insert(&mut self, entity: Entity, transform: &Transform) {
         let global_matrix = transform.global_matrix();
-        let x_cell = (global_matrix[(3, 0)] / self.cell_size).floor() as i32;
-        let y_cell = (global_matrix[(3, 1)] / self.cell_size).floor() as i32;
-        let row_entry = self.cells.entry(x_cell).or_insert(HashMap::new());
-        let col_entry = row_entry.entry(y_cell).or_insert(Vec::new());
-        col_entry.push(entity);
+        let x_cell = (global_matrix[(0, 3)] / self.cell_size).floor() as i32;
+        let y_cell = (global_matrix[(1, 3)] / self.cell_size).floor() as i32;
+
+        let cell_entry = self
+            .cells
+            .entry(Vector2::new(x_cell, y_cell))
+            .or_insert(BitSet::new());
+        cell_entry.add(entity.id());
     }
 
     // Query the entities close to a certain position.
     // The range of the query is defined by the range input.
-    pub fn query(&self, transform: &Transform, range: f32) -> Vec<Entity> {
+    pub fn query(&self, transform: &Transform, range: f32) -> BitSet {
         let global_matrix = transform.global_matrix();
-        let x_cell = (global_matrix[(3, 0)] / self.cell_size).floor() as i32;
-        let y_cell = (global_matrix[(3, 1)] / self.cell_size).floor() as i32;
-        let integer_range = 1 + (range / self.cell_size).ceil() as i32;
-        let mut entities = Vec::new();
-        for x in -integer_range..integer_range {
-            for y in -integer_range..integer_range {
-                match self.cells.get(&(x_cell + x)) {
-                    Some(col) => match col.get(&(y_cell + y)) {
-                        Some(cell) => entities.extend_from_slice(cell.as_slice()),
-                        None => (),
-                    },
+        let x_cell = (global_matrix[(0, 3)] / self.cell_size).floor() as i32;
+        let y_cell = (global_matrix[(1, 3)] / self.cell_size).floor() as i32;
+        let integer_range = (range / self.cell_size).ceil() as i32;
+        let mut entities = BitSet::new();
+        for x in -integer_range..(integer_range + 1) {
+            for y in -integer_range..(integer_range + 1) {
+                match self.cells.get(&Vector2::new(x_cell + x, y_cell + y)) {
+                    Some(cell) => {
+                        entities |= cell;
+                    }
                     None => (),
                 }
             }
@@ -69,6 +76,29 @@ mod tests {
         let mut spatial_grid = SpatialGrid::new(1.0f32);
         let transform = Transform::default();
         spatial_grid.insert(world.create_entity().build(), &transform);
-        assert!(spatial_grid.query(&transform, 1.0f32).len() == 1);
+        spatial_grid.insert(world.create_entity().build(), &transform);
+        spatial_grid.insert(world.create_entity().build(), &transform);
+
+        let mut transform2 = Transform::default();
+        transform2.set_translation_xyz(10.0, 10.0, 10.0);
+        transform2.copy_local_to_global();
+        spatial_grid.insert(world.create_entity().build(), &transform2);
+
+        transform2.set_translation_xyz(10.5, 12.5, 10.0);
+        transform2.copy_local_to_global();
+        spatial_grid.insert(world.create_entity().build(), &transform2);
+
+        assert!(
+            (&spatial_grid.query(&transform2, 1.0f32))
+                .into_iter()
+                .count()
+                == 1
+        );
+        assert!(
+            (&spatial_grid.query(&transform, 1.0f32))
+                .into_iter()
+                .count()
+                == 3
+        );
     }
 }
