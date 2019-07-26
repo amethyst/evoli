@@ -86,17 +86,17 @@ impl<'s> System<'s> for MusicSystem {
                     .expect("not subscribed to DayNightCycleEvents"),
             )
             .for_each(|event| {
-                // choose new audio source appropriate for the event
-                self.audio_source = match event {
-                    DayNightCycleEvent::GoodMorning => self.day_music.clone(),
-                    DayNightCycleEvent::GoodNight => self.night_music.clone(),
-                };
-
                 // stop the current audio
                 if let Some(audio_sink) = self.audio_sink.as_ref() {
                     audio_sink.stop();
                 }
                 self.audio_sink = None;
+
+                // choose new audio source appropriate for the event
+                self.audio_source = match event {
+                    DayNightCycleEvent::GoodMorning => self.day_music.clone(),
+                    DayNightCycleEvent::GoodNight => self.night_music.clone(),
+                };
             });
 
         // we will create and start a new audio_sink whenever the current one becomes invalid,
@@ -109,17 +109,14 @@ impl<'s> System<'s> for MusicSystem {
 
         // if it is deemed that new audio should start, play the current audio source
         if new_sink_needed {
-            if let Some(audio_source) = self.audio_source.as_ref() {
-                let audio_sink = AudioSink::new(&audio_output);
-                info!("source={:?}", audio_source);
-                if audio_sink
-                    .append(audio_source_storage.get(audio_source).unwrap())
-                    .is_ok()
-                {
-                    info!("play");
-                    self.audio_sink = Some(audio_sink);
-                }
-            }
-        }
+            self.audio_sink = self
+                .audio_source
+                .as_ref()
+                .and_then(|audio_source| audio_source_storage.get(audio_source))
+                .and_then(|audio_source| {
+                    let audio_sink = AudioSink::new(&audio_output);
+                    audio_sink.append(audio_source).ok().and(Some(audio_sink))
+                });
+        };
     }
 }

@@ -254,12 +254,12 @@ impl MainGameState {
             Trans::None
         } else if action == "TogglePauseMenu" {
             Trans::Push(Box::new(PauseMenuState::default()))
-        } else if action == "StartDay" {
+        } else if action == "GoodMorning" {
             world
                 .write_resource::<EventChannel<DayNightCycleEvent>>()
                 .single_write(DayNightCycleEvent::GoodMorning);
             Trans::None
-        } else if action == "StartNight" {
+        } else if action == "GoodNight" {
             world
                 .write_resource::<EventChannel<DayNightCycleEvent>>()
                 .single_write(DayNightCycleEvent::GoodNight);

@@ -36,10 +36,10 @@
     "TogglePauseMenu": [
         [Key(Escape)]
     ],
-    "StartDay": [
-        [Key(LAlt), Key(Y)]
+    "GoodMorning": [
+        [Key(LAlt), Key(M)]
     ],
-    "StartNight": [
+    "GoodNight": [
         [Key(LAlt), Key(N)]
     ],
   },
