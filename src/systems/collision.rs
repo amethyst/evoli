@@ -1,6 +1,6 @@
-use amethyst::renderer::{debug_drawing::DebugLines, palette::Srgba};
+use amethyst::renderer::{debug_drawing::DebugLinesComponent, palette::Srgba};
 use amethyst::shrev::{EventChannel, ReaderId};
-use amethyst::{core::Transform, ecs::*};
+use amethyst::{core::math::Point3, core::Transform, ecs::prelude::*};
 use log::info;
 use std::f32;
 #[cfg(feature = "profiler")]
@@ -99,20 +99,17 @@ impl<'s> System<'s> for DebugColliderSystem {
     type SystemData = (
         ReadStorage<'s, collider::Circle>,
         ReadStorage<'s, Transform>,
-        Write<'s, DebugLines>,
+        WriteStorage<'s, DebugLinesComponent>,
     );
 
-    fn run(&mut self, (circles, locals, mut debug_lines): Self::SystemData) {
-        for (circle, local) in (&circles, &locals).join() {
-            let position = local.translation().clone();
-            debug_lines.draw_line(
-                [position.x - circle.radius, position.y, 0.0].into(),
-                [position.x + circle.radius, position.y, 0.0].into(),
-                Srgba::new(1.0, 0.5, 0.5, 1.0),
-            );
-            debug_lines.draw_line(
-                [position.x, position.y - circle.radius, 0.0].into(),
-                [position.x, position.y + circle.radius, 0.0].into(),
+    fn run(&mut self, (circles, locals, mut debug_lines_comps): Self::SystemData) {
+        for (circle, local, db_comp) in (&circles, &locals, &mut debug_lines_comps).join() {
+            let mut position = local.global_matrix().column(3).xyz();
+            position[2] += 1.0;
+            db_comp.add_circle_2d(
+                Point3::from(position),
+                circle.radius,
+                16,
                 Srgba::new(1.0, 0.5, 0.5, 1.0),
             );
         }
