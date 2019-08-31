@@ -2,6 +2,7 @@ use crate::{
     resources::{
         audio::initialise_audio,
         prefabs::{initialize_prefabs, update_prefabs},
+        wind::*,
         world_bounds::WorldBounds,
     },
     states::{main_game::MainGameState, menu::MenuState},
@@ -18,12 +19,23 @@ use amethyst::{
 const SKIP_MENU_ARG: &str = "no_menu";
 
 pub struct LoadingState {
+    config_path: String,
     prefab_loading_progress: Option<ProgressCounter>,
 }
 
 impl Default for LoadingState {
     fn default() -> Self {
         LoadingState {
+            config_path: "".to_string(),
+            prefab_loading_progress: None,
+        }
+    }
+}
+
+impl LoadingState {
+    pub fn new(config_path: String) -> Self {
+        LoadingState {
+            config_path: config_path,
             prefab_loading_progress: None,
         }
     }
@@ -40,6 +52,9 @@ impl SimpleState for LoadingState {
         data.world.add_resource(DebugLines::new());
         data.world
             .add_resource(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
+        let wind_config_path = self.config_path.clone() + "/wind.ron";
+        let wind_config = Wind::load(wind_config_path);
+        data.world.add_resource(wind_config);
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {

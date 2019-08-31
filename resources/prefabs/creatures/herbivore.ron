@@ -47,6 +47,7 @@ Prefab (
                     ),
                 ),
                 intelligence_tag: (),
+                avoid_obstacles_tag: (),
                 perception: (
                     range: 2.5,
                 ),

@@ -20,6 +20,7 @@ impl<'s> System<'s> for MovementSystem {
             }
             transform.prepend_translation_x(movement.velocity.x * delta_time);
             transform.prepend_translation_y(movement.velocity.y * delta_time);
+            transform.prepend_translation_z(movement.velocity.z * delta_time);
         }
         for (movement, transform, _) in (&mut movements, &mut transforms, &creature_tags).join() {
             let angle = movement.velocity.y.atan2(movement.velocity.x);

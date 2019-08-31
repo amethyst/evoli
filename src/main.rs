@@ -97,7 +97,7 @@ fn main() -> amethyst::Result<()> {
 
     // Set up the core application.
     let mut game: Application<GameData> =
-        CoreApplication::build(resources, LoadingState::default())?
+        CoreApplication::build(resources.clone(), LoadingState::new(resources))?
             .with_frame_limit(FrameRateLimitStrategy::Sleep, 60)
             .build(game_data)?;
     game.run();
