@@ -9,10 +9,10 @@ pub struct WorldBounds {
 impl WorldBounds {
     pub fn new(left: f32, right: f32, bottom: f32, top: f32) -> WorldBounds {
         WorldBounds {
-            left: left,
-            right: right,
-            bottom: bottom,
-            top: top,
+            left,
+            right,
+            bottom,
+            top,
         }
     }
 }

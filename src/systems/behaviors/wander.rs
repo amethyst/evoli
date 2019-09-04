@@ -28,6 +28,9 @@ impl<'s> System<'s> for WanderSystem {
             let desired_velocity = target - position;
 
             movement.velocity += desired_velocity * delta_time;
+            // Quick and dirty fix to keep entities from wandering into the ground if they target
+            // an entity not on the same z-level as themselves.
+            movement.velocity.z = 0.0;
 
             let change = 10.0;
             if rng.gen::<bool>() {

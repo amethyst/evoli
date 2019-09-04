@@ -177,6 +177,27 @@ impl MainGameState {
                     &[],
                 )
                 .with(
+                    topplegrass::TopplegrassSpawnSystem::default(),
+                    "topplegrass_spawn_system",
+                    &[],
+                )
+                .with(
+                    topplegrass::TopplingSystem::default(),
+                    "toppling_system",
+                    &[],
+                )
+                .with(gravity::GravitySystem::default(), "gravity_system", &[])
+                .with(
+                    out_of_bounds::OutOfBoundsDespawnSystem::default(),
+                    "out_of_bounds_despawn_system",
+                    &[],
+                )
+                .with(
+                    wind_control::DebugWindControlSystem::default(),
+                    "wind_control_system",
+                    &[],
+                )
+                .with(
                     swarm_behavior::SwarmBehaviorSystem::default(),
                     "swarm_behavior",
                     &[],
@@ -341,6 +362,8 @@ impl SimpleState for MainGameState {
                     .world
                     .write_resource::<EventChannel<spawner::CreatureSpawnEvent>>();
                 // TODO unfortunate naming here; plants are not creatures...OrganismSpawnEvent or just SpawnEvent?
+                // I would go for something more generic than OrganismSpawnEvent; for example,
+                // Topplegrass isn't really one organism, but more of a set of organisms, both dead and alive.
                 spawn_events.single_write(spawner::CreatureSpawnEvent {
                     creature_type: "Plant".to_string(),
                     entity: plant_entity,

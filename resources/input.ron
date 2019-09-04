@@ -1,6 +1,7 @@
 (
   axes: {
-
+      "ChangeWindDirection": Emulated(pos: Key(J), neg: Key(L)),
+      "ChangeWindSpeed": Emulated(pos: Key(I), neg: Key(K)),
   },
   actions: {
     "ToggleDebug": [

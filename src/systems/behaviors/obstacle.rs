@@ -6,7 +6,7 @@ use amethyst::{
 
 use std::cmp::Ordering;
 
-use crate::components::creatures::Movement;
+use crate::components::creatures::{AvoidObstaclesTag, Movement};
 use crate::resources::world_bounds::WorldBounds;
 use crate::systems::behaviors::decision::Closest;
 
@@ -47,19 +47,22 @@ impl<'s> System<'s> for ClosestObstacleSystem {
         ReadStorage<'s, Transform>,
         ReadStorage<'s, Movement>,
         ReadExpect<'s, WorldBounds>,
+        ReadStorage<'s, AvoidObstaclesTag>,
         WriteStorage<'s, Closest<Obstacle>>,
     );
 
     fn run(
         &mut self,
-        (entities, transforms, movements, world_bounds, mut closest_obstacle): Self::SystemData,
+        (entities, transforms, movements, world_bounds, avoid_obstacles, mut closest_obstacle): Self::SystemData,
     ) {
         // Right now the only obstacles are the world bound walls, so it's
         // safe to clear this out.
         closest_obstacle.clear();
 
         let threshold = 3.0f32.powi(2);
-        for (entity, transform, _) in (&entities, &transforms, &movements).join() {
+        for (entity, transform, _, _) in
+            (&entities, &transforms, &avoid_obstacles, &movements).join()
+        {
             // Find the closest wall to this entity
             let wall_dir = closest_wall(&transform.translation(), &world_bounds);
             if wall_dir.magnitude_squared() < threshold {
