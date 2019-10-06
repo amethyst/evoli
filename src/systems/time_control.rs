@@ -27,7 +27,8 @@ impl<'s> System<'s> for TimeControlSystem {
         Self::SystemData::setup(world);
         self.ui_reader_id = Some(world.fetch_mut::<EventChannel<UiEvent>>().register_reader());
         self.input_reader_id = Some(
-            world.fetch_mut::<EventChannel<InputEvent<String>>>()
+            world
+                .fetch_mut::<EventChannel<InputEvent<String>>>()
                 .register_reader(),
         );
 

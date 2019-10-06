@@ -10,11 +10,8 @@ use amethyst::{
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
-        sprite_visibility::SpriteVisibilitySortingSystem,
-        types::DefaultBackend,
-        visibility::VisibilitySortingSystem,
-        RenderingSystem,
-        SpriteSheet,
+        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend,
+        visibility::VisibilitySortingSystem, RenderingSystem, SpriteSheet,
     },
     ui::{UiBundle, UiGlyphsSystemDesc},
     utils::application_root_dir,
