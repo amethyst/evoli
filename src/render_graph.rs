@@ -1,5 +1,6 @@
 use amethyst::{
-    ecs::{ReadExpect, Resources, SystemData},
+    ecs::{ReadExpect, SystemData},
+    prelude::World,
     renderer::{
         pass::DrawPbrDesc,
         rendy::{
@@ -32,13 +33,13 @@ pub struct RenderGraph {
 }
 
 impl GraphCreator<DefaultBackend> for RenderGraph {
-    fn rebuild(&mut self, res: &Resources) -> bool {
+    fn rebuild(&mut self, world: &World) -> bool {
         // Rebuild when dimensions change, but wait until at least two frames have the same.
-        let new_dimensions = res.try_fetch::<ScreenDimensions>();
+        let new_dimensions = world.try_fetch::<ScreenDimensions>();
         use std::ops::Deref;
         if self.dimensions.as_ref() != new_dimensions.as_ref().map(|d| d.deref()) {
             self.dirty = true;
-            self.dimensions = new_dimensions.map(|d| d.clone());
+            self.dimensions = new_dimensions.map(|d| (*d).clone());
             return false;
         }
         return self.dirty;
@@ -47,11 +48,11 @@ impl GraphCreator<DefaultBackend> for RenderGraph {
     fn builder(
         &mut self,
         factory: &mut Factory<DefaultBackend>,
-        res: &Resources,
-    ) -> GraphBuilder<DefaultBackend, Resources> {
+        world: &World,
+    ) -> GraphBuilder<DefaultBackend, World> {
         self.dirty = false;
 
-        let window = <ReadExpect<'_, Window>>::fetch(res);
+        let window = <ReadExpect<'_, Window>>::fetch(world);
         let surface = factory.create_surface(&window);
         // cache surface format to speed things up
         let surface_format = *self

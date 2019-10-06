@@ -34,12 +34,11 @@ impl SimpleState for LoadingState {
         load_factions(data.world);
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
-        data.world
-            .add_resource(DebugLinesParams { line_width: 1.0 });
+        data.world.insert(DebugLinesParams { line_width: 1.0 });
 
-        data.world.add_resource(DebugLines::new());
+        data.world.insert(DebugLines::new());
         data.world
-            .add_resource(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
+            .insert(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {

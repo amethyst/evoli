@@ -1,20 +1,22 @@
 #[macro_use]
 extern crate log;
 
-use amethyst::assets::PrefabLoaderSystem;
+use amethyst::assets::PrefabLoaderSystemDesc;
 use amethyst::{
     assets::Processor,
-    audio::{AudioBundle, DjSystem},
-    core::frame_limiter::FrameRateLimitStrategy,
-    core::transform::TransformBundle,
-    gltf::GltfSceneLoaderSystem,
+    audio::{AudioBundle, DjSystemDesc},
+    core::{frame_limiter::FrameRateLimitStrategy, transform::TransformBundle},
+    gltf::GltfSceneLoaderSystemDesc,
     input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
-        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend,
-        visibility::VisibilitySortingSystem, RenderingSystem, SpriteSheet,
+        sprite_visibility::SpriteVisibilitySortingSystem,
+        types::DefaultBackend,
+        visibility::VisibilitySortingSystem,
+        RenderingSystem,
+        SpriteSheet,
     },
-    ui::UiBundle,
+    ui::{UiBundle, UiGlyphsSystemDesc},
     utils::application_root_dir,
     window::{DisplayConfig, WindowBundle},
 };
@@ -52,30 +54,35 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(
             InputBundle::<StringBindings>::new().with_bindings_from_file(&key_bindings_path)?,
         )?
-        .with(
-            PrefabLoaderSystem::<creatures::CreaturePrefabData>::default(),
+        .with_system_desc(
+            PrefabLoaderSystemDesc::<creatures::CreaturePrefabData>::default(),
             "creature_loader",
             &[],
         )
-        .with(
-            GltfSceneLoaderSystem::default(),
-            "gltf_loader",
-            &["creature_loader"],
-        )
-        .with(
-            PrefabLoaderSystem::<combat::FactionPrefabData>::default(),
+        .with_system_desc(
+            PrefabLoaderSystemDesc::<combat::FactionPrefabData>::default(),
             "",
             &[],
         )
-        .with(
-            DjSystem::new(|music: &mut Music| music.music.next()),
-            "dj",
+        .with_system_desc(
+            GltfSceneLoaderSystemDesc::default(),
+            "gltf_loader",
+            &["creature_loader"],
+        )
+        .with_system_desc(
+            UiGlyphsSystemDesc::<DefaultBackend>::default(),
+            "ui_glyph_system",
+            &[],
+        )
+        .with_system_desc(
+            DjSystemDesc::new(|music: &mut Music| music.music.next()),
+            "dj_system",
             &[],
         )
         .with_bundle(TransformBundle::new())?
         .with_bundle(AudioBundle::default())?
         .with_bundle(WindowBundle::from_config(display_config))?
-        .with_bundle(UiBundle::<DefaultBackend, StringBindings>::new())?
+        .with_bundle(UiBundle::<StringBindings>::new())?
         .with(
             Processor::<SpriteSheet>::new(),
             "sprite_sheet_processor",

@@ -1,11 +1,12 @@
 [package]
 name = "evolution-island"
-version = "0.2.0"
+version = "0.2.1"
 authors = []
 edition = "2018"
 
 [dependencies]
-amethyst = { git = "https://github.com/amethyst/amethyst.git", rev = "9709f4f", features = ["vulkan", "gltf"]}
+amethyst = { version = "0.13.2", features = ["vulkan", "gltf"]}
+# amethyst = { path = "../amethyst/", features = ["vulkan", "gltf"]}
 rand = "0.6.5"
 log = "0.4.6"
 smart-default = "0.5.2"
@@ -22,5 +23,6 @@ profiler = [
     "thread_profiler/thread_profiler",
     "amethyst/profiler"
 ]
+nightly = ["amethyst/nightly"]
 
 

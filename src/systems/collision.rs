@@ -135,7 +135,7 @@ impl<'s> System<'s> for DebugCollisionEventSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
+    fn setup(&mut self, res: &mut World) {
         Self::SystemData::setup(res);
         self.event_reader = Some(
             res.fetch_mut::<EventChannel<CollisionEvent>>()

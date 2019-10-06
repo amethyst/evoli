@@ -23,7 +23,7 @@ impl<'s> System<'s> for TimeControlSystem {
         Write<'s, EventChannel<InputEvent<String>>>,
     );
 
-    fn setup(&mut self, res: &mut Resources) {
+    fn setup(&mut self, res: &mut World) {
         Self::SystemData::setup(res);
         self.ui_reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
         self.input_reader_id = Some(
@@ -73,7 +73,7 @@ impl<'s> System<'s> for TimeControlSystem {
                 .1,
         );
 
-        let button_resources = UiButtonBuilderResources::<(), u32>::fetch(&res);
+        let button_resources = UiButtonBuilderResorces::<(), u32>::fetch(&res);
         self.speed_up_button = Some(
             UiButtonBuilder::<(), u32>::new("Speed Up")
                 .with_id(2u32)

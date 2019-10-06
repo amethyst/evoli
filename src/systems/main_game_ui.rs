@@ -130,7 +130,7 @@ impl<'s> System<'s> for MainGameUiSystem {
         Write<'s, EventChannel<InputEvent<StringBindings>>>,
     );
 
-    fn setup(&mut self, res: &mut Resources) {
+    fn setup(&mut self, res: &mut World) {
         Self::SystemData::setup(res);
         self.ui_reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
         self.input_reader_id = Some(

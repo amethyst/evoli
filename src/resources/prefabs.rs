@@ -4,7 +4,7 @@ use std::fs::read_dir;
 use crate::components::creatures::CreaturePrefabData;
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab, PrefabLoader, ProgressCounter, RonFormat},
-    ecs::World,
+    ecs::{World, WorldExt},
     ui::{UiLoader, UiPrefab},
     utils::application_root_dir,
 };
@@ -95,7 +95,7 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
                 })
             })
             .collect::<Vec<Handle<UiPrefab>>>();
-        world.add_resource(ui_prefab_registry);
+        world.insert(ui_prefab_registry);
     }
 
     // load creature prefabs
@@ -123,7 +123,7 @@ pub fn initialize_prefabs(world: &mut World) -> ProgressCounter {
         for (count, prefab) in prefab_iter.enumerate() {
             creature_prefabs.insert("temp_prefab_".to_string() + &count.to_string(), prefab);
         }
-        world.add_resource(creature_prefabs);
+        world.insert(creature_prefabs);
     }
 
     progress_counter
