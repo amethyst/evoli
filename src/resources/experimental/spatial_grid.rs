@@ -1,6 +1,6 @@
 use amethyst::{
     core::{math::Vector2, transform::Transform},
-    ecs::{BitSet, Entity, Builder},
+    ecs::{BitSet, Builder, Entity},
 };
 // You should leave the Builder import, as cargo check --all --all-features
 // will not run through otherwise.
