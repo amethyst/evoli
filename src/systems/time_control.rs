@@ -23,17 +23,17 @@ impl<'s> System<'s> for TimeControlSystem {
         Write<'s, EventChannel<InputEvent<String>>>,
     );
 
-    fn setup(&mut self, res: &mut World) {
-        Self::SystemData::setup(res);
-        self.ui_reader_id = Some(res.fetch_mut::<EventChannel<UiEvent>>().register_reader());
+    fn setup(&mut self, world: &mut World) {
+        Self::SystemData::setup(world);
+        self.ui_reader_id = Some(world.fetch_mut::<EventChannel<UiEvent>>().register_reader());
         self.input_reader_id = Some(
-            res.fetch_mut::<EventChannel<InputEvent<String>>>()
+            world.fetch_mut::<EventChannel<InputEvent<String>>>()
                 .register_reader(),
         );
 
         let font_handle = {
-            let loader = res.fetch::<Loader>();
-            let font_storage = res.fetch::<AssetStorage<FontAsset>>();
+            let loader = world.fetch::<Loader>();
+            let font_storage = world.fetch::<AssetStorage<FontAsset>>();
             loader.load(
                 "assets/fonts/OpenSans-Regular.ttf",
                 TtfFormat,
@@ -41,7 +41,7 @@ impl<'s> System<'s> for TimeControlSystem {
                 &font_storage,
             )
         };
-        let button_resources = UiButtonBuilderResources::<(), u32>::fetch(&res);
+        let button_resources = UiButtonBuilderResources::<(), u32>::fetch(&world);
         self.pause_button = Some(
             UiButtonBuilder::<(), u32>::new("Pause")
                 .with_id(0u32)
@@ -57,7 +57,7 @@ impl<'s> System<'s> for TimeControlSystem {
                 .1,
         );
 
-        let button_resources = UiButtonBuilderResources::<(), u32>::fetch(&res);
+        let button_resources = UiButtonBuilderResources::<(), u32>::fetch(&world);
         self.slow_down_button = Some(
             UiButtonBuilder::<(), u32>::new("Slow Down")
                 .with_id(1u32)
@@ -73,7 +73,7 @@ impl<'s> System<'s> for TimeControlSystem {
                 .1,
         );
 
-        let button_resources = UiButtonBuilderResorces::<(), u32>::fetch(&res);
+        let button_resources = UiButtonBuilderResources::<(), u32>::fetch(&world);
         self.speed_up_button = Some(
             UiButtonBuilder::<(), u32>::new("Speed Up")
                 .with_id(2u32)
