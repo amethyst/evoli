@@ -1,9 +1,7 @@
 use amethyst::{
     core::{math::Vector2, transform::Transform},
-    ecs::{BitSet, Builder, Entity},
+    ecs::{BitSet, Entity},
 };
-// You should leave the Builder import, as cargo check --all --all-features
-// will not run through otherwise.
 
 use std::collections::HashMap;
 use std::f32;
@@ -69,7 +67,7 @@ mod tests {
     use super::*;
     use amethyst::{
         core::transform::Transform,
-        ecs::{World, WorldExt},
+        ecs::{Builder, World, WorldExt},
     };
 
     #[test]
