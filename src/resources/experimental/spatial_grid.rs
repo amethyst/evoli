@@ -2,6 +2,8 @@ use amethyst::{
     core::{math::Vector2, transform::Transform},
     ecs::{BitSet, Entity, Builder},
 };
+// You should leave the Builder import, as cargo check --all --all-features
+// will not run through otherwise.
 
 use std::collections::HashMap;
 use std::f32;
