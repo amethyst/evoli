@@ -1,6 +1,6 @@
 use amethyst::{
     core::{math::Vector2, transform::Transform},
-    ecs::{BitSet, Entity},
+    ecs::{BitSet, Entity, Builder},
 };
 
 use std::collections::HashMap;
