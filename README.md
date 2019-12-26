@@ -9,7 +9,7 @@ For more information about the current game design and our goals and history so 
 
 ## Install / Play
 
-Make sure you have Git LFS installed when cloning the repository as most assets are stored there.
+Make sure you have [Git LFS](https://git-lfs.github.com/) installed when cloning the repository as most assets are stored there.
 
 If you are compiling on Linux, you need to install some dependencies first. They are necessary to compile and run the Amethyst engine. Please follow the instructions in the [Amethyst README](https://github.com/amethyst/amethyst#dependencies).
 
