@@ -1,0 +1,38 @@
+#![enable(implicit_some)]
+Prefab (
+    entities: [
+        (
+            data: (
+                name: (
+                    name: "HerbivoreCarcass"
+                ),
+                creature_tag: (),
+                gltf: File("assets/carcass.glb", ()),
+                collider: (
+                    radius: 0.45,
+                ),
+                digestion: (
+                    digestion: (
+                        nutrition_burn_rate: 5.0,
+                    ),
+                    fullness: (
+                        max: 100.0,
+                        value: 100.0,
+                    ),
+                    nutrition: (
+                        value: 50.0,
+                    ),
+                ),
+                combat: (
+                    health: (
+                        max_health: 50.0,
+                        value: 50.0,
+                    ),
+                    has_faction: (
+                        faction: "Herbivores",
+                    ),
+                ),
+            ),
+        ),
+    ],
+)

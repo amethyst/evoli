@@ -27,9 +27,6 @@ Prefab (
                         max: 100.0,
                         value: 100.0,
                     ),
-                    nutrition: (
-                        value: 50.0,
-                    )
                 ),
                 combat: (
                     health: (

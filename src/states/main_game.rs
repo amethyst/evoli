@@ -141,7 +141,7 @@ impl MainGameState {
                 )
                 .with(digestion::DigestionSystem, "digestion_system", &[])
                 .with(
-                    digestion::StarvationSystem,
+                    death::StarvationSystem,
                     "starvation_system",
                     &["digestion_system"],
                 )
@@ -157,9 +157,14 @@ impl MainGameState {
                     &["find_attack_system"],
                 )
                 .with(
-                    health::DeathByHealthSystem,
+                    death::DeathByHealthSystem,
                     "death_by_health_system",
                     &["perform_default_attack_system"],
+                )
+                .with(
+                    death::CarcassSystem::default(),
+                    "carcass_system",
+                    &["death_by_health_system"],
                 )
                 .with(
                     spawner::DebugSpawnTriggerSystem::default(),
