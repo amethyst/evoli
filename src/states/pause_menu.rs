@@ -2,6 +2,7 @@ use crate::resources::prefabs::UiPrefabRegistry;
 use crate::states::menu::MenuState;
 use amethyst::{
     ecs::Entity,
+    input::InputEvent,
     prelude::*,
     shrev::EventChannel,
     ui::{UiEvent, UiEventType, UiFinder},
@@ -63,6 +64,17 @@ impl<'a> SimpleState for PauseMenuState {
                     state_transition_event_channel
                         .single_write(Box::new(|| Trans::Switch(Box::new(MenuState::default()))));
                     Trans::None
+                } else {
+                    Trans::None
+                }
+            }
+            StateEvent::Input(input_event) => {
+                if let InputEvent::ActionPressed(action) = input_event {
+                    if action == "TogglePauseMenu" {
+                        Trans::Pop
+                    } else {
+                        Trans::None
+                    }
                 } else {
                     Trans::None
                 }

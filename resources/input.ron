@@ -33,5 +33,14 @@
     "CameraMoveBackward": [
         [Key(LShift), Key(Down)]
     ],
+    "TogglePauseMenu": [
+        [Key(Escape)]
+    ],
+    "GoodMorning": [
+        [Key(LAlt), Key(M)]
+    ],
+    "GoodNight": [
+        [Key(LAlt), Key(N)]
+    ],
   },
 )

@@ -19,17 +19,18 @@ use amethyst::{
 
 use std::f32;
 
-use crate::systems::behaviors::decision::{
-    ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem,
-};
-use crate::systems::behaviors::obstacle::{ClosestObstacleSystem, Obstacle};
 use crate::{
     components::creatures::CreatureTag,
+    day_night_cycle::DayNightCycleEvent,
     resources::{
         debug::DebugConfig, prefabs::UiPrefabRegistry, spatial_grid::SpatialGrid,
         world_bounds::WorldBounds,
     },
     states::pause_menu::PauseMenuState,
+    systems::behaviors::{
+        decision::{ClosestSystem, Predator, Prey, QueryPredatorsAndPreySystem, SeekSystem},
+        obstacle::{ClosestObstacleSystem, Obstacle},
+    },
     systems::*,
 };
 use rand::{thread_rng, Rng};
@@ -251,9 +252,22 @@ impl MainGameState {
     }
 
     fn handle_action(&mut self, action: &str, world: &mut World) -> SimpleTrans {
+        info!("MainGameState::handle_action({})", action);
         if action == "ToggleDebug" {
             let mut debug_config = world.write_resource::<DebugConfig>();
             debug_config.visible = !debug_config.visible;
+            Trans::None
+        } else if action == "TogglePauseMenu" {
+            Trans::Push(Box::new(PauseMenuState::default()))
+        } else if action == "GoodMorning" {
+            world
+                .write_resource::<EventChannel<DayNightCycleEvent>>()
+                .single_write(DayNightCycleEvent::GoodMorning);
+            Trans::None
+        } else if action == "GoodNight" {
+            world
+                .write_resource::<EventChannel<DayNightCycleEvent>>()
+                .single_write(DayNightCycleEvent::GoodNight);
             Trans::None
         } else if action == main_game_ui::PAUSE_BUTTON.action {
             self.paused = !self.paused;

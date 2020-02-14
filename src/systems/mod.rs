@@ -8,6 +8,7 @@ pub mod digestion;
 pub mod health;
 pub mod main_game_ui;
 pub mod movement;
+pub mod music;
 pub mod spawner;
 pub mod swarm_behavior;
 

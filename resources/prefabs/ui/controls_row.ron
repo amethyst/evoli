@@ -4,13 +4,13 @@ Label(
         id: "controls_row",
         anchor: TopMiddle,
         width: 800.0,
-        height: 100.0,
+        height: 70.0,
         z: 10.0,
     ),
     text: (
         text: "CONTROLS ROW PLACEHOLDER",
         font: File("assets/fonts/OpenSans-Regular.ttf", ("TTF", ())),
-        font_size: 30.0,
+        font_size: 25.0,
         color: (0.0, 0.0, 0.0, 1.0),
     )
 )
