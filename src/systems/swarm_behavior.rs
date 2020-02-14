@@ -13,7 +13,7 @@ use std::f32;
 
 use crate::{
     components::{
-        creatures::{Movement, Wander},
+        creatures::{AvoidObstaclesTag, Movement, Wander},
         swarm::{SwarmBehavior, SwarmCenter},
     },
     systems::spawner::CreatureSpawnEvent,
@@ -54,6 +54,8 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 angle: 0.0,
             };
             swarm_entity_builder = swarm_entity_builder.with(wander);
+            let avoid_obstacles_tag: AvoidObstaclesTag = AvoidObstaclesTag;
+            swarm_entity_builder = swarm_entity_builder.with(avoid_obstacles_tag);
             let swarm_entity = swarm_entity_builder.build();
             let mut swarm_center = SwarmCenter::default();
             let nb_swarm_individuals = rng.gen_range(3, 10);

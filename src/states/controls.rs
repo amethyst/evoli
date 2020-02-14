@@ -36,6 +36,12 @@ impl ControlsState {
                         ),
                     )
                 })
+                .chain(input_handler.bindings.axes().map(|axis| {
+                    (
+                        axis.clone(),
+                        format!("{:?}", input_handler.bindings.axis(axis)),
+                    )
+                }))
                 .collect::<Vec<(String, String)>>();
             bindings.sort();
             bindings

@@ -1,0 +1,6 @@
+(
+  // Initial wind speed.
+  // Speed can be altered during game using the debug controls.
+  // Values between about 1.5 and 5 seem to result in a nice, semi-realistic looking effect.
+  wind: [2.0, 0.0],
+)
