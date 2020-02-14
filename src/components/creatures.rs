@@ -77,6 +77,16 @@ impl Wander {
     }
 }
 
+#[derive(Clone, Debug, Default, Deserialize, Serialize, PrefabData)]
+#[prefab(Component)]
+pub struct Carcass {
+    pub creature_type: CreatureType,
+}
+
+impl Component for Carcass {
+    type Storage = DenseVecStorage<Self>;
+}
+
 // This is the main prefab data for creatures.
 // It defines all the components that a creature could have.
 // In the prefab, it is not necessary to define all of them (due to Option).
@@ -96,4 +106,5 @@ pub struct CreaturePrefabData {
     intelligence_tag: Option<IntelligenceTag>,
     perception: Option<Perception>,
     ricochet_tag: Option<RicochetTag>,
+    carcass: Option<Carcass>,
 }

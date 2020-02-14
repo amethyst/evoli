@@ -12,7 +12,6 @@ use crate::systems::collision::CollisionEvent;
 //use amethyst::Error;
 //#[cfg(test)]
 //use amethyst_test::AmethystApplication;
-use std::f32;
 use std::time::Duration;
 
 pub struct CooldownSystem;
@@ -61,12 +60,20 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
         ReadStorage<'s, Speed>,
         WriteStorage<'s, Health>,
         WriteStorage<'s, Fullness>,
-        ReadStorage<'s, Nutrition>,
+        WriteStorage<'s, Nutrition>,
     );
 
     fn run(
         &mut self,
-        (attack_events, damages, mut cooldowns, speeds, mut healths, mut fullnesses, nutritions): Self::SystemData,
+        (
+            attack_events,
+            damages,
+            mut cooldowns,
+            speeds,
+            mut healths,
+            mut fullnesses,
+            mut nutritions,
+        ): Self::SystemData,
     ) {
         let event_reader = self
             .event_reader
@@ -90,11 +97,11 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
                 }
             }
 
-            for (mut fullness, _) in (&mut fullnesses, &attack_set).join() {
-                for (health, nutrition, _) in (&healths, &nutritions, &defender_set).join() {
-                    if health.value < f32::EPSILON {
-                        fullness.value = fullness.value + nutrition.value;
-                    }
+            for (mut fullness, _, damage) in (&mut fullnesses, &attack_set, &damages).join() {
+                for (nutrition, _) in (&mut nutritions, &defender_set).join() {
+                    let delta = nutrition.value.min(damage.damage);
+                    nutrition.value = nutrition.value - delta;
+                    fullness.value = fullness.value + delta;
                 }
             }
 

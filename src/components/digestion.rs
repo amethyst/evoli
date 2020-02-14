@@ -46,5 +46,5 @@ impl Component for Nutrition {
 pub struct DigestionPrefabData {
     fullness: Fullness,
     digestion: Digestion,
-    nutrition: Nutrition,
+    nutrition: Option<Nutrition>,
 }
