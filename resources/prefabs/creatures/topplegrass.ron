@@ -6,7 +6,7 @@ Prefab (
                 name: (
                     name: "Topplegrass"
                 ),
-                gltf: File("assets/Topplegrass.gltf", ()),
+                gltf: File("assets/topplegrass.gltf", ()),
                 movement: (
                     velocity: [0.0, 0.0, 0.0],
                     max_movement_speed: 10.0,
