@@ -64,10 +64,10 @@ impl<'s> System<'s> for CarcassSystem {
         ReadStorage<'s, Carcass>,
     );
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        <Self as System<'_>>::SystemData::setup(world);
         self.death_reader_id = Some(
-            res.fetch_mut::<EventChannel<CreatureDeathEvent>>()
+            world.fetch_mut::<EventChannel<CreatureDeathEvent>>()
                 .register_reader(),
         );
     }

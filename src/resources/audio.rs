@@ -1,8 +1,9 @@
 use amethyst::{
     assets::Loader,
     audio::{AudioSink, OggFormat, SourceHandle},
-    ecs::prelude::World,
+    ecs::prelude::{World, WorldExt},
 };
+use amethyst::audio::output::init_output;
 
 use std::iter::Cycle;
 use std::vec::IntoIter;
@@ -19,9 +20,9 @@ fn load_audio_track(loader: &Loader, world: &World, file: &str) -> SourceHandle 
 
 // Initialise audio in the world. This sets up the background music
 pub fn initialise_audio(world: &mut World) {
+    init_output(world);
     let music = {
         let loader = world.read_resource::<Loader>();
-
         let mut sink = world.write_resource::<AudioSink>();
         sink.set_volume(0.25);
 
@@ -36,5 +37,5 @@ pub fn initialise_audio(world: &mut World) {
     };
 
     // Add sounds to the world
-    world.add_resource(music);
+    world.insert(music);
 }

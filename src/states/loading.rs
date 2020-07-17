@@ -47,19 +47,20 @@ impl SimpleState for LoadingState {
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
         data.world
-            .add_resource(DebugLinesParams { line_width: 1.0 });
+            .insert(DebugLinesParams { line_width: 1.0 });
 
-        data.world.add_resource(DebugLines::new());
+        data.world.insert(DebugLines::new());
         data.world
-            .add_resource(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
+            .insert(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
         let wind_config_path = self.config_path.clone() + "/wind.ron";
         let wind_config = Wind::load(wind_config_path);
-        data.world.add_resource(wind_config);
+        data.world.insert(wind_config);
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
         if let Some(ref counter) = self.prefab_loading_progress.as_ref() {
+            println!("Loading: {}, Failed: {}, Finished: {}", counter.num_loading(), counter.num_failed(), counter.num_finished()); 
             if counter.is_complete() {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);

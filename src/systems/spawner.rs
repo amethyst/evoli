@@ -52,10 +52,10 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
         Write<'s, LazyUpdate>,
     );
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        <Self as System<'_>>::SystemData::setup(world);
         self.spawn_reader_id = Some(
-            res.fetch_mut::<EventChannel<CreatureSpawnEvent>>()
+            world.fetch_mut::<EventChannel<CreatureSpawnEvent>>()
                 .register_reader(),
         );
     }

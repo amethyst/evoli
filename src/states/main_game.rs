@@ -1,9 +1,8 @@
 use amethyst;
-
 use amethyst::{
     core::math::{clamp, Rotation3, Vector3},
     core::{transform::Transform, ArcThreadPool, Time},
-    ecs::*,
+    ecs::prelude::*,
     input::InputEvent,
     prelude::*,
     renderer::{
@@ -16,7 +15,6 @@ use amethyst::{
     shrev::EventChannel,
     window::ScreenDimensions,
 };
-
 use std::f32;
 
 use crate::systems::behaviors::decision::{
@@ -52,7 +50,7 @@ impl MainGameState {
     pub fn new(world: &mut World) -> Self {
         // For profiling, the dispatcher needs to specify the pool that is created for us by `ApplicationBuilder::new`.
         // This thread pool will include the necessary setup for `profile_scope`.
-        let pool = world.read_resource::<ArcThreadPool>().clone();
+        let pool = (&*world.read_resource::<ArcThreadPool>()).clone();
         MainGameState {
             dispatcher: DispatcherBuilder::new()
                 .with_pool(pool)
@@ -322,13 +320,13 @@ impl SimpleState for MainGameState {
     fn on_start(&mut self, data: StateData<GameData>) {
         info!("start main game");
 
-        self.dispatcher.setup(&mut data.world.res);
-        self.debug_dispatcher.setup(&mut data.world.res);
-        self.ui_dispatcher.setup(&mut data.world.res);
+        self.dispatcher.setup(data.world);
+        self.debug_dispatcher.setup(data.world);
+        self.ui_dispatcher.setup(data.world);
 
         // Setup debug config resource
-        data.world.add_resource(DebugConfig::default());
-        data.world.add_resource(SpatialGrid::new(1.0f32));
+        data.world.insert(DebugConfig::default());
+        data.world.insert(SpatialGrid::new(1.0f32));
 
         // main game ui
         let ui_prefab = data
@@ -415,7 +413,7 @@ impl SimpleState for MainGameState {
         data.world.create_entity().with(light_component).build();
 
         data.world
-            .add_resource(AmbientColor(Srgba::new(0.2f32, 0.2f32, 0.2f32, 1.0f32)));
+            .insert(AmbientColor(Srgba::new(0.2f32, 0.2f32, 0.2f32, 1.0f32)));
 
         // Setup camera
         let (width, height) = {
@@ -490,9 +488,9 @@ impl SimpleState for MainGameState {
     }
 
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
-        self.dispatcher.dispatch(&data.world.res);
+        self.dispatcher.dispatch(&data.world);
 
-        for (db_comp,) in (&mut data.world.write_storage::<DebugLinesComponent>(),).join() {
+        for (db_comp, ) in (&mut data.world.write_storage::<DebugLinesComponent>(), ).join() {
             db_comp.clear();
         }
         let show_debug = {
@@ -500,12 +498,12 @@ impl SimpleState for MainGameState {
             debug_config.visible
         };
         if show_debug {
-            self.debug_dispatcher.dispatch(&data.world.res);
+            self.debug_dispatcher.dispatch(&data.world);
         }
 
         data.data.update(&data.world);
 
-        self.ui_dispatcher.dispatch(&data.world.res);
+        self.ui_dispatcher.dispatch(&data.world);
 
         Trans::None
     }

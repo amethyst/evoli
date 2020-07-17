@@ -53,6 +53,7 @@ impl CollisionEvent {
 /// intended! If there are a lot of entities, collisions should be handled by a real physics engine. As soon
 /// as a physics integration for Amethyst exists, we are going to switch to that for collision detection.
 pub struct CollisionSystem;
+
 impl<'s> System<'s> for CollisionSystem {
     type SystemData = (
         ReadStorage<'s, collider::Circle>,
@@ -69,7 +70,7 @@ impl<'s> System<'s> for CollisionSystem {
         #[cfg(feature = "profiler")]
         profile_scope!("collision_system");
         for (circle_a, movement, local_a, entity_a) in
-            (&circles, &mut movements, &locals, &entities).join()
+        (&circles, &mut movements, &locals, &entities).join()
         {
             for (circle_b, local_b, entity_b) in (&circles, &locals, &entities).join() {
                 if entity_a == entity_b {
@@ -122,9 +123,9 @@ pub struct DebugCollisionEventSystem {
 }
 
 impl<'s> System<'s> for DebugCollisionEventSystem {
-    type SystemData = (Write<'s, EventChannel<CollisionEvent>>,);
+    type SystemData = (Write<'s, EventChannel<CollisionEvent>>, );
 
-    fn run(&mut self, (collision_events,): Self::SystemData) {
+    fn run(&mut self, (collision_events, ): Self::SystemData) {
         let event_reader = self
             .event_reader
             .as_mut()
@@ -135,10 +136,10 @@ impl<'s> System<'s> for DebugCollisionEventSystem {
         }
     }
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
+    fn setup(&mut self, world: &mut World) {
+        <Self as System<'_>>::SystemData::setup(world);
         self.event_reader = Some(
-            res.fetch_mut::<EventChannel<CollisionEvent>>()
+            world.fetch_mut::<EventChannel<CollisionEvent>>()
                 .register_reader(),
         );
     }
