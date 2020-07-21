@@ -87,7 +87,9 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
-                .with_plugin(RenderToWindow::from_config(render_display_config))
+                .with_plugin(RenderToWindow::from_config(render_display_config)
+                    .with_clear([0.0, 0.0, 0.0, 1.0]), //rgba background
+                )
                 .with_plugin(RenderPbr3D::default())
                 .with_plugin(RenderUi::default())
         )?;
