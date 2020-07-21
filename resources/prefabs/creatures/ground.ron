@@ -6,8 +6,9 @@ Prefab (
                 name: (
                     name: "Ground"
                 ),
-                //gltf: File("assets/ground.gltf", ()),
+                gltf: File("assets/ground2.glb", ()),
             ),
         ),
     ],
+
 )
