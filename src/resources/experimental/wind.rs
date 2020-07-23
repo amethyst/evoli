@@ -20,6 +20,6 @@ impl Wind {
 
 impl Default for Wind {
     fn default() -> Self {
-        Wind::new(0.0, 0.0)
+        Wind::new(2.0, 0.0)
     }
 }

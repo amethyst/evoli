@@ -52,7 +52,10 @@ impl SimpleState for LoadingState {
         data.world
             .insert(WorldBounds::new(-10.0, 10.0, -10.0, 10.0));
         let wind_config_path = self.config_path.clone() + "/wind.ron";
-        let wind_config = Wind::load(wind_config_path);
+        let wind_config = Wind::load(wind_config_path).unwrap_or_else(|error| {
+            error!("Failed to load wind resource from config file. Using Wind::default() instead. Error: {:?}", error);
+            Wind::default()
+        });
         data.world.insert(wind_config);
     }
 
