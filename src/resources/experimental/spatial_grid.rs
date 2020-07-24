@@ -67,7 +67,7 @@ mod tests {
     use super::*;
     use amethyst::{
         core::transform::Transform,
-        ecs::{Builder, World, prelude::WorldExt},    
+        ecs::{prelude::WorldExt, Builder, World},
     };
 
     #[test]

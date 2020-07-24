@@ -1,5 +1,5 @@
 use amethyst::{
-    ecs::{prelude::*,ReadExpect, SystemData},
+    ecs::{prelude::*, ReadExpect, SystemData},
     renderer::{
         pass::DrawPbrDesc,
         rendy::{

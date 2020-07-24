@@ -3,21 +3,16 @@ extern crate log;
 
 use amethyst::assets::PrefabLoaderSystemDesc;
 use amethyst::{
-    assets::Processor,
     audio::{AudioBundle, DjSystem},
     core::frame_limiter::FrameRateLimitStrategy,
     core::transform::TransformBundle,
     gltf::GltfSceneLoaderSystemDesc,
     input::{InputBundle, StringBindings},
     prelude::*,
-    renderer::{
-        sprite_visibility::SpriteVisibilitySortingSystem, types::DefaultBackend,
-        visibility::VisibilitySortingSystem, RenderingSystem, SpriteSheet,
-    },
-    ui::{UiGlyphsSystemDesc},
+    renderer::types::DefaultBackend,
+    ui::{RenderUi, UiBundle},
     utils::application_root_dir,
-    window::{DisplayConfig, WindowBundle},
-    ui::{RenderUi, ToNativeWidget, UiBundle, UiCreator, UiTransformData, UiWidget},
+    window::DisplayConfig,
 };
 
 use amethyst::renderer::plugins::{RenderPbr3D, RenderToWindow};
@@ -31,7 +26,6 @@ mod systems;
 mod utils;
 
 use crate::components::{combat, creatures};
-use crate::render_graph::RenderGraph;
 use crate::resources::audio::Music;
 use crate::states::loading::LoadingState;
 
@@ -47,7 +41,7 @@ fn main() -> amethyst::Result<()> {
     let display_config_path = resources.clone() + "/display_config.ron";
     let key_bindings_path = resources.clone() + "/input.ron";
 
-    let display_config = DisplayConfig::load(display_config_path)?;
+    let _display_config = DisplayConfig::load(display_config_path)?;
 
     let render_display_config = DisplayConfig {
         title: "Evoli".to_string(),
@@ -87,11 +81,12 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(UiBundle::<StringBindings>::new())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
-                .with_plugin(RenderToWindow::from_config(render_display_config)
-                    .with_clear([0.0, 0.0, 0.0, 1.0]), //rgba background
+                .with_plugin(
+                    RenderToWindow::from_config(render_display_config)
+                        .with_clear([0.0, 0.0, 0.0, 1.0]), //rgba background
                 )
                 .with_plugin(RenderPbr3D::default())
-                .with_plugin(RenderUi::default())
+                .with_plugin(RenderUi::default()),
         )?;
 
     // Set up the core application.

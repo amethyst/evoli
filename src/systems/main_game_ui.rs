@@ -134,7 +134,8 @@ impl<'s> System<'s> for MainGameUiSystem {
         <Self as System<'_>>::SystemData::setup(world);
         self.ui_reader_id = Some(world.fetch_mut::<EventChannel<UiEvent>>().register_reader());
         self.input_reader_id = Some(
-            world.fetch_mut::<EventChannel<InputEvent<StringBindings>>>()
+            world
+                .fetch_mut::<EventChannel<InputEvent<StringBindings>>>()
                 .register_reader(),
         );
     }
