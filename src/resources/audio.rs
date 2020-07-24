@@ -1,9 +1,9 @@
+use amethyst::audio::output::init_output;
 use amethyst::{
     assets::Loader,
     audio::{AudioSink, OggFormat, SourceHandle},
     ecs::prelude::{World, WorldExt},
 };
-use amethyst::audio::output::init_output;
 
 use std::iter::Cycle;
 use std::vec::IntoIter;

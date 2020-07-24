@@ -55,7 +55,8 @@ impl<'s> System<'s> for CreatureSpawnerSystem {
     fn setup(&mut self, world: &mut World) {
         <Self as System<'_>>::SystemData::setup(world);
         self.spawn_reader_id = Some(
-            world.fetch_mut::<EventChannel<CreatureSpawnEvent>>()
+            world
+                .fetch_mut::<EventChannel<CreatureSpawnEvent>>()
                 .register_reader(),
         );
     }

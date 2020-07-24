@@ -5,21 +5,17 @@ authors = []
 edition = "2018"
 
 [dependencies]
-#amethyst = { git = "https://github.com/amethyst/amethyst.git", rev = "9709f4f", features = ["vulkan", "gltf"]}
 rand = "0.7.3"
 log = "0.4.8"
 smart-default = "0.6.0"
 serde = "1.0.114"
 thread_profiler = "0.3.0"
 
-# TODO: update dependencies for Amethyst newest version
-#amethyst_test = "0.2.0"
-#amethyst-imgui = "0.3.0"
-#amethyst-inspector = { git = "https://github.com/awpteamoose/amethyst-inspector.git"}
-
+# TODO: find a way to update the features based on which platform is targeted
+# MacOS needs the metal feature while other platforms use vulkan.
 [dependencies.amethyst]
 version = "0.15.0"
-features = ["metal", "gltf"]
+features = ["vulkan", "gltf"]
 
 [features]
 profiler = [

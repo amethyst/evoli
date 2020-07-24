@@ -490,7 +490,7 @@ impl SimpleState for MainGameState {
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         self.dispatcher.dispatch(&data.world);
 
-        for (db_comp, ) in (&mut data.world.write_storage::<DebugLinesComponent>(), ).join() {
+        for (db_comp,) in (&mut data.world.write_storage::<DebugLinesComponent>(),).join() {
             db_comp.clear();
         }
         let show_debug = {

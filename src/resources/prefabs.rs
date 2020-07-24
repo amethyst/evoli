@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use std::fs::read_dir;
 use crate::components::creatures::CreaturePrefabData;
 use amethyst::{
     assets::{AssetStorage, Handle, Prefab, PrefabLoader, ProgressCounter, RonFormat},
@@ -7,6 +5,8 @@ use amethyst::{
     ui::{UiLoader, UiPrefab},
     utils::application_root_dir,
 };
+use std::collections::HashMap;
+use std::fs::read_dir;
 
 #[derive(Default)]
 pub struct UiPrefabRegistry {

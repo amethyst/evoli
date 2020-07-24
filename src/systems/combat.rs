@@ -116,7 +116,8 @@ impl<'s> System<'s> for PerformDefaultAttackSystem {
     fn setup(&mut self, world: &mut World) {
         <Self as System<'_>>::SystemData::setup(world);
         self.event_reader = Some(
-            world.fetch_mut::<EventChannel<AttackEvent>>()
+            world
+                .fetch_mut::<EventChannel<AttackEvent>>()
                 .register_reader(),
         )
     }
@@ -177,7 +178,8 @@ impl<'s> System<'s> for FindAttackSystem {
     fn setup(&mut self, world: &mut World) {
         <Self as System<'_>>::SystemData::setup(world);
         self.event_reader = Some(
-            world.fetch_mut::<EventChannel<CollisionEvent>>()
+            world
+                .fetch_mut::<EventChannel<CollisionEvent>>()
                 .register_reader(),
         )
     }

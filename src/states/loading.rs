@@ -46,8 +46,7 @@ impl SimpleState for LoadingState {
         load_factions(data.world);
         self.prefab_loading_progress = Some(initialize_prefabs(&mut data.world));
         initialise_audio(data.world);
-        data.world
-            .insert(DebugLinesParams { line_width: 1.0 });
+        data.world.insert(DebugLinesParams { line_width: 1.0 });
 
         data.world.insert(DebugLines::new());
         data.world
@@ -60,7 +59,12 @@ impl SimpleState for LoadingState {
     fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans {
         data.data.update(&data.world);
         if let Some(ref counter) = self.prefab_loading_progress.as_ref() {
-            println!("Loading: {}, Failed: {}, Finished: {}", counter.num_loading(), counter.num_failed(), counter.num_finished()); 
+            println!(
+                "Loading: {}, Failed: {}, Finished: {}",
+                counter.num_loading(),
+                counter.num_failed(),
+                counter.num_finished()
+            );
             if counter.is_complete() {
                 self.prefab_loading_progress = None;
                 update_prefabs(&mut data.world);

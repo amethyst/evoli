@@ -67,7 +67,8 @@ impl<'s> System<'s> for CarcassSystem {
     fn setup(&mut self, world: &mut World) {
         <Self as System<'_>>::SystemData::setup(world);
         self.death_reader_id = Some(
-            world.fetch_mut::<EventChannel<CreatureDeathEvent>>()
+            world
+                .fetch_mut::<EventChannel<CreatureDeathEvent>>()
                 .register_reader(),
         );
     }
