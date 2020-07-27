@@ -1,0 +1,194 @@
+---
+kind: pipeline
+name: linux
+
+steps:
+  - name: build
+    image: rust:1.35
+    commands:
+      - apt-get update
+      - >
+        apt-get install -y gcc pkg-config openssl libasound2-dev cmake
+        build-essential libfreetype6-dev libexpat1-dev
+        libxcb-composite0-dev libssl-dev
+      - cargo build --release
+      - mkdir evolution-island
+      - mv target/release/evolution-island evolution-island
+      - cp -R resources evolution-island
+      - tar -czf evoli-linux-x86_64.tgz evolution-island
+
+  # Publish draft to GitHub releases
+  - name: publish-draft
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      title: release-draft-linux
+      api_key:
+        from_secret: github_access_key
+      files:
+        - evoli-linux-x86_64.tgz
+      draft: true
+    when:
+      ref:
+        - refs/tags/release-draft
+
+  # Publish release to GitHub releases
+  - name: publish-release
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      api_key:
+        from_secret: github_access_key
+      files:
+        - evoli-linux-x86_64.tgz
+    when:
+      ref:
+        - refs/tags/v*
+
+trigger:
+  branch:
+    exclude:
+      - feature/*
+
+---
+kind: pipeline
+name: windows
+
+steps:
+
+  # Build Arsenal runtime for Windows
+  - name: build
+    image: rust:1.35
+    commands:
+      - apt-get update
+      - >
+        apt-get install -y gcc gcc-mingw-w64 pkg-config openssl libasound2-dev
+        cmake build-essential libfreetype6-dev libexpat1-dev
+        libxcb-composite0-dev libssl-dev zip
+      - rustup target install x86_64-pc-windows-gnu
+      - mkdir -p .cargo
+      - |
+        echo '[target.x86_64-pc-windows-gnu]
+        linker = "x86_64-w64-mingw32-gcc"' >> .cargo/config
+      - cargo build --target x86_64-pc-windows-gnu --release
+      - mkdir evolution-island
+      - mv target/x86_64-pc-windows-gnu/release/evolution-island.exe evolution-island
+      - cp -R resources evolution-island
+      - zip -r evoli-windows-x86_64.zip evolution-island
+
+  # Publish draft to GitHub releases
+  - name: publish-draft
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      title: release-draft-windows
+      api_key:
+        from_secret: github_access_key
+      files:
+        - evoli-windows-x86_64.zip
+      draft: true
+    when:
+      ref:
+        - refs/tags/release-draft
+
+  # Publish release to GitHub releases
+  - name: publish-release
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      api_key:
+        from_secret: github_access_key
+      files:
+        - evoli-windows-x86_64.zip
+    when:
+      ref:
+        - refs/tags/v*
+
+trigger:
+  branch:
+    exclude:
+      - feature/*
+
+---
+kind: pipeline
+name: macos
+
+steps:
+
+  - name: build
+    image: rust:1.35
+    commands:
+      # Install Cross-compiler toolchain
+      - apt-get update
+      - apt-get install -y clang cmake cpio make libssl-dev lzma-dev libxml2-dev
+      - rustup target add x86_64-apple-darwin
+      - mkdir -p /build
+      - cd /build
+      - git clone --depth 1 https://github.com/tpoechtrager/osxcross.git
+      - cd /build/osxcross/tarballs
+      - wget https://s3.dockerproject.org/darwin/v2/MacOSX10.11.sdk.tar.xz
+      - cd /build/osxcross
+      - UNATTENDED=yes OSX_VERSION_MIN=10.7 ./build.sh
+      - export PATH="$PATH:/build/osxcross/target/bin"
+      - ln -s /build/osxcross/target/SDK/MacOSX10.11.sdk/System/ /System
+      # Configure build to use Mac linker and libraries
+      - mkdir -p /drone/src/.cargo
+      - |
+        echo '[target.x86_64-apple-darwin]
+        linker = "x86_64-apple-darwin15-clang"' >> /drone/src/.cargo/config
+      - cd /drone/src
+      - echo "[replace]" >> Cargo.toml # Patch coreaudio-sys so that it can be cross-compiled on Linux
+      - >
+        echo '"coreaudio-sys:0.2.2" =
+        { git = "https://github.com/RustAudio/coreaudio-sys.git",
+        rev = "13a32d7" }' >> Cargo.toml
+      - cargo update # WARNING: This is required because of our [replace] config above, but will potentially update dependencies.
+      - export COREAUDIO_FRAMEWORKS_PATH='/System/Library/Frameworks'
+      - >
+        export COREAUDIO_CFLAGS='-I/System/Library/Frameworks/Kernel.framework/Headers
+        -I/build/osxcross/target/SDK/MacOSX10.11.sdk/usr/include'
+      - export CC=x86_64-apple-darwin15-clang
+      - cargo build --target x86_64-apple-darwin --release
+      - mkdir evolution-island
+      - mv target/x86_64-apple-darwin/release/evolution-island evolution-island
+      - cp -R resources evolution-island
+      - tar -czf evoli-mac-x86_64.tgz evolution-island
+
+  # Publish draft to GitHub releases
+  - name: publish-draft
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      title: release-draft-mac
+      api_key:
+        from_secret: github_access_key
+      files:
+        - evoli-mac-x86_64.tgz
+      draft: true
+    when:
+      ref:
+        - refs/tags/release-draft
+
+  # Publish release to GitHub releases
+  - name: publish-release
+    image: plugins/github-release
+    depends_on:
+      - build
+    settings:
+      api_key:
+        from_secret: github_access_key
+      files:
+        - evoli-mac-x86_64.tgz
+    when:
+      ref:
+        - refs/tags/v*
+
+trigger:
+  branch:
+    exclude:
+      - feature/*
