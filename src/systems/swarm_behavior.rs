@@ -39,8 +39,8 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             let mut rng = thread_rng();
             self.swarm_timer = 10.0f32;
             let mut swarm_entity_builder = lazy_update.create_entity(&entities);
-            let x = rng.gen_range(-10.0, 10.0);
-            let y = rng.gen_range(-10.0, 10.0);
+            let x = rng.gen_range(-10.0..=10.0);
+            let y = rng.gen_range(-10.0..=10.0);
             let mut transform = Transform::default();
             transform.set_translation_xyz(x, y, 2.0);
             swarm_entity_builder = swarm_entity_builder.with(transform);
@@ -58,7 +58,7 @@ impl<'s> System<'s> for SwarmSpawnSystem {
             swarm_entity_builder = swarm_entity_builder.with(avoid_obstacles_tag);
             let swarm_entity = swarm_entity_builder.build();
             let mut swarm_center = SwarmCenter::default();
-            let nb_swarm_individuals = rng.gen_range(3, 10);
+            let nb_swarm_individuals = rng.gen_range(3..=10);
             for _ in 0..nb_swarm_individuals {
                 let mut swarmling_entity_builder = lazy_update.create_entity(&entities);
                 let swarm_behavior = SwarmBehavior {
@@ -68,15 +68,15 @@ impl<'s> System<'s> for SwarmSpawnSystem {
                 };
                 swarmling_entity_builder = swarmling_entity_builder.with(swarm_behavior);
                 let mut transform = Transform::default();
-                let x = rng.gen_range(-1.0, 1.0);
-                let y = rng.gen_range(-1.0, 1.0);
+                let x = rng.gen_range(-1.0..=1.0);
+                let y = rng.gen_range(-1.0..=1.0);
                 transform.set_translation_xyz(x, y, 0.0);
                 transform.set_scale(Vector3::new(0.1, 0.1, 0.1));
                 let parent = Parent {
                     entity: swarm_entity,
                 };
                 let movement = Movement {
-                    velocity: Vector3::new(rng.gen_range(-1.0, 1.0), rng.gen_range(-1.0, 1.0), 0.0),
+                    velocity: Vector3::new(rng.gen_range(-1.0..=1.0), rng.gen_range(-1.0..=1.0), 0.0),
                     max_movement_speed: 5.0,
                 };
                 swarmling_entity_builder = swarmling_entity_builder
@@ -111,10 +111,10 @@ impl<'s> System<'s> for SwarmCenterSystem {
             swarm_center.entities = swarm_center
                 .entities
                 .iter()
-                .filter(|swarmling_entity| !(swarm_behaviors.get(**swarmling_entity).is_none()))
+                .filter(|swarmling_entity| swarm_behaviors.get(**swarmling_entity).is_some())
                 .cloned()
                 .collect();
-            if swarm_center.entities.len() == 0 {
+            if swarm_center.entities.is_empty() {
                 entities
                     .delete(entity)
                     .expect("unreachable, the entity has been used just before");

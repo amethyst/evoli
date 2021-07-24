@@ -97,23 +97,23 @@ impl TopplegrassSpawnSystem {
         if Self::wind_towards_direction(wind.wind, Vector2::new(1.0, 0.0)) {
             Vector3::new(
                 bounds.left,
-                rng.gen_range(bounds.bottom, bounds.top),
+                rng.gen_range(bounds.bottom..=bounds.top),
                 HEIGHT,
             )
         } else if Self::wind_towards_direction(wind.wind, Vector2::new(0.0, 1.0)) {
             Vector3::new(
-                rng.gen_range(bounds.left, bounds.right),
+                rng.gen_range(bounds.left..=bounds.right),
                 bounds.bottom,
                 HEIGHT,
             )
         } else if Self::wind_towards_direction(wind.wind, Vector2::new(-1.0, 0.0)) {
             Vector3::new(
                 bounds.right,
-                rng.gen_range(bounds.bottom, bounds.top),
+                rng.gen_range(bounds.bottom..=bounds.top),
                 HEIGHT,
             )
         } else {
-            Vector3::new(rng.gen_range(bounds.left, bounds.right), bounds.top, HEIGHT)
+            Vector3::new(rng.gen_range(bounds.left..=bounds.right), bounds.top, HEIGHT)
         }
     }
 
@@ -165,7 +165,7 @@ impl<'s> System<'s> for TopplingSystem {
                 if movement.velocity.magnitude() > JUMP_THRESHOLD
                     && rng.gen::<f32>() < JUMP_PROBABILITY * time.delta_seconds()
                 {
-                    movement.velocity.z = rng.gen_range(0.4, 0.7);
+                    movement.velocity.z = rng.gen_range(0.4..=0.7);
                     Some(entity)
                 } else {
                     None
