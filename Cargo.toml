@@ -1,20 +1,21 @@
 [package]
 name = "evolution-island"
+license = "MIT or Apache-2.0"
 version = "0.2.0"
 authors = []
 edition = "2018"
 
 [dependencies]
-rand = "0.7.3"
-log = "0.4.8"
+rand = "0.8.4"
+log = "0.4.14"
 smart-default = "0.6.0"
-serde = "1.0.114"
+serde = "1.0.126"
 thread_profiler = "0.3.0"
 
 # TODO: find a way to update the features based on which platform is targeted
 # MacOS needs the metal feature while other platforms use vulkan.
 [dependencies.amethyst]
-version = "0.15.0"
+version = "0.15.3"
 features = ["vulkan", "gltf"]
 
 [features]

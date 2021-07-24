@@ -6,7 +6,7 @@ use amethyst::{
     input::InputEvent,
     prelude::*,
     renderer::{
-        camera::{Camera, Projection},
+        camera::Camera,
         debug_drawing::DebugLinesComponent,
         light::{DirectionalLight, Light},
         palette::rgb::{Srgb, Srgba},
@@ -347,10 +347,10 @@ impl SimpleState for MainGameState {
         {
             let mut rng = thread_rng();
             for _ in 0..25 {
-                let x = rng.gen_range(left, right);
-                let y = rng.gen_range(bottom, top);
-                let scale = rng.gen_range(0.8f32, 1.2f32);
-                let rotation = rng.gen_range(0.0f32, PI);
+                let x = rng.gen_range(left..=right);
+                let y = rng.gen_range(bottom..=top);
+                let scale = rng.gen_range(0.8f32..=1.2f32);
+                let rotation = rng.gen_range(0.0f32..=PI);
                 let mut transform = Transform::default();
                 transform.set_translation_xyz(x, y, 0.01);
                 transform.set_scale(Vector3::new(scale, scale, 1.0));
@@ -371,8 +371,8 @@ impl SimpleState for MainGameState {
         //insert single nushi
         {
             let mut rng = thread_rng();
-            let x = rng.gen_range(left, right);
-            let y = rng.gen_range(bottom, top);
+            let x = rng.gen_range(left..=right);
+            let y = rng.gen_range(bottom..=top);
             let scale = 0.4f32;
 
             let mut transform = Transform::default();
@@ -431,7 +431,7 @@ impl SimpleState for MainGameState {
             data.world
                 .create_entity()
                 .named("Main camera")
-                .with(Camera::from(Projection::orthographic(
+                .with(Camera::from(Camera::orthographic(
                     -width / zoom_factor,
                     width / zoom_factor,
                     -height / zoom_factor,
